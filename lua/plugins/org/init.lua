@@ -1,13 +1,9 @@
 local modules = {
-	'filetree',
-	'treesitter',
-	'autocompletion',
-	'lsp',
-    'org',
+    'nvim-orgmode',
 }
 
 for _, module in ipairs(modules) do
-    local ok, err = pcall(require, 'plugins.'..module)
+    local ok, err = pcall(require, 'plugins.org.'.. module)
     if not ok then
         error("Error loading " .. module .. "\n\n" .. err)
     end

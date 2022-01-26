@@ -32,7 +32,15 @@ local pluginList = {
 
     'neovim/nvim-lspconfig',
     
-    'williamboman/nvim-lsp-installer'
+    'williamboman/nvim-lsp-installer',
+    
+    {
+        'nvim-orgmode/orgmode',
+        config = function()
+            require('orgmode').setup{}
+        end
+    },
+
 }
 
 return pluginList
