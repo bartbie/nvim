@@ -1,6 +1,6 @@
 local modules = {
 	'filetree',
-	--'treesitter',
+	'treesitter',
 	--'lsp',
 	--'autocompletion',
 }
