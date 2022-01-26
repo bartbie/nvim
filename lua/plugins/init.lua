@@ -2,7 +2,7 @@ local modules = {
 	'filetree',
 	'treesitter',
 	'autocompletion',
-	--'lsp',
+	'lsp',
 }
 
 for _, module in ipairs(modules) do

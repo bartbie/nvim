@@ -30,6 +30,9 @@ local pluginList = {
         branch = '3p'
     },
 
+    'neovim/nvim-lspconfig',
+    
+    'williamboman/nvim-lsp-installer'
 }
 
 return pluginList
