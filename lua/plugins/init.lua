@@ -1,8 +1,8 @@
 local modules = {
 	'filetree',
 	'treesitter',
+	'autocompletion',
 	--'lsp',
-	--'autocompletion',
 }
 
 for _, module in ipairs(modules) do

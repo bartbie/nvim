@@ -3,17 +3,33 @@ local pluginList = {
     'sainnhe/sonokai',
 
     {
-        "ms-jpq/chadtree",
-        branch = "chad",
-        run = "python3 -m chadtree deps"
+        'ms-jpq/chadtree',
+        branch = 'chad',
+        run = 'python3 -m chadtree deps'
     },
     
     'tpope/vim-fugitive',
 
     {        
         'nvim-treesitter/nvim-treesitter',
-	run = ':TSUpdate'
-    }
+        run = ':TSUpdate'
+    },
+
+    {
+        'ms-jpq/coq_nvim',
+        branch = 'coq'
+    },
+
+    {
+        'ms-jpq/coq.artifacts',
+        branch = 'artifacts'
+    },
+
+    {
+        'ms-jpq/coq.thirdparty',
+        branch = '3p'
+    },
+
 }
 
 return pluginList
