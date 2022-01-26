@@ -6,7 +6,7 @@ end
 
 -- Packer can manage itself
 local plugins = {'wbthomason/packer.nvim'}
-for _, v in ipairs(require('plugins.pluginList')) do
+for _, v in ipairs(require('manager.pluginList')) do
         table.insert(plugins, v)
 end
 
