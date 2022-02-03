@@ -4,6 +4,7 @@ local modules = {
 	'autocompletion',
 	'lsp',
     'org',
+    'telescope',
 }
 
 for _, module in ipairs(modules) do

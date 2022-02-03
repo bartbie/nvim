@@ -41,6 +41,11 @@ local pluginList = {
         end
     },
 
+    {
+        'nvim-telescope/telescope.nvim',
+        requires = { 'nvim-lua/plenary.nvim' }
+    },
+
 }
 
 return pluginList
