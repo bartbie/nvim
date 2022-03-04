@@ -5,6 +5,7 @@ local modules = {
 	'lsp',
 --    'org',
     'telescope',
+    'gitsigns',
 }
 
 for _, module in ipairs(modules) do
