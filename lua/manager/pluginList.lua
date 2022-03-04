@@ -34,12 +34,12 @@ local pluginList = {
     
     'williamboman/nvim-lsp-installer',
     
-    {
-        'nvim-orgmode/orgmode',
-        config = function()
-            require('orgmode').setup{}
-        end
-    },
+--    {
+--        'nvim-orgmode/orgmode',
+--        config = function()
+--            require('orgmode').setup_setup_ts_grammar()
+--        end
+--    },
 
     {
         'nvim-telescope/telescope.nvim',

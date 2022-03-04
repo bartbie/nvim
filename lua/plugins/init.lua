@@ -3,7 +3,7 @@ local modules = {
 	'treesitter',
 	'autocompletion',
 	'lsp',
-    'org',
+--    'org',
     'telescope',
 }
 
