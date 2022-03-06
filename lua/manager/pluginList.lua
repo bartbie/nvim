@@ -65,6 +65,13 @@ local pluginList = {
 
     'tpope/vim-repeat',
 
+    {
+        'zegervdv/nrpattern.nvim',
+        config = function()
+            require"nrpattern".setup()
+        end,
+    },
+
 }
 
 return pluginList
