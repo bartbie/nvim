@@ -4,6 +4,7 @@ local modules = {
     'plugins',
     'keymapping',
     'visuals',
+    'events',
 }
 
 for _, module in ipairs(modules) do
