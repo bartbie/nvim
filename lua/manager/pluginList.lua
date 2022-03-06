@@ -61,6 +61,8 @@ local pluginList = {
 
     'tpope/vim-surround',
 
+    'tpope/vim-unimpaired',
+
 }
 
 return pluginList
