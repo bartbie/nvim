@@ -7,10 +7,10 @@ local pluginList = {
         branch = 'chad',
         run = 'python3 -m chadtree deps'
     },
-    
+
     'tpope/vim-fugitive',
 
-    {        
+    {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate'
     },
@@ -31,9 +31,9 @@ local pluginList = {
     },
 
     'neovim/nvim-lspconfig',
-    
+
     'williamboman/nvim-lsp-installer',
-    
+
 --    {
 --        'nvim-orgmode/orgmode',
 --        config = function()
