@@ -8,5 +8,5 @@ g.sonokai_show_eob = false
 g.sonokai_diagnostic_text_highlight = true
 g.sonokai_diagnostic_line_highlight = true
 g.sonokai_diagnostic_virtual_text = 'colored'
-
+--g.sonokai_transparent_background = 1
 cmd('colorscheme sonokai')

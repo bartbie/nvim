@@ -25,7 +25,7 @@ map('n', '<leader>fg', '<CMD>Telescope live_grep<CR>')
 map('n', '<leader>fb', '<CMD>Telescope buffers<CR>')
 map('n', '<leader>fh', '<CMD>Telescope help_tags<CR>')
 
--- GITSIGNS 
+-- GITSIGNS
 map('n', ']c', "&diff ? ']c' : '<CMD>Gitsigns next_hunk<CR>'", {expr=true})
 map('n', '[c', "&diff ? '[c' : '<CMD>Gitsigns prev_hunk<CR>'", {expr=true})
 map({'n', 'v'}, '<leader>gs', '<CMD>Gitsigns stage_hunk<CR>')
