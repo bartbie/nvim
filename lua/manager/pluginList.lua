@@ -58,6 +58,9 @@ local pluginList = {
             require('Comment').setup()
         end
     },
+
+    'tpope/vim-surround',
+
 }
 
 return pluginList
