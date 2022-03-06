@@ -51,6 +51,13 @@ local pluginList = {
         requires = { 'nvim-lua/plenary.nvim' },
         -- tag = 'release' -- To use the latest release
     },
+
+    {
+        'numToStr/Comment.nvim',
+        config = function()
+            require('Comment').setup()
+        end
+    },
 }
 
 return pluginList
