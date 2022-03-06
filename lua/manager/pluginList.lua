@@ -63,6 +63,8 @@ local pluginList = {
 
     'tpope/vim-unimpaired',
 
+    'tpope/vim-repeat',
+
 }
 
 return pluginList
