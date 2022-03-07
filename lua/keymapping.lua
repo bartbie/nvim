@@ -35,3 +35,16 @@ map({'n', 'v'}, '<leader>gr', '<CMD>Gitsigns reset_hunk<CR>')
 map('n', '<leader>gS', '<cmd>Gitsigns stage_buffer<CR>')
 map('n', '<leader>gR', '<cmd>Gitsigns reset_buffer<CR>')
 map('n', '<leader>gd', '<cmd>Gitsigns diffthis<CR>')
+
+-- DADBOT UI
+vim.g.db_ui_disable_mappings = true
+vim.api.nvim_exec([[
+autocmd FileType dbui nmap <buffer> <leader>ds <Plug>(DBUI_SelectLineVsplit)
+autocmd FileType dbui nmap <buffer> <leader>do <Plug>(DBUI_SelectLine)
+autocmd FileType dbui nmap <buffer> <leader>dd <Plug>(DBUI_DeleteLine)
+autocmd FileType dbui nmap <buffer> <leader>dr <Plug>(DBUI_Redraw)
+autocmd FileType dbui nmap <buffer> <leader>da <Plug>(DBUI_AddConnection)
+autocmd FileType dbui nmap <buffer> <leader>dh <Plug>(DBUI_ToggleDetails)
+autocmd FileType dbui nmap <buffer> <leader>dw <Plug>(DBUI_SaveQuery)
+autocmd FileType dbui nmap <buffer> <leader>de <Plug>(DBUI_EditBindParameters)
+]])
