@@ -27,5 +27,10 @@ require("coq_3p") {
     {
         src = "orgmode",
         short_name = "ORG"
-    }
+    },
+
+    {
+        src = "vim_dadbod_completion",
+        short_name = "DB"
+    },
 }
