@@ -77,6 +77,8 @@ local pluginList = {
     "kristijanhusak/vim-dadbod-ui",
 
     "kristijanhusak/vim-dadbod-completion",
+
+    'ggandor/lightspeed.nvim',
 }
 
 return pluginList
