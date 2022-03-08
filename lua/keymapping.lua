@@ -41,15 +41,3 @@ map('n', "<leader>du", "<CMD>DBUIToggle<CR>")
 map('n', "<leader>df", "<CMD>DBUIFindBuffer<CR>")
 map('n', "<leader>dr", "<CMD>DBUIRenameBuffer<CR>")
 map('n', "<leader>dl", "<CMD>DBUILastQueryInfo<CR>")
-
-vim.g.db_ui_disable_mappings = true
-vim.api.nvim_exec([[
-autocmd FileType dbui nmap <buffer> <leader>ds <Plug>(DBUI_SelectLineVsplit)
-autocmd FileType dbui nmap <buffer> <leader>do <Plug>(DBUI_SelectLine)
-autocmd FileType dbui nmap <buffer> <leader>dd <Plug>(DBUI_DeleteLine)
-autocmd FileType dbui nmap <buffer> <leader>dr <Plug>(DBUI_Redraw)
-autocmd FileType dbui nmap <buffer> <leader>da <Plug>(DBUI_AddConnection)
-autocmd FileType dbui nmap <buffer> <leader>dh <Plug>(DBUI_ToggleDetails)
-autocmd FileType dbui nmap <buffer> <leader>dw <Plug>(DBUI_SaveQuery)
-autocmd FileType dbui nmap <buffer> <leader>de <Plug>(DBUI_EditBindParameters)
-]], false)
