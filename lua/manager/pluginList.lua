@@ -79,6 +79,22 @@ local pluginList = {
     "kristijanhusak/vim-dadbod-completion",
 
     'ggandor/lightspeed.nvim',
+
+    {
+        "themercorp/themer.lua",
+        -- config = function()
+        --     require("themer").setup({
+        --         colorscheme = "tokyodark",
+        --         styles = {
+        --             ["function"] = { style = 'italic' },
+        --             functionbuiltin = { style = 'italic' },
+        --             variable = { style = 'italic' },
+        --             variableBuiltIn = { style = 'italic' },
+        --             parameter  = { style = 'italic' },
+        --         },
+        --     })
+        -- end
+    },
 }
 
 return pluginList
