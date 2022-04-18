@@ -6,7 +6,10 @@ local pluginList = {
         'ms-jpq/chadtree',
         branch = 'chad',
         run = 'python3 -m chadtree deps',
-        },
+        config = function()
+            require("plugins.configs.filetree")
+        end
+    },
 
     { 'tpope/vim-fugitive' },
 
@@ -19,19 +22,22 @@ local pluginList = {
     },
 
     {
-        'ms-jpq/coq_nvim',
-        branch = 'coq'
+        {
+            'ms-jpq/coq_nvim',
+            branch = 'coq',
+        },
+
+        {
+            'ms-jpq/coq.artifacts',
+            branch = 'artifacts',
+        },
+
+        {
+            'ms-jpq/coq.thirdparty',
+            branch = '3p',
+        },
     },
 
-    {
-        'ms-jpq/coq.artifacts',
-        branch = 'artifacts'
-    },
-
-    {
-        'ms-jpq/coq.thirdparty',
-        branch = '3p'
-    },
 
     { 'neovim/nvim-lspconfig' },
 
