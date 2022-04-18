@@ -35,18 +35,29 @@ local pluginList = {
         {
             'ms-jpq/coq.artifacts',
             branch = 'artifacts',
+            after = "coq_nvim",
         },
 
         {
             'ms-jpq/coq.thirdparty',
             branch = '3p',
+            after = "coq_nvim",
+            config = function()
+                require("plugins.configs.autocompletion")
+            end
         },
     },
 
 
     { 'neovim/nvim-lspconfig' },
 
-    { 'williamboman/nvim-lsp-installer' },
+    { 
+        'williamboman/nvim-lsp-installer',
+        after = {"nvim-lspconfig", "coq_nvim"},
+        config = function()
+            require("plugins.configs.lsp")
+        end
+    },
 
 --    {
 --        'nvim-orgmode/orgmode',
@@ -57,12 +68,18 @@ local pluginList = {
 
     {
         'nvim-telescope/telescope.nvim',
-        requires = { 'nvim-lua/plenary.nvim' }
+        requires = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require("plugins.configs.telescope")
+        end
     },
 
     {
         'lewis6991/gitsigns.nvim',
         requires = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require("plugins.configs.gitsigns")
+        end,
         -- tag = 'release' -- To use the latest release
     },
 
@@ -70,7 +87,7 @@ local pluginList = {
         'numToStr/Comment.nvim',
         config = function()
             require('Comment').setup()
-        end
+        end,
     },
 
     { 'tpope/vim-surround' },
