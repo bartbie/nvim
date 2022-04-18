@@ -1,14 +1,14 @@
 local pluginList = {
 
-    'sainnhe/sonokai',
+    { 'sainnhe/sonokai' },
 
     {
         'ms-jpq/chadtree',
         branch = 'chad',
-        run = 'python3 -m chadtree deps'
+        run = 'python3 -m chadtree deps',
     },
 
-    'tpope/vim-fugitive',
+    { 'tpope/vim-fugitive' },
 
     {
         'nvim-treesitter/nvim-treesitter',
@@ -30,9 +30,9 @@ local pluginList = {
         branch = '3p'
     },
 
-    'neovim/nvim-lspconfig',
+    { 'neovim/nvim-lspconfig' },
 
-    'williamboman/nvim-lsp-installer',
+    { 'williamboman/nvim-lsp-installer' },
 
 --    {
 --        'nvim-orgmode/orgmode',
@@ -59,11 +59,11 @@ local pluginList = {
         end
     },
 
-    'tpope/vim-surround',
+    { 'tpope/vim-surround' },
 
-    'tpope/vim-unimpaired',
+    { 'tpope/vim-unimpaired' },
 
-    'tpope/vim-repeat',
+    { 'tpope/vim-repeat' },
 
     {
         'zegervdv/nrpattern.nvim',
@@ -72,16 +72,17 @@ local pluginList = {
         end,
     },
 
-    "tpope/vim-dadbod",
+    { "tpope/vim-dadbod" },
 
-    "kristijanhusak/vim-dadbod-ui",
+    { "kristijanhusak/vim-dadbod-ui" },
 
-    "kristijanhusak/vim-dadbod-completion",
+    { "kristijanhusak/vim-dadbod-completion" },
 
-    'ggandor/lightspeed.nvim',
+    { 'ggandor/lightspeed.nvim' },
 
     {
         "themercorp/themer.lua",
+        disable = true,
         -- config = function()
         --     require("themer").setup({
         --         colorscheme = "tokyodark",

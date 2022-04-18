@@ -1,6 +1,5 @@
 local modules = {
     'config',
-    'manager',
     'plugins',
     'keymapping',
     'visuals',

@@ -30,7 +30,7 @@ packer.init {
 -- Packer can manage itself
 local plugins = {'wbthomason/packer.nvim'}
 -- adding all plugins from pluginList.lua to 'plugins' table
-for _, v in ipairs(require('manager.pluginList')) do
+for _, v in ipairs(require('plugins.pluginList')) do
         table.insert(plugins, v)
 end
 
