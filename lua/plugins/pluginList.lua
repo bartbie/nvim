@@ -6,13 +6,16 @@ local pluginList = {
         'ms-jpq/chadtree',
         branch = 'chad',
         run = 'python3 -m chadtree deps',
-    },
+        },
 
     { 'tpope/vim-fugitive' },
 
     {
         'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
+        run = ':TSUpdate',
+        config = function()
+            require("plugins.configs.treesitter")
+        end,
     },
 
     {
