@@ -1,6 +1,11 @@
 local pluginList = {
 
-    { 'sainnhe/sonokai' },
+    { 
+        'sainnhe/sonokai',
+        config = function()
+            require("plugins.configs.theme")
+        end
+    },
 
     {
         'ms-jpq/chadtree',

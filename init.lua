@@ -2,7 +2,6 @@ local modules = {
     'core.config',
     'plugins',
     'core.keymapping',
-    'plugins.configs.theme',
     'core.events',
 }
 
