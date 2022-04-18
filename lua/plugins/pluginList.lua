@@ -1,13 +1,13 @@
 local pluginList = {
 
-    { 
+    sonokai = { 
         'sainnhe/sonokai',
         config = function()
             require("plugins.configs.theme")
         end
     },
 
-    {
+    chadtree = {
         'ms-jpq/chadtree',
         branch = 'chad',
         run = 'python3 -m chadtree deps',
@@ -16,9 +16,9 @@ local pluginList = {
         end
     },
 
-    { 'tpope/vim-fugitive' },
+    fugitive = { 'tpope/vim-fugitive' },
 
-    {
+    treesitter = {
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate',
         config = function()
@@ -26,19 +26,19 @@ local pluginList = {
         end,
     },
 
-    {
-        {
+    coq = {
+        main = {
             'ms-jpq/coq_nvim',
             branch = 'coq',
         },
 
-        {
+        artifacts = {
             'ms-jpq/coq.artifacts',
             branch = 'artifacts',
             after = "coq_nvim",
         },
 
-        {
+        coq3p = {
             'ms-jpq/coq.thirdparty',
             branch = '3p',
             after = "coq_nvim",
@@ -48,10 +48,9 @@ local pluginList = {
         },
     },
 
+    lsp = { 'neovim/nvim-lspconfig' },
 
-    { 'neovim/nvim-lspconfig' },
-
-    { 
+    lsp_installer = { 
         'williamboman/nvim-lsp-installer',
         after = {"nvim-lspconfig", "coq_nvim"},
         config = function()
@@ -59,14 +58,7 @@ local pluginList = {
         end
     },
 
---    {
---        'nvim-orgmode/orgmode',
---        config = function()
---            require('orgmode').setup_setup_ts_grammar()
---        end
---    },
-
-    {
+    telescope = {
         'nvim-telescope/telescope.nvim',
         requires = { 'nvim-lua/plenary.nvim' },
         config = function()
@@ -74,44 +66,45 @@ local pluginList = {
         end
     },
 
-    {
+    gitsigns = {
         'lewis6991/gitsigns.nvim',
         requires = { 'nvim-lua/plenary.nvim' },
+        after = "vim-fugitive",
         config = function()
             require("plugins.configs.gitsigns")
         end,
         -- tag = 'release' -- To use the latest release
     },
 
-    {
+    comment = {
         'numToStr/Comment.nvim',
         config = function()
             require('Comment').setup()
         end,
     },
 
-    { 'tpope/vim-surround' },
+    surround = { 'tpope/vim-surround' },
 
-    { 'tpope/vim-unimpaired' },
+    unimpaired = { 'tpope/vim-unimpaired' },
 
-    { 'tpope/vim-repeat' },
+    vim_repeat = { 'tpope/vim-repeat' },
 
-    {
+    nrpattern = {
         'zegervdv/nrpattern.nvim',
         config = function()
             require"nrpattern".setup()
         end,
     },
 
-    { "tpope/vim-dadbod" },
+    dadbot = { "tpope/vim-dadbod" },
 
-    { "kristijanhusak/vim-dadbod-ui" },
+    dadbot_ui = { "kristijanhusak/vim-dadbod-ui", after = { "vim-dadbod", "vim-dadbod-completion" } },
 
-    { "kristijanhusak/vim-dadbod-completion" },
+    dadbot_autocompletion = { "kristijanhusak/vim-dadbod-completion", after = "vim-dadbod", },
 
-    { 'ggandor/lightspeed.nvim' },
+    lightspeed = { 'ggandor/lightspeed.nvim' },
 
-    {
+    themer = {
         "themercorp/themer.lua",
         disable = true,
         -- config = function()
