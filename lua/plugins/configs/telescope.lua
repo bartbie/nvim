@@ -1,1 +1,1 @@
-require('telescope').load_extension('themes')
+-- require('telescope').load_extension('themes')
