@@ -27,25 +27,23 @@ local pluginList = {
     },
 
     coq = {
-        main = {
-            'ms-jpq/coq_nvim',
-            branch = 'coq',
-        },
+        'ms-jpq/coq_nvim',
+        branch = 'coq',
+    },
 
-        artifacts = {
-            'ms-jpq/coq.artifacts',
-            branch = 'artifacts',
-            after = "coq_nvim",
-        },
+    coqarts = {
+        'ms-jpq/coq.artifacts',
+        branch = 'artifacts',
+        after = "coq_nvim",
+    },
 
-        coq3p = {
-            'ms-jpq/coq.thirdparty',
-            branch = '3p',
-            after = "coq_nvim",
-            config = function()
-                require("plugins.configs.autocompletion")
-            end
-        },
+    coq3p = {
+        'ms-jpq/coq.thirdparty',
+        branch = '3p',
+        after = "coq_nvim",
+        config = function()
+            require("plugins.configs.autocompletion")
+        end
     },
 
     lsp = { 'neovim/nvim-lspconfig' },
@@ -106,7 +104,6 @@ local pluginList = {
 
     themer = {
         "themercorp/themer.lua",
-        disable = true,
         -- config = function()
         --     require("themer").setup({
         --         colorscheme = "tokyodark",
