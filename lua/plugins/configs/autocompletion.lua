@@ -34,3 +34,5 @@ require("coq_3p") {
         short_name = "DB"
     },
 }
+
+vim.cmd('COQnow -s')
