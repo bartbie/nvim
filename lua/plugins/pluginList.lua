@@ -1,6 +1,6 @@
 local pluginList = {
 
-    sonokai = { 
+    sonokai = {
         'sainnhe/sonokai',
         config = function()
             require("plugins.configs.theme")
@@ -46,14 +46,15 @@ local pluginList = {
         end
     },
 
-    lsp = { 'neovim/nvim-lspconfig' },
-
-    lsp_installer = { 
+    lsp = {
         'williamboman/nvim-lsp-installer',
-        after = {"nvim-lspconfig", "coq_nvim"},
-        config = function()
-            require("plugins.configs.lsp")
-        end
+        after = {"coq_nvim"},
+        {
+            'neovim/nvim-lspconfig',
+            config = function()
+                require("plugins.configs.lsp")
+            end
+        },
     },
 
     telescope = {

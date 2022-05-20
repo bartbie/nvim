@@ -1,23 +1,65 @@
-local lsp_installer = require("nvim-lsp-installer")
+-- Servers with default setups
+local default = {"pylsp", "emmet_ls", "html", "jsonls", "jdtls", "vimls", "zk", "grammarly", "sqlls"}
+
+-- Make runtime files discoverable to the server
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, "lua/?.lua")
+table.insert(runtime_path, "lua/?/init.lua")
+
+-- Rest of servers
+local servers = {
+
+    pyright = { },
+
+    rust_analyzer = {
+    },
+
+    sumneko_lua = {
+        Lua = {
+            runtime = {
+                version = 'LuaJIT',
+                path = runtime_path,
+            },
+            format = {
+                enable = false,
+            },
+            diagnostics = {
+                globals = {"vim"},
+            },
+            workspace = {
+                -- Make the server aware of Neovim runtime files
+                library = vim.api.nvim_get_runtime_file('', true),
+            },
+            -- Do not send telemetry data containing a randomized but unique identifier
+            telemetry = {
+                enable = false,
+            },
+        },
+    },
+}
+
+-- Combine them for uniform interface
+for _, v in ipairs(default) do
+    servers[v] = {}
+end
+
+-- Installer setup
+require("nvim-lsp-installer").setup{
+    ensure_installed=vim.tbl_keys(servers)
+}
+
+local lsp = require("lspconfig")
 local coq = require("coq")
--- Register a handler that will be called for all installed servers.
--- Alternatively, you may also register handlers on specific server instances instead (see example below).
-lsp_installer.on_server_ready(function(server)
-    local opts = {
-        on_attach = function(client)
-            -- [[ other on_attach code ]]
-            -- "ILLUMINATE
-            -- require 'illuminate'.on_attach(client)
-        end,
-    }
 
-    -- (optional) Customize the options passed to the server
-    -- if server.name == "tsserver" then
-    --     opts.root_dir = function() ... end
-    -- end
 
-    -- This setup() function is exactly the same as lspconfig's setup function.
-    -- Refer to https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-    -- server:setup(opts)
-    server:setup(coq.lsp_ensure_capabilities(opts))
-end)
+-- -- Default on_attach settings
+-- local function on_attach(client, buffer)
+--     --
+-- end
+
+for server, opts in pairs(servers) do
+    lsp[server].setup(coq.lsp_ensure_capabilities({
+        -- on_attach=on_attach,
+        settings=opts
+    }))
+end
