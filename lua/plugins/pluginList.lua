@@ -1,12 +1,5 @@
 local pluginList = {
 
-    -- sonokai = {
-    --     'sainnhe/sonokai',
-    --     config = function()
-    --         require("plugins.configs.theme")
-    --     end
-    -- },
-
     gruvbox = {
         'sainnhe/gruvbox-material',
         config = function()
@@ -14,7 +7,7 @@ local pluginList = {
         end
     },
 
-    nvimtree = {
+    nvim_tree = {
         'kyazdani42/nvim-tree.lua',
         requires = {
             'kyazdani42/nvim-web-devicons', -- optional, for file icon
@@ -114,19 +107,14 @@ local pluginList = {
 
     themer = {
         "themercorp/themer.lua",
-        -- config = function()
-        --     require("themer").setup({
-        --         colorscheme = "tokyodark",
-        --         styles = {
-        --             ["function"] = { style = 'italic' },
-        --             functionbuiltin = { style = 'italic' },
-        --             variable = { style = 'italic' },
-        --             variableBuiltIn = { style = 'italic' },
-        --             parameter  = { style = 'italic' },
-        --         },
-        --     })
-        -- end
     },
+
+    indent_blackline = {
+        "lukas-reineke/indent-blankline.nvim",
+        config = function()
+            require("plugins.configs.indent_blackline")
+        end,
+    }
 }
 
 return pluginList
