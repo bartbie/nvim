@@ -38,9 +38,9 @@ utils.file_exists = function(path)
 end
 
 
--- get all lines from a file, returns an empty
+-- get all lines from a file
 -- @param path string path to file
--- @return table if the file does not exist
+-- @return table if the file exists, empty table else
 utils.read_lines = function(path)
     if not utils.file_exists(path) then return {} end
     local lines = {}
@@ -51,9 +51,9 @@ utils.read_lines = function(path)
 end
 
 
--- Joins arbitrary number of paths together.
+-- get file's content as string
 -- @param path string path to file
--- @return string
+-- @return string if the file exists, nil else
 utils.read_file = function(path)
     local file = io.open(path, "rb") -- r read mode and b binary mode
     if not file then return nil end
