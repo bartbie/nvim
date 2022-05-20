@@ -1,1 +1,3 @@
--- require('telescope').load_extension('themes')
+local ts = require('telescope')
+
+ts.load_extension('themes')

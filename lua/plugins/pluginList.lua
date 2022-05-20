@@ -1,9 +1,16 @@
 local pluginList = {
 
-    sonokai = {
-        'sainnhe/sonokai',
+    -- sonokai = {
+    --     'sainnhe/sonokai',
+    --     config = function()
+    --         require("plugins.configs.theme")
+    --     end
+    -- },
+
+    gruvbox = {
+        'sainnhe/gruvbox-material',
         config = function()
-            require("plugins.configs.theme")
+            require("plugins.configs.gruvbox")
         end
     },
 
