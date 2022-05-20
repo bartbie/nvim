@@ -12,8 +12,8 @@ end
 map('n','<space>','<Nop>')
 vim.g.mapleader = ' '
 
--- CHADTREE
-map('n', '<leader>n', '<CMD>CHADopen<CR>')
+-- NVIM-TREE
+map('n', '<leader>n', '<CMD>NvimTreeToggle<CR>')
 
 -- FUGITIVE
 map('n', '<leader>gg', '<CMD>Git<CR>')

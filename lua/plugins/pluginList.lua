@@ -7,13 +7,15 @@ local pluginList = {
         end
     },
 
-    chadtree = {
-        'ms-jpq/chadtree',
-        branch = 'chad',
-        run = 'python3 -m chadtree deps',
+    nvimtree = {
+        'kyazdani42/nvim-tree.lua',
+        requires = {
+            'kyazdani42/nvim-web-devicons', -- optional, for file icon
+        },
+        tag = 'nightly', -- optional, updated every week. (see issue #1193)
         config = function()
-            require("plugins.configs.filetree")
-        end
+            require("plugins.configs.nvimtree")
+        end,
     },
 
     fugitive = { 'tpope/vim-fugitive' },
@@ -42,7 +44,7 @@ local pluginList = {
         branch = '3p',
         after = "coq_nvim",
         config = function()
-            require("plugins.configs.autocompletion")
+            require("plugins.configs.coq")
         end
     },
 
