@@ -5,6 +5,8 @@ utils.path_separator = "/"
 utils.is_windows = vim.fn.has("win32") == 1 or vim.fn.has("win32unix") == 1
 if utils.is_windows == true then utils.path_separator = "\\" end
 
+-- path to bin folder
+utils.bin_path = vim.fn.stdpath("config") .. utils.path_separator .. "bin"
 
 -- Joins arbitrary number of paths together.
 -- @param ... string The paths to join.
