@@ -31,21 +31,18 @@ local pluginList = {
     coq = {
         'ms-jpq/coq_nvim',
         branch = 'coq',
-    },
+        {
+            'ms-jpq/coq.artifacts',
+            branch = 'artifacts',
+        },
 
-    coqarts = {
-        'ms-jpq/coq.artifacts',
-        branch = 'artifacts',
-        after = "coq_nvim",
-    },
-
-    coq3p = {
-        'ms-jpq/coq.thirdparty',
-        branch = '3p',
-        after = "coq_nvim",
-        config = function()
-            require("plugins.configs.coq")
-        end
+        {
+            'ms-jpq/coq.thirdparty',
+            branch = '3p',
+            config = function()
+                require("plugins.configs.coq")
+            end
+        },
     },
 
     lsp = {
