@@ -111,7 +111,16 @@ local pluginList = {
         config = function()
             require("plugins.configs.indent_blackline")
         end,
+    },
+
+    {
+        'feline-nvim/feline.nvim',
+        requires = { 'kyazdani42/nvim-web-devicons' },
+        config = function()
+            require("plugins.configs.feline")
+        end,
     }
+
 }
 
 return pluginList

@@ -3,19 +3,19 @@ local o = vim.o
 local cmd = vim.cmd
 
 -- Gruvbox-material
-local palettes = {"material", "mix", "original"}
-local backgrounds = {"hard", "medium", "soft"}
-local modes = {"light", "dark"}
+local palettes = {m = "material", x = "mix", o = "original"}
+local backgrounds = {h = "hard", m = "medium", s = "soft"}
+local modes = {l = "light", d = "dark"}
 
--- lua starts from 1
-local palette = palettes[3]
-local background = backgrounds[1]
-local mode = modes[2]
+local M = {}
+M.palette = palettes.o
+M.background = backgrounds.h
+M.mode = modes.d
 
 
-o.background = mode
-g.gruvbox_material_background = background
-g.gruvbox_material_palette = palette
+o.background = M.mode
+g.gruvbox_material_background = M.background
+g.gruvbox_material_palette = M.palette
 
 g.gruvbox_material_disable_italic_comment = 0
 g.gruvbox_material_enable_bold = 1
@@ -33,7 +33,9 @@ g.gruvbox_material_diagnostic_line_highlight = 1
 g.gruvbox_material_diagnostic_virtual_text = 1
 g.gruvbox_material_current_word = 'grey background'
 g.gruvbox_material_disable_terminal_colors = 0
-g.gruvbox_material_statusline_style = "original"
+g.gruvbox_material_statusline_style = M.palette
 g.gruvbox_material_lightline_disable_bold = 0
 
 cmd('colorscheme gruvbox-material')
+
+return M
