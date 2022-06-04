@@ -119,7 +119,14 @@ local pluginList = {
         config = function()
             require("plugins.configs.feline")
         end,
-    }
+    },
+
+    colorizer = {
+        'norcalli/nvim-colorizer.lua',
+        config = function ()
+            require("colorizer").setup()
+        end,
+    },
 
 }
 
