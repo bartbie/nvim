@@ -113,9 +113,18 @@ local pluginList = {
         end,
     },
 
-    {
+    nvim_gps = {
+        "SmiteshP/nvim-gps",
+        requires = "nvim-treesitter/nvim-treesitter",
+        config = function()
+            require("nvim-gps").setup()
+        end,
+    },
+
+    feline = {
         'feline-nvim/feline.nvim',
         requires = { 'kyazdani42/nvim-web-devicons' },
+        after = "nvim-gps",
         config = function()
             require("plugins.configs.feline")
         end,
