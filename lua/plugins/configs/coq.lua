@@ -1,5 +1,5 @@
 vim.g.coq_settings = {
-    ["auto_start"] = "shut-up"
+    auto_start = "shut-up",
 }
 
 require("coq")
@@ -13,7 +13,7 @@ require("coq_3p") {
         deadline = 500,
         unsafe = { "rm", "poweroff", "mv"}
     },
- 
+
     {
         src = "nvimlua",
         short_name = "nLUA",
@@ -36,3 +36,6 @@ require("coq_3p") {
         short_name = "DB"
     },
 }
+
+-- autostart fix until come up with something better
+vim.cmd("COQnow -s")
