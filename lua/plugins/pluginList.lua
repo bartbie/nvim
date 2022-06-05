@@ -151,6 +151,13 @@ local pluginList = {
     hlslens = {
         'kevinhwang91/nvim-hlslens',
     },
+
+    scrollbar = {
+       "petertriho/nvim-scrollbar",
+        config = function()
+            require("plugins.configs.scrollbar")
+        end
+    }
 }
 
 return pluginList
