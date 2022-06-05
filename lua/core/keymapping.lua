@@ -1,12 +1,6 @@
 local function map(mode, lhs, rhs, opts)
-    opts = vim.tbl_extend('force', {noremap = true, silent = true}, opts or {})
-    if type(mode) == 'string' then
-        vim.api.nvim_set_keymap(mode, lhs, rhs, opts)
-    else
-        for _, m in ipairs(mode) do
-            vim.api.nvim_set_keymap(m, lhs, rhs, opts)
-        end
-    end
+    opts = vim.tbl_extend('force', {silent = true}, opts or {})
+    vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 map('n','<space>','<Nop>')
