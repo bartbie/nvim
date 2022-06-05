@@ -146,7 +146,11 @@ local pluginList = {
         config = function()
             vim.notify = require("notify")
         end,
-    }
+    },
+
+    hlslens = {
+        'kevinhwang91/nvim-hlslens',
+    },
 }
 
 return pluginList
