@@ -1,4 +1,4 @@
-require("nvim-tree").setup {
+require("nvim-tree").setup({
     hijack_unnamed_buffer_when_opening = true,
     open_on_setup = true,
     open_on_setup_file = true,
@@ -38,7 +38,7 @@ require("nvim-tree").setup {
     },
     filters = {
         dotfiles = false,
-        custom = {".DS_Store"},
+        custom = { ".DS_Store" },
         exclude = {},
     },
     actions = {
@@ -55,4 +55,4 @@ require("nvim-tree").setup {
             },
         },
     },
-}
+})

@@ -11,12 +11,12 @@ local colors = require("core.colors")
 
 local function get_os_icon(os)
     local icon
-    if os == 'UNIX' then
-        icon = ''
-    elseif os == 'MAC' then
-        icon = ''
+    if os == "UNIX" then
+        icon = ""
+    elseif os == "MAC" then
+        icon = ""
     else
-        icon = ''
+        icon = ""
     end
     return icon
 end
@@ -25,220 +25,233 @@ end
 local to_right = nil
 -- local to_right = ' '
 
-
 local force_inactive = {
     filetypes = {
-        'NvimTree',
-        'dbui',
-        'packer',
-        'startify',
-        'fugitive',
-        'fugitiveblame'
+        "NvimTree",
+        "dbui",
+        "packer",
+        "startify",
+        "fugitive",
+        "fugitiveblame",
     },
     buftypes = {},
-    bufnames = {}
+    bufnames = {},
 }
 
 -- library of components to use in components table
 local comps = {
 
     vi_mode = {
-        provider = 'vi_mode',
+        provider = "vi_mode",
         hl = function()
             return {
                 name = vi_mode.get_mode_highlight_name(),
                 bg = vi_mode.get_mode_color(),
                 fg = "black",
-                style = 'bold'
+                style = "bold",
             }
         end,
-        left_sep = to_right or '',
-        right_sep = ' ',
+        left_sep = to_right or "",
+        right_sep = " ",
         -- Uncomment the next line to disable icons for this component and use the mode name instead
-        icon = ''
+        icon = "",
     },
 
     file_info = {
-        provider = 'file_info',
+        provider = "file_info",
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
+            fg = "white",
+            bg = "bg",
+            style = "bold",
         },
-        right_sep = ' '
+        right_sep = " ",
     },
 
     file_size = {
-        provider = 'file_size',
+        provider = "file_size",
         hl = {
-            fg = 'skyblue',
-            bg = 'bg',
-            style = 'bold'
+            fg = "skyblue",
+            bg = "bg",
+            style = "bold",
         },
-        left_sep = ' ',
+        left_sep = " ",
     },
 
     file_encoding = {
-        provider = 'file_encoding',
+        provider = "file_encoding",
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
+            fg = "white",
+            bg = "bg",
+            style = "bold",
         },
-        left_sep = ' ',
-        right_sep = ' '
+        left_sep = " ",
+        right_sep = " ",
     },
 
     file_type = {
-        provider = 'file_type',
+        provider = "file_type",
         hl = {
-            fg = 'black',
-            bg = 'aqua',
-            style = 'bold'
+            fg = "black",
+            bg = "aqua",
+            style = "bold",
         },
-        left_sep = to_right or '',
-        right_sep = ' '
+        left_sep = to_right or "",
+        right_sep = " ",
     },
 
     file_os = {
-        provider = function() return get_os_icon(bo.fileformat:upper()) end,
+        provider = function()
+            return get_os_icon(bo.fileformat:upper())
+        end,
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
-        }
+            fg = "white",
+            bg = "bg",
+            style = "bold",
+        },
     },
 
     file_format = {
-        provider = function() return bo.fileformat:upper() end,
+        provider = function()
+            return bo.fileformat:upper()
+        end,
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
+            fg = "white",
+            bg = "bg",
+            style = "bold",
         },
-        right_sep = ' '
+        right_sep = " ",
     },
 
     git_branch = {
-        provider   = 'git_branch',
+        provider = "git_branch",
         hl = {
-            fg = 'yellow',
-            bg = 'bg',
-            style = 'bold'
-        }
+            fg = "yellow",
+            bg = "bg",
+            style = "bold",
+        },
     },
 
     diff_added = {
-        provider = 'git_diff_added',
+        provider = "git_diff_added",
         hl = {
-            fg = 'green',
-            bg = 'bg',
-            style = 'bold'
-        }
+            fg = "green",
+            bg = "bg",
+            style = "bold",
+        },
     },
 
-    diff_changed= {
-        provider = 'git_diff_changed',
+    diff_changed = {
+        provider = "git_diff_changed",
         hl = {
-            fg = 'orange',
-            bg = 'bg',
-            style = 'bold'
-        }
+            fg = "orange",
+            bg = "bg",
+            style = "bold",
+        },
     },
 
     diff_removed = {
-        provider = 'git_diff_removed',
+        provider = "git_diff_removed",
         hl = {
-            fg = 'red',
-            bg = 'bg',
-            style = 'bold'
+            fg = "red",
+            bg = "bg",
+            style = "bold",
         },
     },
 
     line_percentage = {
-        provider = 'line_percentage',
+        provider = "line_percentage",
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
+            fg = "white",
+            bg = "bg",
+            style = "bold",
         },
-        right_sep = ' '
+        right_sep = " ",
     },
 
     scroll_bar = {
-        provider = 'scroll_bar',
+        provider = "scroll_bar",
         hl = {
-            fg = 'yellow',
-            bg = 'bg',
+            fg = "yellow",
+            bg = "bg",
         },
     },
 
     gps = {
-        provider = function() return gps.get_location() end,
-        enabled = function() return gps.is_available() end,
+        provider = function()
+            return gps.get_location()
+        end,
+        enabled = function()
+            return gps.is_available()
+        end,
         hl = {
-            fg = 'orange',
-            style = 'bold'
-        }
+            fg = "orange",
+            style = "bold",
+        },
     },
 
     lsp_name = {
-        provider = 'lsp_client_names',
+        provider = "lsp_client_names",
         hl = {
-            fg = 'yellow',
-            style = 'bold'
+            fg = "yellow",
+            style = "bold",
         },
-        right_sep = ' '
+        right_sep = " ",
     },
 
     diagnostics_errors = {
-        provider = 'diagnostic_errors',
-        enabled = function() return lsp.diagnostics_exist(vim.diagnostic.severity.ERROR) end,
+        provider = "diagnostic_errors",
+        enabled = function()
+            return lsp.diagnostics_exist(vim.diagnostic.severity.ERROR)
+        end,
         hl = {
-            fg = 'red',
-            style = 'bold'
-        }
+            fg = "red",
+            style = "bold",
+        },
     },
 
     diagnostics_warn = {
-        provider = 'diagnostic_warnings',
-        enabled = function() return lsp.diagnostics_exist(vim.diagnostic.severity.WARN) end,
+        provider = "diagnostic_warnings",
+        enabled = function()
+            return lsp.diagnostics_exist(vim.diagnostic.severity.WARN)
+        end,
         hl = {
-            fg = 'yellow',
-            style = 'bold'
-        }
+            fg = "yellow",
+            style = "bold",
+        },
     },
 
     diagnostics_hints = {
-        provider = 'diagnostic_hints',
-        enabled = function() return lsp.diagnostics_exist(vim.diagnostic.severity.HINT) end,
+        provider = "diagnostic_hints",
+        enabled = function()
+            return lsp.diagnostics_exist(vim.diagnostic.severity.HINT)
+        end,
         hl = {
-            fg = 'cyan',
-            style = 'bold'
-        }
+            fg = "cyan",
+            style = "bold",
+        },
     },
 
     diagnostics_info = {
-        provider = 'diagnostic_info',
-        enabled = function() return lsp.diagnostics_exist(vim.diagnostic.severity.INFO) end,
+        provider = "diagnostic_info",
+        enabled = function()
+            return lsp.diagnostics_exist(vim.diagnostic.severity.INFO)
+        end,
         hl = {
-            fg = 'skyblue',
-            style = 'bold'
-        }
+            fg = "skyblue",
+            style = "bold",
+        },
     },
 
     position = {
-        provider = 'position',
+        provider = "position",
         hl = {
-            fg = 'white',
-            bg = 'bg',
-            style = 'bold'
+            fg = "white",
+            bg = "bg",
+            style = "bold",
         },
-        right_sep = ' '
-    }
-
+        right_sep = " ",
+    },
 }
-
 
 -- Initialize the components table
 local components = {
@@ -274,18 +287,17 @@ local components = {
             comps.line_percentage,
             comps.scroll_bar,
         },
-
     },
 
-    inactive = {{comps.file_type},{}}
+    inactive = { { comps.file_type }, {} },
 }
 
 feline.setup({
     theme = colors,
-    default_bg = 'bg',
-    default_fg = 'fg',
+    default_bg = "bg",
+    default_fg = "fg",
     components = components,
-    force_inactive = force_inactive
+    force_inactive = force_inactive,
 })
 
 -- gruvbox's colors

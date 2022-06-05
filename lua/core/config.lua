@@ -15,4 +15,4 @@ o.expandtab = true
 o.shiftwidth = 4
 o.smartindent = true
 
-o.laststatus=3
+o.laststatus = 3

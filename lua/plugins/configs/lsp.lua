@@ -3,7 +3,7 @@ local json = vim.json
 local u = require("core.utils")
 
 -- Make runtime files discoverable to the server
-local runtime_path = vim.split(package.path, ';')
+local runtime_path = vim.split(package.path, ";")
 table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
 
@@ -15,33 +15,31 @@ local function read(filename)
     return json.decode(u.read_file(configs_path .. filename .. ".json"))
 end
 
-
 -- Servers with default setups
-local default = {"pylsp", "emmet_ls", "html", "jsonls", "jdtls", "vimls", "zk", "grammarly", "sqlls"}
+local default = { "pylsp", "emmet_ls", "html", "jsonls", "jdtls", "vimls", "zk", "grammarly", "sqlls" }
 
 -- Rest of servers
 local servers = {
 
     pyright = read("pyrightconfig"),
 
-    rust_analyzer = {
-    },
+    rust_analyzer = {},
 
     sumneko_lua = {
         Lua = {
             runtime = {
-                version = 'LuaJIT',
+                version = "LuaJIT",
                 path = runtime_path,
             },
             format = {
                 enable = false,
             },
             diagnostics = {
-                globals = {"vim"},
+                globals = { "vim" },
             },
             workspace = {
                 -- Make the server aware of Neovim runtime files
-                library = api.nvim_get_runtime_file('', true),
+                library = api.nvim_get_runtime_file("", true),
             },
             -- Do not send telemetry data containing a randomized but unique identifier
             telemetry = {
@@ -57,9 +55,9 @@ for _, v in ipairs(default) do
 end
 
 -- Installer setup
-require("nvim-lsp-installer").setup{
-    ensure_installed=vim.tbl_keys(servers)
-}
+require("nvim-lsp-installer").setup({
+    ensure_installed = vim.tbl_keys(servers),
+})
 
 local lsp = require("lspconfig")
 local coq = require("coq")
@@ -72,6 +70,6 @@ local coq = require("coq")
 for server, opts in pairs(servers) do
     lsp[server].setup(coq.lsp_ensure_capabilities({
         -- on_attach=on_attach,
-        settings=opts
+        settings = opts,
     }))
 end

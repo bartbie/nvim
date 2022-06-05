@@ -1,8 +1,15 @@
 -- automatically install Packer
 local fn = vim.fn
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    packer_bootstrap = fn.system({
+        "git",
+        "clone",
+        "--depth",
+        "1",
+        "https://github.com/wbthomason/packer.nvim",
+        install_path,
+    })
 end
 
 -- autocommand that reloads neovim automatically after saving pluginList.lua
@@ -13,35 +20,34 @@ end
 --   augroup end
 -- ]])
 
-local ok, packer = pcall(require, 'packer')
+local ok, packer = pcall(require, "packer")
 if not ok then
     return
 end
 
 -- have Packer use popup window
-packer.init {
+packer.init({
     display = {
         open_fn = function()
-            return require("packer.util").float { border = "rounded" }
+            return require("packer.util").float({ border = "rounded" })
         end,
     },
-}
+})
 
 -- adding all plugins from pluginList.lua to 'plugins' table
-local plugins = require('plugins.pluginList')
+local plugins = require("plugins.pluginList")
 -- Packer can manage itself
-plugins.packer = {'wbthomason/packer.nvim'}
+plugins.packer = { "wbthomason/packer.nvim" }
 
-return require('packer').startup(function(use)
+return require("packer").startup(function(use)
+    -- My plugins here
+    for _, v in pairs(plugins) do
+        use(v)
+    end
 
-  -- My plugins here
-  for _, v in pairs(plugins) do
-    use(v)
-  end 
-
-  -- Automatically set up your configuration after cloning packer.nvim
-  -- Put this at the end after all plugins
-  if packer_bootstrap then
-    require('packer').sync()
-  end
+    -- Automatically set up your configuration after cloning packer.nvim
+    -- Put this at the end after all plugins
+    if packer_bootstrap then
+        require("packer").sync()
+    end
 end)

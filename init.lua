@@ -1,8 +1,8 @@
 local modules = {
-    'core.config',
-    'plugins',
-    'core.keymapping',
-    'core.events',
+    "core.config",
+    "plugins",
+    "core.keymapping",
+    "core.events",
 }
 
 for _, module in ipairs(modules) do

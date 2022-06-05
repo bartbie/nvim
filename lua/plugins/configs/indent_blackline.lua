@@ -4,8 +4,7 @@ opt.list = true
 opt.listchars:append("eol:↴")
 -- opt.listchars:append("space:⋅")
 
-
-require("indent_blankline").setup {
+require("indent_blankline").setup({
     use_treesitter = true,
     show_end_of_line = true,
     show_current_context = true,
@@ -23,4 +22,4 @@ require("indent_blankline").setup {
         "fugitive",
         "",
     },
-}
+})

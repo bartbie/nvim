@@ -1,72 +1,72 @@
 local pluginList = {
 
     gruvbox = {
-        'sainnhe/gruvbox-material',
+        "sainnhe/gruvbox-material",
         config = function()
             require("plugins.configs.gruvbox")
-        end
+        end,
     },
 
     nvim_tree = {
-        'kyazdani42/nvim-tree.lua',
+        "kyazdani42/nvim-tree.lua",
         requires = {
-            'kyazdani42/nvim-web-devicons', -- optional, for file icon
+            "kyazdani42/nvim-web-devicons", -- optional, for file icon
         },
-        tag = 'nightly', -- optional, updated every week. (see issue #1193)
+        tag = "nightly", -- optional, updated every week. (see issue #1193)
         config = function()
             require("plugins.configs.nvimtree")
         end,
     },
 
-    fugitive = { 'tpope/vim-fugitive' },
+    fugitive = { "tpope/vim-fugitive" },
 
     treesitter = {
-        'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate',
+        "nvim-treesitter/nvim-treesitter",
+        run = ":TSUpdate",
         config = function()
             require("plugins.configs.treesitter")
         end,
     },
 
     coq = {
-        'ms-jpq/coq_nvim',
-        branch = 'coq',
+        "ms-jpq/coq_nvim",
+        branch = "coq",
         {
-            'ms-jpq/coq.artifacts',
-            branch = 'artifacts',
+            "ms-jpq/coq.artifacts",
+            branch = "artifacts",
         },
 
         {
-            'ms-jpq/coq.thirdparty',
-            branch = '3p',
+            "ms-jpq/coq.thirdparty",
+            branch = "3p",
             config = function()
                 require("plugins.configs.coq")
-            end
+            end,
         },
     },
 
     lsp = {
-        'williamboman/nvim-lsp-installer',
-        after = {"coq_nvim"},
+        "williamboman/nvim-lsp-installer",
+        after = { "coq_nvim" },
         {
-            'neovim/nvim-lspconfig',
+            "neovim/nvim-lspconfig",
             config = function()
                 require("plugins.configs.lsp")
-            end
+            end,
         },
     },
 
     telescope = {
-        'nvim-telescope/telescope.nvim',
-        requires = { 'nvim-lua/plenary.nvim' },
+        "nvim-telescope/telescope.nvim",
+        requires = { "nvim-lua/plenary.nvim" },
         config = function()
             require("plugins.configs.telescope")
-        end
+        end,
     },
 
     gitsigns = {
-        'lewis6991/gitsigns.nvim',
-        requires = { 'nvim-lua/plenary.nvim' },
+        "lewis6991/gitsigns.nvim",
+        requires = { "nvim-lua/plenary.nvim" },
         after = "vim-fugitive",
         config = function()
             require("plugins.configs.gitsigns")
@@ -75,22 +75,22 @@ local pluginList = {
     },
 
     comment = {
-        'numToStr/Comment.nvim',
+        "numToStr/Comment.nvim",
         config = function()
-            require('Comment').setup()
+            require("Comment").setup()
         end,
     },
 
-    surround = { 'tpope/vim-surround' },
+    surround = { "tpope/vim-surround" },
 
-    unimpaired = { 'tpope/vim-unimpaired' },
+    unimpaired = { "tpope/vim-unimpaired" },
 
-    vim_repeat = { 'tpope/vim-repeat' },
+    vim_repeat = { "tpope/vim-repeat" },
 
     nrpattern = {
-        'zegervdv/nrpattern.nvim',
+        "zegervdv/nrpattern.nvim",
         config = function()
-            require"nrpattern".setup()
+            require("nrpattern").setup()
         end,
     },
 
@@ -98,9 +98,9 @@ local pluginList = {
 
     dadbot_ui = { "kristijanhusak/vim-dadbod-ui", after = { "vim-dadbod", "vim-dadbod-completion" } },
 
-    dadbot_autocompletion = { "kristijanhusak/vim-dadbod-completion", after = "vim-dadbod", },
+    dadbot_autocompletion = { "kristijanhusak/vim-dadbod-completion", after = "vim-dadbod" },
 
-    lightspeed = { 'ggandor/lightspeed.nvim' },
+    lightspeed = { "ggandor/lightspeed.nvim" },
 
     themer = {
         "themercorp/themer.lua",
@@ -122,8 +122,8 @@ local pluginList = {
     },
 
     feline = {
-        'feline-nvim/feline.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons' },
+        "feline-nvim/feline.nvim",
+        requires = { "kyazdani42/nvim-web-devicons" },
         after = "nvim-gps",
         config = function()
             require("plugins.configs.feline")
@@ -131,14 +131,14 @@ local pluginList = {
     },
 
     colorizer = {
-        'norcalli/nvim-colorizer.lua',
+        "norcalli/nvim-colorizer.lua",
         config = function()
             require("colorizer").setup()
         end,
     },
 
     dressing = {
-        'stevearc/dressing.nvim',
+        "stevearc/dressing.nvim",
     },
 
     notify = {
@@ -149,15 +149,15 @@ local pluginList = {
     },
 
     hlslens = {
-        'kevinhwang91/nvim-hlslens',
+        "kevinhwang91/nvim-hlslens",
     },
 
     scrollbar = {
-       "petertriho/nvim-scrollbar",
+        "petertriho/nvim-scrollbar",
         config = function()
             require("plugins.configs.scrollbar")
-        end
-    }
+        end,
+    },
 }
 
 return pluginList
