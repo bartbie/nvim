@@ -132,11 +132,21 @@ local pluginList = {
 
     colorizer = {
         'norcalli/nvim-colorizer.lua',
-        config = function ()
+        config = function()
             require("colorizer").setup()
         end,
     },
 
+    dressing = {
+        'stevearc/dressing.nvim',
+    },
+
+    notify = {
+        "rcarriga/nvim-notify",
+        config = function()
+            vim.notify = require("notify")
+        end,
+    }
 }
 
 return pluginList
