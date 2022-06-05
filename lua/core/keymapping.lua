@@ -44,3 +44,11 @@ map("n", "*", [[*<Cmd>lua require('hlslens').start()<CR>]])
 map("n", "#", [[#<Cmd>lua require('hlslens').start()<CR>]])
 map("n", "g*", [[g*<Cmd>lua require('hlslens').start()<CR>]])
 map("n", "g#", [[g#<Cmd>lua require('hlslens').start()<CR>]])
+
+-- TROUBLE
+map("n", "<leader>xx", "<CMD>Trouble<cr>")
+map("n", "<leader>xw", "<CMD>Trouble workspace_diagnostics<cr>")
+map("n", "<leader>xd", "<CMD>Trouble document_diagnostics<cr>")
+map("n", "<leader>xl", "<CMD>Trouble loclist<cr>")
+map("n", "<leader>xq", "<CMD>Trouble quickfix<cr>")
+map("n", "gR", "<CMD>Trouble lsp_references<cr>")

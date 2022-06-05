@@ -33,6 +33,7 @@ local force_inactive = {
         "startify",
         "fugitive",
         "fugitiveblame",
+        "Trouble",
     },
     buftypes = {},
     bufnames = {},

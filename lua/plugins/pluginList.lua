@@ -158,6 +158,14 @@ local pluginList = {
             require("plugins.configs.scrollbar")
         end,
     },
+
+    trouble = {
+        "folke/trouble.nvim",
+        requires = "kyazdani42/nvim-web-devicons",
+        config = function()
+            require("plugins.configs.trouble")
+        end,
+    },
 }
 
 return pluginList
