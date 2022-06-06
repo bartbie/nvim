@@ -32,6 +32,7 @@ local force_inactive = {
         "packer",
         "startify",
         "fugitive",
+        "gitcommit",
         "fugitiveblame",
         "Trouble",
     },
