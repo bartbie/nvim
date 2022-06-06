@@ -166,6 +166,14 @@ local pluginList = {
             require("plugins.configs.trouble")
         end,
     },
+    bufferline = {
+        "akinsho/bufferline.nvim",
+        tag = "v2.*",
+        requires = "kyazdani42/nvim-web-devicons",
+        config = function()
+            require("plugins.configs.bufferline")
+        end,
+    },
 }
 
 return pluginList
