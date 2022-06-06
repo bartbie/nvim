@@ -1,4 +1,4 @@
-local icons = require("core.visuals").diagnostics_symbols
+local icons = require("core.lib").diagnostics_symbols
 
 require("trouble").setup({
     action_keys = { -- key mappings for actions in the trouble list

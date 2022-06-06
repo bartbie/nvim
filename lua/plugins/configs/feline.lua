@@ -3,13 +3,17 @@
 -- move gps from middle to winbar
 
 local bo = vim.bo
+
 local feline = require("feline")
 local vi_mode = require("feline.providers.vi_mode")
 local lsp = require("feline.providers.lsp")
+
 local gps = require("nvim-gps")
-local _visuals = require("core.visuals")
-local colors = _visuals.colors
-local icons = _visuals.diagnostics_symbols
+
+local lib = require("core.lib")
+local colors = lib.colors
+local icons = lib.diagnostics_symbols
+local force_inactive = lib.special_types
 
 local function get_os_icon(os)
     local icon
@@ -26,22 +30,6 @@ end
 -- moves mode and special buffer indicator to right if set
 local to_right = nil
 -- local to_right = ' '
-
-local force_inactive = {
-    filetypes = {
-        "NvimTree",
-        "dbui",
-        "packer",
-        "startify",
-        "fugitive",
-        "gitcommit",
-        "fugitiveblame",
-        "Trouble",
-        "TelescopePrompt",
-    },
-    buftypes = {},
-    bufnames = {},
-}
 
 -- library of components to use in components table
 local comps = {

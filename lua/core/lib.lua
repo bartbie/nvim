@@ -29,4 +29,19 @@ M.diagnostics_symbols = {
     other = "✓",
 }
 
+M.special_types = {
+    filetypes = {
+        "NvimTree",
+        "dbui",
+        "packer",
+        "startify",
+        "fugitive",
+        "gitcommit",
+        "fugitiveblame",
+        "Trouble",
+        "TelescopePrompt",
+    },
+    buftypes = {},
+    bufnames = {},
+}
 return M

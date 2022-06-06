@@ -1,4 +1,4 @@
-local signs = require("core.visuals").diagnostics_symbols
+local signs = require("core.lib").diagnostics_symbols
 
 require("nvim-tree").setup({
     hijack_unnamed_buffer_when_opening = true,
