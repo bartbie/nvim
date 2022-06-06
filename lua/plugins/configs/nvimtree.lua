@@ -1,3 +1,5 @@
+local signs = require("core.visuals").diagnostics_symbols
+
 require("nvim-tree").setup({
     hijack_unnamed_buffer_when_opening = true,
     open_on_setup = true,
@@ -29,10 +31,10 @@ require("nvim-tree").setup({
         enable = true,
         show_on_dirs = false,
         icons = {
-            hint = "",
-            info = "",
-            warning = "",
-            error = "",
+            error = signs.error,
+            warning = signs.warn,
+            hint = signs.hint,
+            info = signs.info,
         },
     },
     filters = {

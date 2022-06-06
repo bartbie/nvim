@@ -7,7 +7,9 @@ local feline = require("feline")
 local vi_mode = require("feline.providers.vi_mode")
 local lsp = require("feline.providers.lsp")
 local gps = require("nvim-gps")
-local colors = require("core.colors")
+local _visuals = require("core.visuals")
+local colors = _visuals.colors
+local icons = _visuals.diagnostics_symbols
 
 local function get_os_icon(os)
     local icon
@@ -210,6 +212,7 @@ local comps = {
             fg = "red",
             style = "bold",
         },
+        icon = icons.error,
     },
 
     diagnostics_warn = {
@@ -221,6 +224,7 @@ local comps = {
             fg = "yellow",
             style = "bold",
         },
+        icon = icons.warn,
     },
 
     diagnostics_hints = {
@@ -232,6 +236,7 @@ local comps = {
             fg = "cyan",
             style = "bold",
         },
+        icon = icons.hint,
     },
 
     diagnostics_info = {
@@ -243,6 +248,7 @@ local comps = {
             fg = "skyblue",
             style = "bold",
         },
+        icon = icons.info,
     },
 
     position = {

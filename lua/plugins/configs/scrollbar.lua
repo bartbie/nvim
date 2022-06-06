@@ -1,4 +1,4 @@
-local colors = require("core.colors")
+local colors = require("core.visuals").colors
 
 require("scrollbar").setup({
     show_in_active_only = true,

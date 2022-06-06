@@ -1,4 +1,5 @@
--- https://github.com/folke/trouble.nvim#setup
+local icons = require("core.visuals").diagnostics_symbols
+
 require("trouble").setup({
     action_keys = { -- key mappings for actions in the trouble list
         -- map to {} to remove a mapping, for example:
@@ -20,6 +21,14 @@ require("trouble").setup({
         toggle_fold = { "zA", "za" }, -- toggle fold of current file
         previous = "k", -- preview item
         next = "j", -- next item
+    },
+    signs = {
+        -- icons / text used for a diagnostic
+        error = icons.error,
+        warning = icons.warn,
+        hint = icons.hint,
+        information = icons.info,
+        other = icons.other,
     },
     auto_close = false, -- automatically close the list when you have no diagnostics
 })

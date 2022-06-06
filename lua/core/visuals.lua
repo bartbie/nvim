@@ -1,9 +1,11 @@
+local M = {}
+
 -- darker, meshes with editor's background
 -- local bg = "#1d2021"
 -- lighter, makes the statusline more distinct
 local bg = "#282828"
 
-local colors = {
+M.colors = {
     bg = bg,
     black = bg,
     yellow = "#fabd2f",
@@ -19,4 +21,12 @@ local colors = {
     purple = "#d3869b",
 }
 
-return colors
+M.diagnostics_symbols = {
+    error = "",
+    warn = "",
+    hint = "",
+    info = "",
+    other = "✓",
+}
+
+return M
