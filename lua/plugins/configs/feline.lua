@@ -212,7 +212,7 @@ local comps = {
             fg = "red",
             style = "bold",
         },
-        icon = icons.error,
+        icon = " " .. icons.error .. " ",
     },
 
     diagnostics_warn = {
@@ -224,7 +224,7 @@ local comps = {
             fg = "yellow",
             style = "bold",
         },
-        icon = icons.warn,
+        icon = " " .. icons.warn .. " ",
     },
 
     diagnostics_hints = {
@@ -236,7 +236,7 @@ local comps = {
             fg = "cyan",
             style = "bold",
         },
-        icon = icons.hint,
+        icon = " " .. icons.hint .. " ",
     },
 
     diagnostics_info = {
@@ -248,7 +248,7 @@ local comps = {
             fg = "skyblue",
             style = "bold",
         },
-        icon = icons.info,
+        icon = " " .. icons.info .. " ",
     },
 
     position = {
