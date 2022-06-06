@@ -4,7 +4,6 @@ require("nvim-tree").setup({
     open_on_setup_file = true,
     open_on_tab = false,
     sort_by = "extension",
-    reload_on_bufenter = true,
     view = {
         side = "left",
         number = false,
