@@ -35,6 +35,7 @@ local force_inactive = {
         "gitcommit",
         "fugitiveblame",
         "Trouble",
+        "TelescopePrompt",
     },
     buftypes = {},
     bufnames = {},
