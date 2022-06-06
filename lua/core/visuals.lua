@@ -1,13 +1,13 @@
 local M = {}
 
--- darker, meshes with editor's background
--- local bg = "#1d2021"
--- lighter, makes the statusline more distinct
-local bg = "#282828"
-
 M.colors = {
-    bg = bg,
-    black = bg,
+    -- took it from bufferline highlight group, i have no idea where it came from but it's cool
+    dark_bg = "#151818",
+    -- darker, meshes with editor's background
+    darker_bg = "#1d2021",
+    -- lighter, makes the statusline more distinct
+    bg = "#282828",
+    black = "#282828",
     yellow = "#fabd2f",
     aqua = "#8ec07c",
     oceanblue = "#45707a",
