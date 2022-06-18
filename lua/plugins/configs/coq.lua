@@ -14,11 +14,11 @@ require("coq_3p")({
         unsafe = { "rm", "poweroff", "mv" },
     },
 
-    {
-        src = "nvimlua",
-        short_name = "nLUA",
-        conf_only = true,
-    },
+    -- {
+    --     src = "nvimlua",
+    --     short_name = "nLUA",
+    --     conf_only = true,
+    -- },
 
     {
         src = "bc",
