@@ -27,6 +27,8 @@ M.diagnostics_symbols = {
     hint = "",
     info = "",
     other = "✓",
+    action = "",
+    bug = "",
 }
 
 M.special_types = {

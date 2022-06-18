@@ -174,6 +174,13 @@ local pluginList = {
             require("plugins.configs.bufferline")
         end,
     },
+
+    lspsaga = {
+        "tami5/lspsaga.nvim",
+        config = function()
+            require("plugins.configs.lspsaga")
+        end,
+    },
 }
 
 return pluginList
