@@ -98,8 +98,6 @@ M.keymaps[""] = {
         [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
         "Jump To Previous Search",
     },
-    -- indent-aware paste
-    p = { "=p", "paste" },
     ["*"] = { [[*<Cmd>lua require('hlslens').start()<CR>]], "Jump To Next Search" },
     ["#"] = { [[#<Cmd>lua require('hlslens').start()<CR>]], "Jump To Previous Search" },
     -- improve those descriptions
