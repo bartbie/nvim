@@ -16,7 +16,7 @@ local function read(filename)
 end
 
 -- Servers with default setups
-local default = { "pylsp", "emmet_ls", "html", "jsonls", "jdtls", "vimls", "zk", "grammarly", "sqlls" }
+local default = { "pylsp", "emmet_ls", "html", "jsonls", "vimls", "zk", "grammarly", "sqlls" }
 
 -- Rest of servers
 local servers = {
@@ -61,15 +61,19 @@ require("nvim-lsp-installer").setup({
 
 local lsp = require("lspconfig")
 local coq = require("coq")
+local wk = require("which-key")
+local km = require("core.keymapping")
+local keymaps = km.lsp_keymaps
+local opts = km.opts
 
--- -- Default on_attach settings
--- local function on_attach(client, buffer)
---     --
--- end
+-- Default on_attach settings
+local function on_attach(client, buffer)
+    wk.register(keymaps, vim.tbl_extend("force", opts, { buffer = buffer }))
+end
 
 for server, opts in pairs(servers) do
     lsp[server].setup(coq.lsp_ensure_capabilities({
-        -- on_attach=on_attach,
+        on_attach = on_attach,
         settings = opts,
     }))
 end

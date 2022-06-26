@@ -181,6 +181,13 @@ local pluginList = {
             require("plugins.configs.lspsaga")
         end,
     },
+
+    whichkey = {
+        "folke/which-key.nvim",
+        config = function()
+            require("plugins.configs.which-key")
+        end,
+    },
 }
 
 return pluginList
