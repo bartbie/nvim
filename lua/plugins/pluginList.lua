@@ -1,4 +1,5 @@
 local pluginList = {
+    impatient = { "lewis6991/impatient.nvim" },
 
     gruvbox = {
         "sainnhe/gruvbox-material",

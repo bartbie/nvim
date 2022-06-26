@@ -16,3 +16,6 @@ o.shiftwidth = 4
 o.smartindent = true
 
 o.laststatus = 3
+
+g.do_filetype_lua = 1
+g.did_load_filetypes = 0

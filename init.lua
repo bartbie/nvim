@@ -1,3 +1,5 @@
+pcall(require, "impatient")
+
 local modules = {
     "core.config",
     "plugins",
