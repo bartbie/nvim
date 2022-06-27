@@ -1,8 +1,10 @@
 -- automatically install Packer
 local fn = vim.fn
 local install_path = fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
+local bootstrap = false
+
 if fn.empty(fn.glob(install_path)) > 0 then
-    packer_bootstrap = fn.system({
+    bootstrap = fn.system({
         "git",
         "clone",
         "--depth",
@@ -10,20 +12,10 @@ if fn.empty(fn.glob(install_path)) > 0 then
         "https://github.com/wbthomason/packer.nvim",
         install_path,
     })
+    vim.cmd("packadd packer.nvim")
 end
 
--- autocommand that reloads neovim automatically after saving pluginList.lua
--- vim.cmd([[
---   augroup packer_user_config
---     autocmd!
---     autocmd BufWritePost pluginList.lua source <afile> | PackerSync
---   augroup end
--- ]])
-
-local ok, packer = pcall(require, "packer")
-if not ok then
-    return
-end
+local packer = require("packer")
 
 -- have Packer use popup window
 packer.init({
@@ -39,7 +31,7 @@ local plugins = require("plugins.pluginList")
 -- Packer can manage itself
 plugins.packer = { "wbthomason/packer.nvim" }
 
-return require("packer").startup(function(use)
+return packer.startup(function(use)
     -- My plugins here
     for _, v in pairs(plugins) do
         use(v)
@@ -47,7 +39,12 @@ return require("packer").startup(function(use)
 
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins
-    if packer_bootstrap then
-        require("packer").sync()
+    if bootstrap then
+        packer.sync()
+        vim.notify([[
+        Packer is installing the Plugins,
+        Please wait until finished,
+        then restart Neovim
+        ]])
     end
 end)
