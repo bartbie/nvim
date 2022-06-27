@@ -60,9 +60,17 @@ local pluginList = {
     telescope = {
         "nvim-telescope/telescope.nvim",
         requires = { "nvim-lua/plenary.nvim" },
-        config = function()
-            require("plugins.configs.telescope")
-        end,
+        {
+            "nvim-telescope/telescope-fzf-native.nvim",
+            run = "make",
+            cond = vim.fn.executable("make") == 1,
+        },
+        {
+            "nvim-telescope/telescope-file-browser.nvim",
+            config = function()
+                require("plugins.configs.telescope")
+            end,
+        },
     },
 
     gitsigns = {

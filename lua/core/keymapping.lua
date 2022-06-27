@@ -63,6 +63,9 @@ M.keymaps["<leader>"] = {
         R = { "<cmd>Gitsigns reset_buffer<CR>", "Reset Buffer" },
         d = { "<cmd>Gitsigns diffthis<CR>", "Diff This File" },
         ["'"] = { "<CMD>Gitsigns toggle_current_line_blame<CR>", "Toggle Line Blame" },
+        -- TELESCOPE
+        f = { "<CMD>Telescope git_status<CR>", "Find Changed Files In Git" },
+        h = { "<CMD>Telescope git_bcommits<CR>", "Show Commits For This File" },
     },
     x = {
         name = "Diagnostics Menu",
