@@ -46,8 +46,11 @@ M.keymaps["<leader>"] = {
         -- TELESCOPE
         f = { "<CMD>Telescope find_files<CR>", "Find File" },
         g = { "<CMD>Telescope live_grep<CR>", "Grep Through Files" },
+        h = { "<CMD>Telescope oldfiles<CR>", "Find Recent Files" },
         b = { "<CMD>Telescope buffers<CR>", "Find Buffer" },
-        h = { "<CMD>Telescope help_tags<CR>", "Find Help" },
+        d = { "<CMD>Telescope help_tags<CR>", "Find Documentation" },
+        m = { "<CMD>Telescope marks<CR>", "Find Bookmarks" },
+        w = { "<CMD>Telescope current_buffer_fuzzy_find<CR>", "Find Word In Buffer" },
     },
     g = {
         name = "Git",
