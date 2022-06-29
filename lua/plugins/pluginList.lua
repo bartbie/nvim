@@ -197,6 +197,13 @@ local pluginList = {
             require("plugins.configs.which-key")
         end,
     },
+
+    alpha = {
+        "goolord/alpha-nvim",
+        config = function()
+            require("plugins.configs.alpha")
+        end,
+    },
 }
 
 return pluginList

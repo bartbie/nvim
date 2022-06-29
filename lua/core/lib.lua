@@ -42,6 +42,7 @@ M.special_types = {
         "fugitiveblame",
         "Trouble",
         "TelescopePrompt",
+        "alpha",
     },
     buftypes = {},
     bufnames = {},
