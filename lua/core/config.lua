@@ -7,7 +7,7 @@ o.cursorline = true
 o.smartcase = true
 o.scrolloff = 1
 o.termguicolors = true
-o.mouse = a
+o.mouse = "a"
 
 o.tabstop = 4
 o.softtabstop = 4

@@ -34,13 +34,7 @@ end
 -- see if the file exists
 -- @param path string path to file
 -- @return boolean
-utils.file_exists = function(path)
-    local f = io.open(path, "rb")
-    if f then
-        f:close()
-    end
-    return f ~= nil
-end
+utils.file_exists = vim.fn.filereadable
 
 -- get all lines from a file
 -- @param path string path to file
