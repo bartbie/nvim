@@ -207,6 +207,9 @@ local pluginList = {
 
     dap = {
         "mfussenegger/nvim-dap",
+        config = function()
+            require("plugins.configs.dap")
+        end,
 
         {
             "rcarriga/nvim-dap-ui",
@@ -225,8 +228,9 @@ local pluginList = {
 
     rust_tools = {
         "simrat39/rust-tools.nvim",
+        after = "nvim-dap",
         config = function()
-            require("rust-tools").setup()
+            require("plugins.configs.rust-tools")
         end,
     },
 }
