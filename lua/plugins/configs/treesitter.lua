@@ -1,3 +1,5 @@
+local col = require("core.lib").colors
+
 local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
 parser_config.org = {
     install_info = {
@@ -46,5 +48,14 @@ require("nvim-treesitter.configs").setup({
     -- Indentation based on treesitter for the = operator. NOTE: This is an experimental feature.
     indent = {
         enable = true,
+    },
+
+    rainbow = {
+        enable = true,
+        -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
+        extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+        max_file_lines = nil, -- Do not enable for files with more than n lines, int
+        colors = { col.skyblue, col.purple, col.white }, -- table of hex strings
+        -- termcolors = {} -- table of colour name strings
     },
 })

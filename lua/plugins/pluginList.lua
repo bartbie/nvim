@@ -21,6 +21,10 @@ local pluginList = {
 
     fugitive = { "tpope/vim-fugitive" },
 
+    rainbow_brackets = {
+        "p00f/nvim-ts-rainbow",
+    },
+
     treesitter = {
         "nvim-treesitter/nvim-treesitter",
         run = ":TSUpdate",
