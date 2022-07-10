@@ -115,9 +115,9 @@ local pluginList = {
 
     lightspeed = { "ggandor/lightspeed.nvim" },
 
-    themer = {
-        "themercorp/themer.lua",
-    },
+    -- themer = {
+    --     "themercorp/themer.lua",
+    -- },
 
     indent_blackline = {
         "lukas-reineke/indent-blankline.nvim",

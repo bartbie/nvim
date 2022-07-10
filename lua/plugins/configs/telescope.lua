@@ -6,7 +6,7 @@ if fzf then
 end
 
 local extensions = {
-    "themes",
+    -- "themes",
     "file_browser",
     -- "packer",
 }
