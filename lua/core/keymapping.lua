@@ -1,25 +1,13 @@
 -- TODO:
 -- make unnormal mappings use WhichKey API
 
+-- used for toggleterm shortcuts
+local terminals = require("plugins.configs.toggleterm").terminals
+
 local function map(mode, lhs, rhs, opts)
     opts = vim.tbl_extend("force", { silent = true }, opts or {})
     vim.keymap.set(mode, lhs, rhs, opts)
 end
-
-map("n", "<space>", "<Nop>")
-vim.g.mapleader = " "
-
--- stage hunks in visual mode
-map("v", "<leader>gs", "<CMD>Gitsigns stage_hunk<CR>")
-map("v", "<leader>gr", "<CMD>Gitsigns reset_hunk<CR>")
-
--- better indentation
-map("v", "<", "<gv")
-map("v", ">", ">gv")
-
--- Move selected text up/down
-map("x", "K", ":move '<-2<CR>gv=gv")
-map("x", "J", ":move '>+1<CR>gv=gv")
 
 local M = {}
 
@@ -89,6 +77,12 @@ M.keymaps["<leader>"] = {
         r = { "<CMD>DBUIRenameBuffer<CR>", "Rename Database Buffer" },
         l = { "<CMD>DBUILastQueryInfo<CR>", "Last Query Info" },
     },
+
+    t = {
+        name = "Terminal Menu",
+        g = { terminals.lazygit, "Toggle Lazygit" },
+        p = { terminals.python, "Toggle Python REPL" },
+    },
 }
 
 M.keymaps[""] = {
@@ -155,5 +149,36 @@ M.lsp_keymaps = {
     -- ["<C-p>"] = { vim.lsp.buf.signature_help, "Show Signature Help" }
     --     map(0, "x", "gx", ":<c-u>Lspsaga range_code_action<cr>", {silent = true, noremap = true})
 }
+
+M.term_keymaps = function()
+    function _G.set_terminal_keymaps()
+        local opts = { buffer = 0 }
+        vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], opts)
+        vim.keymap.set("t", "<C-h>", [[<C-\><C-n><C-W>h]], opts)
+        vim.keymap.set("t", "<C-j>", [[<C-\><C-n><C-W>j]], opts)
+        vim.keymap.set("t", "<C-k>", [[<C-\><C-n><C-W>k]], opts)
+        vim.keymap.set("t", "<C-l>", [[<C-\><C-n><C-W>l]], opts)
+    end
+    vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
+end
+
+M.setup = function()
+    map("n", "<space>", "<Nop>")
+    vim.g.mapleader = " "
+
+    -- stage hunks in visual mode
+    map("v", "<leader>gs", "<CMD>Gitsigns stage_hunk<CR>")
+    map("v", "<leader>gr", "<CMD>Gitsigns reset_hunk<CR>")
+
+    -- better indentation
+    map("v", "<", "<gv")
+    map("v", ">", ">gv")
+
+    -- Move selected text up/down
+    map("x", "K", ":move '<-2<CR>gv=gv")
+    map("x", "J", ":move '>+1<CR>gv=gv")
+
+    M.term_keymaps()
+end
 
 return M

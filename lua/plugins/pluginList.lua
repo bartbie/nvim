@@ -237,6 +237,14 @@ local pluginList = {
             require("plugins.configs.rust-tools")
         end,
     },
+
+    toggleterm = {
+        "akinsho/toggleterm.nvim",
+        tag = "v2.*",
+        config = function()
+            require("plugins.configs.toggleterm").setup()
+        end,
+    },
 }
 
 return pluginList
