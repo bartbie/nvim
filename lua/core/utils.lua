@@ -63,4 +63,16 @@ utils.read_file = function(path)
     return content
 end
 
+-- convert list to dictionary with nil values or provided default one
+-- @param list list to be copied and converted
+-- @param[opt=nil] default_value
+-- @return dictionary with old values as keys and values as default_value
+utils.to_dict = function(list, default_value)
+    local new_dict = {}
+    for i, value in ipairs(list) do
+        new_dict[value] = default_value
+    end
+    return new_dict
+end
+
 return utils
