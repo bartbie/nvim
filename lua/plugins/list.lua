@@ -250,6 +250,13 @@ local pluginList = {
             require("plugins.configs.toggleterm").setup()
         end,
     },
+
+    autopairs = {
+        "windwp/nvim-autopairs",
+        config = function()
+            require("plugins.configs.autopairs")
+        end,
+    },
 }
 
 return pluginList
