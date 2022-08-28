@@ -51,12 +51,13 @@ local pluginList = {
     },
 
     lsp = {
-        "williamboman/nvim-lsp-installer",
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
         after = { "coq_nvim" },
         {
             "neovim/nvim-lspconfig",
             config = function()
-                require("plugins.configs.lsp")
+                require("plugins.configs.lsp").setup()
             end,
         },
     },
