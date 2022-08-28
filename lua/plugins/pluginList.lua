@@ -205,7 +205,7 @@ local pluginList = {
     alpha = {
         "goolord/alpha-nvim",
         config = function()
-            require("plugins.configs.alpha")
+            require("plugins.configs.alpha").setup()
         end,
     },
 

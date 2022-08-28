@@ -1,3 +1,5 @@
+local M = {}
+
 local alpha = require("alpha")
 
 local utils = require("core.utils")
@@ -9,10 +11,11 @@ local ver = vim.version()
 
 local dash = require("alpha.themes.dashboard")
 local button = dash.button
+local map = vim.tbl_map
 
--- header
+-- Header
 -- stylua: ignore start
-dash.section.header.val = {
+M.banner = {
     [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
     [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⣠⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
     [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣡⣾⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣟⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
@@ -43,24 +46,25 @@ dash.section.header.val = {
 }
 -- stylua: ignore stop
 
--- buttons
-dash.section.buttons.val = {
+-- Buttons
+M.menu = {
     -- stylua: ignore start
     ---@diagnostic disable: missing-parameter
-    button("e", "  New file", "<cmd>ene <CR>"),
-    button("SPC f f", "  Find file"),
-    button("SPC f h", "  Recently opened files"),
-    button("SPC f g", "  Find word"),
-    button("SPC f m", "  Jump to bookmarks"),
-    button("SPC s l", "  Open last session"),
-    button("SPC e s", "  Open Config", ":e " .. config_path .. " | :cd %:p:h <CR>"),
-    button("q", "  Quit NVIM", "<CMD>qa<CR>"),
+    {"e", "  New file", "<cmd>ene <CR>"},
+    {"SPC f f", "  Find file"},
+    {"SPC f h", "  Recently opened files"},
+    {"SPC f g", "  Find word"},
+    {"SPC f m", "  Jump to bookmarks"},
+    {"SPC s l", "  Open last session"},
+    {"SPC e s", "  Open Config", ":e " .. config_path .. " | :cd %:p:h <CR>"},
+    {"q", "  Quit NVIM", "<CMD>qa<CR>"},
     ---@diagnostic enable: missing-parameter
     -- stylua: ignore stop
 }
 
--- footer
-dash.section.footer.val = function()
+
+-- Footer
+M.footer = function()
     -- plugins count
     local function count(folder)
         return #vim.fn.globpath(plugins_path .. "/" .. folder, "*", 0, 1)
@@ -79,16 +83,23 @@ dash.section.footer.val = function()
         .. "\n               Good Luck."
 end
 
+-- fortune footer
 -- local handle = io.popen("fortune -s")
 -- if handle ~= nil then
 --     local fortune = handle:read("*a")
 --     handle:close()
---     dash.section.footer.val = fortune
+--     M.footer = fortune
 -- end
 
--- rest
-dash.config.opts.noautocmd = false
+-- Setup function
+M.setup = function()
+    dash.section.header.val = M.banner
+    dash.section.buttons.val = map(function(x) return button(unpack(x)) end, M.menu)
+    dash.section.footer.val = M.footer
+    dash.config.opts.noautocmd = false
+    vim.cmd([[autocmd User AlphaReady echo 'ready']])
 
-vim.cmd([[autocmd User AlphaReady echo 'ready']])
+    alpha.setup(dash.config)
+end
 
-alpha.setup(dash.config)
+return M
