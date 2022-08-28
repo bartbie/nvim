@@ -27,7 +27,7 @@ packer.init({
 })
 
 -- adding all plugins from pluginList.lua to 'plugins' table
-local plugins = require("plugins.pluginList")
+local plugins = require("plugins.list")
 -- Packer can manage itself
 plugins.packer = { "wbthomason/packer.nvim" }
 
