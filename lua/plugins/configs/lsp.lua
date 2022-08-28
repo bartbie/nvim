@@ -1,8 +1,4 @@
-M = {
-    servers = {},
-}
-
-function M.prepare_servers(self)
+local function prepare_servers()
     local api = vim.api
     local json = vim.json
     local u = require("core.utils")
@@ -24,7 +20,7 @@ function M.prepare_servers(self)
     local default = { "pylsp", "emmet_ls", "html", "jsonls", "vimls", "zk", "grammarly", "sqlls" }
 
     -- Rest of servers
-    self.servers = {
+    local servers = {
 
         pyright = read("pyrightconfig"),
 
@@ -55,9 +51,15 @@ function M.prepare_servers(self)
     }
     -- Combine them for uniform interface
     for _, v in ipairs(default) do
-        self.servers[v] = {}
+        servers[v] = {}
     end
+
+    return servers
 end
+
+M = {
+    servers = prepare_servers(),
+}
 
 -- Installer setup
 function M.mason_setup(self)
@@ -90,7 +92,6 @@ function M.lsp_setup(self)
 end
 
 function M.setup()
-    M:prepare_servers()
     M:mason_setup()
     M:lsp_setup()
 end
