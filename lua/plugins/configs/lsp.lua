@@ -1,7 +1,8 @@
+local u = require("core.utils")
+
 local function prepare_servers()
     local api = vim.api
     local json = vim.json
-    local u = require("core.utils")
 
     -- Make runtime files discoverable to the server
     local runtime_path = vim.split(package.path, ";")
@@ -59,14 +60,18 @@ end
 
 M = {
     servers = prepare_servers(),
+    default_opts = {}, -- empty for now
 }
 
 -- Installer setup
 function M.mason_setup(self)
     require("mason").setup()
-    require("mason-lspconfig").setup({
+    local mason_lsp = require("mason-lspconfig")
+    mason_lsp.setup({
         ensure_installed = vim.tbl_keys(self.servers),
     })
+    -- local installed = mason_lsp.get_installed_servers()
+    -- vim.tbl_extend("keep", self.servers, u.to_dict(installed, {}))
 end
 
 -- LSP setup
@@ -76,19 +81,36 @@ function M.lsp_setup(self)
     local wk = require("which-key")
     local km = require("core.keymapping")
     local keymaps = km.lsp_keymaps
-    local opts = km.opts
+    local keymap_opts = km.opts
+    local mason_lsp = require("mason-lspconfig")
 
     -- Default on_attach settings
     local function on_attach(client, buffer)
-        wk.register(keymaps, vim.tbl_extend("force", opts, { buffer = buffer }))
+        wk.register(keymaps, vim.tbl_extend("force", keymap_opts, { buffer = buffer }))
     end
 
+    -- setup handlers
+    local handlers = {
+        -- default one used e.g. when server is installed from Mason menu
+        function(server)
+            lsp[server].setup(coq.lsp_ensure_capabilities({
+                on_attach = on_attach,
+                settings = self.default_opts,
+            }))
+        end,
+    }
+
+    -- setting up the handlers for ensure_installed servers
     for server, opts in pairs(self.servers) do
-        lsp[server].setup(coq.lsp_ensure_capabilities({
-            on_attach = on_attach,
-            settings = opts,
-        }))
+        handlers[server] = function()
+            lsp[server].setup(coq.lsp_ensure_capabilities({
+                on_attach = on_attach,
+                settings = opts,
+            }))
+        end
     end
+
+    mason_lsp.setup_handlers(handlers)
 end
 
 function M.setup()
