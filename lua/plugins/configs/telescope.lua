@@ -8,7 +8,7 @@ end
 local extensions = {
     -- "themes",
     "file_browser",
-    -- "packer",
+    "packer",
 }
 
 for _, v in ipairs(extensions) do

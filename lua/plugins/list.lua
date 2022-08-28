@@ -67,11 +67,14 @@ local pluginList = {
         requires = { "nvim-lua/plenary.nvim" },
         {
             "nvim-telescope/telescope-fzf-native.nvim",
-            run = "make",
-            cond = vim.fn.executable("make") == 1,
+            run = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+            cond = vim.fn.executable("cmake") == 1,
         },
         {
             "nvim-telescope/telescope-file-browser.nvim",
+        },
+        {
+            "nvim-telescope/telescope-packer.nvim",
             config = function()
                 require("plugins.configs.telescope")
             end,
@@ -212,6 +215,7 @@ local pluginList = {
 
     dap = {
         "mfussenegger/nvim-dap",
+        after = { "nvim-lspconfig" },
         config = function()
             require("plugins.configs.dap")
         end,
@@ -226,7 +230,7 @@ local pluginList = {
         {
             "theHamsta/nvim-dap-virtual-text",
             config = function()
-                require("nvim-dap-virtual-text").setup()
+                require("nvim-dap-virtual-text").setup({})
             end,
         },
     },
