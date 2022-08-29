@@ -10,10 +10,10 @@ local function prepare_servers()
     table.insert(runtime_path, "lua/?/init.lua")
 
     -- Path to json folder with server settings
-    local configs_path = u.bin_path .. "/lsp_servers_configs/"
+    local configs_path = u.config_path .. "/lsp_servers/"
 
     -- function to read and decode json server settings
-    local function read(filename)
+    local function decode(filename)
         return json.decode(u.read_file(configs_path .. filename .. ".json"))
     end
 
@@ -23,7 +23,17 @@ local function prepare_servers()
     -- Rest of servers
     local servers = {
 
-        pyright = read("pyrightconfig"),
+        pyright = {
+            python = {
+                analysis = {
+                    autoImportCompletions = true,
+                    autoSearchPaths = true,
+                    diagnosticMode = "workspace",
+                    useLibraryCodeForTypes = true,
+                    diagnosticSeverityOverrides = decode("pyrightconfig"),
+                },
+            },
+        },
 
         rust_analyzer = {},
 

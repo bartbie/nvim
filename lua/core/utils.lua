@@ -8,7 +8,7 @@ if utils.is_windows == true then
 end
 
 -- path to bin folder
-utils.bin_path = vim.fn.stdpath("config") .. utils.path_separator .. "bin"
+utils.config_path = vim.fn.stdpath("config") .. utils.path_separator .. "config"
 
 -- Joins arbitrary number of paths together.
 -- @param ... string The paths to join.
