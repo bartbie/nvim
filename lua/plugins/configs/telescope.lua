@@ -1,4 +1,5 @@
 local ts = require("telescope")
+ts.setup({})
 
 local fzf, _ = pcall(require, "fzf_lib")
 if fzf then

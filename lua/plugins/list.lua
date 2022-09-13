@@ -1,4 +1,4 @@
-local pluginList = {
+local list = {
     impatient = { "lewis6991/impatient.nvim" },
 
     gruvbox = {
@@ -67,8 +67,7 @@ local pluginList = {
         requires = { "nvim-lua/plenary.nvim" },
         {
             "nvim-telescope/telescope-fzf-native.nvim",
-            run = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
-            cond = vim.fn.executable("cmake") == 1,
+            run = "make",
         },
         {
             "nvim-telescope/telescope-file-browser.nvim",
@@ -259,4 +258,4 @@ local pluginList = {
     },
 }
 
-return pluginList
+return list
