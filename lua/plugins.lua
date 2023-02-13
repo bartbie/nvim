@@ -1,3 +1,4 @@
+local lib = require("lib")
 return {
     {
         "sainnhe/gruvbox-material",
@@ -83,14 +84,14 @@ return {
                 },
             },
 
-            --            rainbow = {
-            --                enable = true,
-            --                -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
-            --                extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
-            --                max_file_lines = nil, -- Do not enable for files with more than n lines, int
-            --                --				colors = { col.skyblue, col.purple, col.white }, -- table of hex strings
-            --                -- termcolors = {} -- table of colour name strings
-            --            },
+            rainbow = {
+                enable = true,
+                -- disable = { "jsx", "cpp" }, list of languages you want to disable the plugin for
+                extended_mode = true, -- Also highlight non-bracket delimiters like html tags, boolean or table: lang -> boolean
+                max_file_lines = nil, -- Do not enable for files with more than n lines, int
+                --				colors = { col.skyblue, col.purple, col.white }, -- table of hex strings
+                -- termcolors = {} -- table of colour name strings
+            },
         },
         config = function(_, opts)
             require("nvim-treesitter.configs").setup(opts)
@@ -183,5 +184,42 @@ return {
             lsp.ensure_installed(opts.ensure_installed)
             lsp.setup()
         end,
+    },
+    {
+        "windwp/nvim-autopairs",
+        config = function()
+            require("nvim-autopairs").setup({})
+            local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+            local cmp = require("cmp")
+            cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+        end,
+        dependencies = {
+            { "hrsh7th/nvim-cmp" },
+        },
+    },
+    { "p00f/nvim-ts-rainbow" },
+    { "numToStr/Comment.nvim", config = true },
+    {
+        "petertriho/nvim-scrollbar",
+        config = true,
+    },
+    {
+        "folke/trouble.nvim",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        opts = {
+            signs = {
+                error = lib.diagnostics_symbols.error,
+                warning = lib.diagnostics_symbols.warning,
+                hint = lib.diagnostics_symbols.hint,
+                information = lib.diagnostics_symbols.info,
+                other = lib.diagnostics_symbols.otehr,
+            },
+        },
+    },
+    {
+        "lewis6991/gitsigns.nvim",
+        opts = {
+            current_line_blame = true,
+        },
     },
 }
