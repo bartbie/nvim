@@ -103,4 +103,36 @@ return {
             { "<leader>gc", "<CMD>Git commit<CR>", desc = "Commit" },
         },
     },
+    {
+        "nvim-telescope/telescope.nvim",
+        dependencies = {
+            {
+                "nvim-telescope/telescope-fzf-native.nvim",
+                build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build",
+            },
+        },
+        keys = {
+            { "<leader>ff", "<CMD>Telescope find_files<CR>", "Find File" },
+            { "<leader>fg", "<CMD>Telescope live_grep<CR>", "Grep Through Files" },
+            { "<leader>fh", "<CMD>Telescope oldfiles<CR>", "Find Recent Files" },
+            { "<leader>fb", "<CMD>Telescope buffers<CR>", "Find Buffer" },
+            { "<leader>fd", "<CMD>Telescope help_tags<CR>", "Find Documentation" },
+            { "<leader>fm", "<CMD>Telescope marks<CR>", "Find Bookmarks" },
+            { "<leader>fw", "<CMD>Telescope current_buffer_fuzzy_find<CR>", "Find Word In Buffer" },
+        },
+        config = function()
+            local ts = require("telescope")
+            ts.setup({})
+
+            local fzf, _ = pcall(require, "fzf_lib")
+            if fzf then
+                ts.load_extension("fzf")
+            end
+
+            local extensions = {}
+            for _, v in ipairs(extensions) do
+                ts.load_extension(v)
+            end
+        end,
+    },
 }
