@@ -20,7 +20,3 @@ o.smartindent = true
 
 -- status
 o.laststatus = 3
-
--- quicker loading of filetypes
-g.do_filetype_lua = 1
-g.did_load_filetypes = 0

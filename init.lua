@@ -1,17 +1,18 @@
-pcall(require, "impatient")
-
-local modules = {
-    "core.config",
-    "plugins",
-    "core.keymapping",
-    "core.events",
-}
-
-for _, module in ipairs(modules) do
-    local ok, err = pcall(require, module)
-    if not ok then
-        error("Error loading " .. module .. "\n\n" .. err)
-    elseif module == "core.keymapping" then
-        require("core.keymapping").setup()
-    end
+-- set up lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
 end
+vim.opt.rtp:prepend(lazypath)
+
+vim.g.mapleader = " "
+
+require("config")
+require("lazy").setup("plugins")
