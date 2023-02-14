@@ -1,4 +1,8 @@
 local lib = require("lib")
+local y = function(x)
+    return x
+end
+
 return {
     {
         "sainnhe/gruvbox-material",
@@ -152,6 +156,7 @@ return {
             { "hrsh7th/cmp-path" }, -- Optional
             { "saadparwaiz1/cmp_luasnip" }, -- Optional
             { "hrsh7th/cmp-nvim-lua" }, -- Optional
+            { "hrsh7th/cmp-nvim-lsp-signature-help" },
 
             -- Snippets
             { "L3MON4D3/LuaSnip" }, -- Required
@@ -179,9 +184,15 @@ return {
                 suggest_lsp_servers = false,
             })
 
+            local cmp_sources = lsp.defaults.cmp_sources()
+            table.insert(cmp_sources, { name = "nvim_lsp_signature_help" })
+
+            lsp.setup_nvim_cmp({ sources = cmp_sources })
+
+            lsp.ensure_installed(opts.ensure_installed)
             -- (Optional) Configure lua language server for neovim
             lsp.nvim_workspace()
-            lsp.ensure_installed(opts.ensure_installed)
+
             lsp.setup()
         end,
     },
@@ -221,5 +232,34 @@ return {
         opts = {
             current_line_blame = true,
         },
+    },
+    { "tpope/vim-unimpaired" },
+    { "tpope/vim-repeat" },
+    {
+        "lukas-reineke/indent-blankline.nvim",
+        opts = {
+            use_treesitter = true,
+            show_end_of_line = true,
+            show_current_context = true,
+            show_current_context_start = true,
+            -- char_blankline = '┆',
+            -- space_char_blankline = "",
+            show_trailing_blankline_indent = false,
+            show_first_indent_level = false,
+            filetype_exclude = {
+                "lspinfo",
+                "packer",
+                "checkhealth",
+                "help",
+                "man",
+                "fugitive",
+                "",
+            },
+        },
+        config = function(_, opts)
+            vim.opt.list = true
+            vim.opt.listchars:append("eol:↴")
+            require("indent_blankline").setup(opts)
+        end,
     },
 }
