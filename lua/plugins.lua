@@ -1,11 +1,9 @@
 local lib = require("lib")
-local y = function(x)
-    return x
-end
-
 return {
     {
         "sainnhe/gruvbox-material",
+        lazy = false,
+        priority = 1000,
         config = function()
             local o = vim.o
             local g = vim.g
@@ -261,5 +259,52 @@ return {
             vim.opt.listchars:append("eol:↴")
             require("indent_blankline").setup(opts)
         end,
+    },
+    {
+        "akinsho/toggleterm.nvim",
+        version = "*",
+        opts = {
+            size = 20,
+            open_mapping = [[<c-\>]],
+            hide_numbers = true,
+            shade_filetypes = {},
+            shade_terminals = true,
+            shading_factor = 2,
+            start_in_insert = true,
+            insert_mappings = true,
+            persist_size = true,
+            direction = "float",
+            close_on_exit = true,
+            shell = vim.o.shell,
+            float_opts = {
+                border = "curved",
+                winblend = 0,
+                highlights = {
+                    border = "Normal",
+                    background = "Normal",
+                },
+            },
+        },
+        -- TODO configure this
+        -- config = function(_, opts)
+        --     local toggleterm = require("toggleterm")
+        --     local terminal = require("toggleterm.terminal").Terminal
+        --
+        --     -- creates new terminal object and returns a function that toggles it
+        --     local function new_cmd(cmd)
+        --         -- creates new terminal object
+        --         local function new_term(cmd)
+        --             return terminal:new({ cmd = cmd, hidden = true })
+        --         end
+        --
+        --         local term = new_term(cmd)
+        --         return function() term:toggle() end
+        --     end
+        --
+        --     local python = new_cmd("python3")
+        --     local lazygit = new_cmd("lazygit"),
+        --
+        --     toggleterm.setup(opts)
+        -- end,
     },
 }
