@@ -1,4 +1,5 @@
 local lib = require("lib")
+local icons = lib.diagnostics_symbols
 return {
     {
         "folke/tokyonight.nvim",
@@ -14,39 +15,6 @@ return {
             vim.cmd("colorscheme tokyonight")
         end,
     },
-    -- {
-    --     "sainnhe/gruvbox-material",
-    --     lazy = false,
-    --     priority = 1000,
-    --     config = function()
-    --         local o = vim.o
-    --         local g = vim.g
-    --
-    --         o.background = "dark"
-    --         g.gruvbox_material_background = "hard"
-    --         g.gruvbox_material_palette = "original"
-    --
-    --         g.gruvbox_material_disable_italic_comment = 0
-    --         g.gruvbox_material_enable_bold = 1
-    --         g.gruvbox_material_enable_italic = 1
-    --         g.gruvbox_material_cursor = "auto"
-    --         g.gruvbox_material_transparent_background = 0
-    --         -- g.gruvbox_material_visual = "grey background"
-    --         -- g.gruvbox_material_selection_background = "grey"
-    --         g.gruvbox_material_sign_column_background = "none"
-    --         g.gruvbox_material_spell_foreground = "none"
-    --         g.gruvbox_material_ui_contrast = "low"
-    --         g.gruvbox_material_show_eob = 0
-    --         g.gruvbox_material_diagnostic_text_highlight = 0
-    --         g.gruvbox_material_diagnostic_line_highlight = 1
-    --         g.gruvbox_material_diagnostic_virtual_text = 1
-    --         g.gruvbox_material_current_word = "grey background"
-    --         g.gruvbox_material_disable_terminal_colors = 0
-    --         g.gruvbox_material_statusline_style = "original"
-    --         g.gruvbox_material_lightline_disable_bold = 0
-    --         vim.cmd("colorscheme gruvbox-material")
-    --     end,
-    -- },
     {
         "nvim-neo-tree/neo-tree.nvim",
         keys = {
@@ -322,4 +290,33 @@ return {
         -- end,
     },
     { "kevinhwang91/nvim-hlslens", config = true },
+    {
+        "glepnir/lspsaga.nvim",
+        event = "BufRead",
+        dependencies = {
+            { "nvim-tree/nvim-web-devicons" },
+            { "nvim-treesitter/nvim-treesitter" },
+        },
+        opts = {
+            symbol_in_winbar = {
+                separator = "  ",
+                hide_keyword = true,
+                show_file = false,
+            },
+            ui = {
+                expand = "",
+                collapse = "",
+                preview = " ",
+                code_action = icons.action,
+                diagnostic = icons.bug,
+                incoming = " ",
+                outgoing = " ",
+                hover = " ",
+            },
+        },
+        -- config = function(_, opts)
+        --     require("lspsaga").setup(opts)
+        --     local keymap = vim.keymap.set
+        -- end
+    },
 }
