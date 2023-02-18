@@ -97,13 +97,13 @@ return {
             },
         },
         keys = {
-            { "<leader>ff", "<CMD>Telescope find_files<CR>", "Find File" },
-            { "<leader>fg", "<CMD>Telescope live_grep<CR>", "Grep Through Files" },
-            { "<leader>fh", "<CMD>Telescope oldfiles<CR>", "Find Recent Files" },
-            { "<leader>fb", "<CMD>Telescope buffers<CR>", "Find Buffer" },
-            { "<leader>fd", "<CMD>Telescope help_tags<CR>", "Find Documentation" },
-            { "<leader>fm", "<CMD>Telescope marks<CR>", "Find Bookmarks" },
-            { "<leader>fw", "<CMD>Telescope current_buffer_fuzzy_find<CR>", "Find Word In Buffer" },
+            { "<leader>ff", "<CMD>Telescope find_files<CR>", desc = "Find File" },
+            { "<leader>fg", "<CMD>Telescope live_grep<CR>", desc = "Grep Through Files" },
+            { "<leader>fh", "<CMD>Telescope oldfiles<CR>", desc = "Find Recent Files" },
+            { "<leader>fb", "<CMD>Telescope buffers<CR>", desc = "Find Buffer" },
+            { "<leader>fd", "<CMD>Telescope help_tags<CR>", desc = "Find Documentation" },
+            { "<leader>fm", "<CMD>Telescope marks<CR>", desc = "Find Bookmarks" },
+            { "<leader>fw", "<CMD>Telescope current_buffer_fuzzy_find<CR>", desc = "Find Word In Buffer" },
         },
         config = function()
             local ts = require("telescope")
@@ -209,8 +209,31 @@ return {
     },
     {
         "lewis6991/gitsigns.nvim",
+        event = { "BufReadPre", "BufNewFile" },
         opts = {
             current_line_blame = true,
+            on_attach = function(buffer)
+                local gs = package.loaded.gitsigns
+
+                local map = function(mode, l, r, desc)
+                    vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
+                end
+
+                -- stylua: ignore start
+                map("n", "]h", gs.next_hunk, "Next Hunk")
+                map("n", "[h", gs.prev_hunk, "Prev Hunk")
+                map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+                map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+                map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+                map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
+                map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+                map("n", "<leader>ghp", gs.preview_hunk, "Preview Hunk")
+                map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
+                map("n", "<leader>ghd", gs.diffthis, "Diff This")
+                map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+                map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+                -- stylua: ignore end
+            end,
         },
     },
     { "tpope/vim-unimpaired" },
@@ -318,5 +341,41 @@ return {
         --     require("lspsaga").setup(opts)
         --     local keymap = vim.keymap.set
         -- end
+    },
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        opts = {
+            plugin = { spelling = true },
+            key_labels = {
+                ["<leader>"] = "SPC",
+                ["<cr>"] = "RET",
+                ["<tab>"] = "TAB",
+            },
+        },
+        config = function(_, opts)
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+            local wk = require("which-key")
+            wk.setup(opts)
+            wk.register({
+                mode = { "n", "v" },
+                ["g"] = { name = "+goto" },
+                ["]"] = { name = "+next" },
+                ["["] = { name = "+prev" },
+                ["<leader>b"] = { name = "+buffer" },
+                ["<leader>c"] = { name = "+code" },
+                ["<leader>f"] = { name = "+file/find" },
+                ["<leader>g"] = { name = "+git" },
+                ["<leader>gh"] = { name = "+hunks" },
+                ["<leader><tab>"] = { name = "+tabs" },
+                -- ["<leader>q"] = { name = "+quit/session" },
+                -- ["<leader>s"] = { name = "+search" },
+                -- ["<leader>sn"] = { name = "+noice" },
+                -- ["<leader>u"] = { name = "+ui" },
+                ["<leader>w"] = { name = "+windows" },
+                ["<leader>x"] = { name = "+diagnostics/quickfix" },
+            })
+        end,
     },
 }
