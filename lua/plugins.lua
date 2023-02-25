@@ -84,8 +84,8 @@ return {
     {
         "tpope/vim-fugitive",
         keys = {
-            { "<leader>gg", "<CMD>Git<CR>", desc = "Open Status Menu" },
-            { "<leader>gc", "<CMD>Git commit<CR>", desc = "Commit" },
+            { "<leader>gg", "<CMD>Git<CR>", desc = "Open Git Menu" },
+            { "<leader>gC", "<CMD>Git commit<CR>", desc = "Commit Staged Files" },
         },
     },
     {
@@ -97,13 +97,23 @@ return {
             },
         },
         keys = {
-            { "<leader>ff", "<CMD>Telescope find_files<CR>", desc = "Find File" },
-            { "<leader>fg", "<CMD>Telescope live_grep<CR>", desc = "Grep Through Files" },
+            { "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
+            { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
+            -- find
+            { "<leader>ff", "<CMD>Telescope find_files<CR>", desc = "Find Files" },
             { "<leader>fh", "<CMD>Telescope oldfiles<CR>", desc = "Find Recent Files" },
-            { "<leader>fb", "<CMD>Telescope buffers<CR>", desc = "Find Buffer" },
-            { "<leader>fd", "<CMD>Telescope help_tags<CR>", desc = "Find Documentation" },
-            { "<leader>fm", "<CMD>Telescope marks<CR>", desc = "Find Bookmarks" },
-            { "<leader>fw", "<CMD>Telescope current_buffer_fuzzy_find<CR>", desc = "Find Word In Buffer" },
+            { "<leader>fb", "<CMD>Telescope buffers show_all_buffers=true<CR>", desc = "Buffers" },
+            -- search
+            { "<leader>sg", "<CMD>Telescope live_grep<CR>", desc = "Grep" },
+            { "<leader>sw", "<CMD>Telescope current_buffer_fuzzy_find<CR>", desc = "Buffer" },
+            { "<leader>sd", "<cmd>Telescope diagnostics<cr>", desc = "Diagnostics" },
+            { "<leader>sh", "<cmd>Telescope help_tags<cr>", desc = "Help Pages" },
+            { "<leader>sk", "<cmd>Telescope keymaps<cr>", desc = "Key Maps" },
+            { "<leader>sm", "<cmd>Telescope marks<cr>", desc = "Jump to Mark" },
+            { "<leader>so", "<cmd>Telescope vim_options<cr>", desc = "Options" },
+            -- git
+            { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
+            { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
         },
         config = function()
             local ts = require("telescope")
@@ -122,7 +132,11 @@ return {
     },
     {
         "VonHeikemen/lsp-zero.nvim",
+        event = { "BufReadPre", "BufNewFile" },
         branch = "v1.x",
+        keys = {
+            { "<leader>m", "<CMD>Mason<CR>", desc = "Mason" },
+        },
         dependencies = {
             -- LSP Support
             { "neovim/nvim-lspconfig" }, -- Required
@@ -197,6 +211,13 @@ return {
     {
         "folke/trouble.nvim",
         dependencies = { "nvim-tree/nvim-web-devicons" },
+        keys = {
+            { "<leader>xx", "<CMD>TroubleToggle<cr>", desc = "Toggle Menu" },
+            { "<leader>xw", "<CMD>TroubleToggle workspace_diagnostics<cr>", desc = "Toggle Menu For Workspace" },
+            { "<leader>xd", "<CMD>TroubleToggle document_diagnostics<cr>", desc = "Toggle Menu For Single File" },
+            { "<leader>xl", "<CMD>TroubleToggle loclist<cr>", desc = "Show Location List" },
+            { "<leader>xq", "<CMD>TroubleToggle quickfix<cr>", desc = "Show QuickFix List" },
+        },
         opts = {
             signs = {
                 error = lib.diagnostics_symbols.error,
@@ -320,6 +341,37 @@ return {
             { "nvim-tree/nvim-web-devicons" },
             { "nvim-treesitter/nvim-treesitter" },
         },
+        keys = {
+            { "gh", "<cmd>Lspsaga lsp_finder<CR>", desc = "Find Definition & References" },
+            { "gn", "<cmd>Lspsaga rename<CR>", desc = "Rename in File" },
+            { "gN", "<cmd>Lspsaga rename ++project<CR>", desc = "Rename in Project" },
+            { mode = { "n", "v" }, "<leader>ca", "<cmd>Lspsaga code_action<CR>", desc = "Actions" },
+            { "gd", "<cmd>Lspsaga peek_definition<CR>", desc = "Peek Definition" },
+            { "gt", "<cmd>Lspsaga peek_type_definition<CR>", desc = "Peek Type Definition" },
+            { "gT", "<cmd>Lspsaga goto_type_definition<CR>", desc = "Go to Type Definition" },
+            { "go", "<cmd>Lspsaga show_line_diagnostics<CR>", desc = "Show Line Diagnostics" },
+            { "gk", "<cmd>Lspsaga diagnostic_jump_prev<CR>", desc = "Jump to Prev Diagnostic" },
+            { "gj", "<cmd>Lspsaga diagnostic_jump_next<CR>", desc = "Jump to Next Diagnostic" },
+
+            {
+                "gK",
+                function()
+                    require("lspsaga.diagnostic"):goto_prev({ severity = vim.diagnostic.severity.ERROR })
+                end,
+                desc = "Jump to Prev Error",
+            },
+            {
+                "gJ",
+                function()
+                    require("lspsaga.diagnostic"):goto_next({ severity = vim.diagnostic.severity.ERROR })
+                end,
+                desc = "Jump to Next Error",
+            },
+            { "K", "<cmd>Lspsaga hover_doc ++keep<CR>", desc = "Hover Documentation" },
+            { "<leader>co", "<cmd>Lspsaga outline<CR>", desc = "Sorted Code Outline" },
+            { "<Leader>ci", "<cmd>Lspsaga incoming_calls<CR>", desc = "Incoming Calls" },
+            { "<Leader>co", "<cmd>Lspsaga outgoing_calls<CR>", desc = "Incoming Calls" },
+        },
         opts = {
             symbol_in_winbar = {
                 separator = "  ",
@@ -337,10 +389,6 @@ return {
                 hover = " ",
             },
         },
-        -- config = function(_, opts)
-        --     require("lspsaga").setup(opts)
-        --     local keymap = vim.keymap.set
-        -- end
     },
     {
         "folke/which-key.nvim",
@@ -368,9 +416,9 @@ return {
                 ["<leader>f"] = { name = "+file/find" },
                 ["<leader>g"] = { name = "+git" },
                 ["<leader>gh"] = { name = "+hunks" },
-                ["<leader><tab>"] = { name = "+tabs" },
+                -- ["<leader><tab>"] = { name = "+tabs" },
                 -- ["<leader>q"] = { name = "+quit/session" },
-                -- ["<leader>s"] = { name = "+search" },
+                ["<leader>s"] = { name = "+search" },
                 -- ["<leader>sn"] = { name = "+noice" },
                 -- ["<leader>u"] = { name = "+ui" },
                 ["<leader>w"] = { name = "+windows" },
