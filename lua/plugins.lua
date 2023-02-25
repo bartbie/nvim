@@ -455,4 +455,42 @@ return {
             vim.keymap.del({ "x", "o" }, "X")
         end,
     },
+    {
+        "folke/todo-comments.nvim",
+        cmd = { "TodoTrouble", "TodoTelescope" },
+        event = { "BufReadPost", "BufNewFile" },
+        opts = {
+            highlight = {
+                keyword = "bg",
+                pattern = {
+                    [[.*<(KEYWORDS)\s*:]],
+                    [[.*<(KEYWORDS)\s*]],
+                },
+            },
+            search = {
+                pattern = [[\b(KEYWORDS)\b]],
+            },
+        },
+        keys = {
+            -- stylua: ignore start
+            {
+                "]t",
+                function()
+                    require("todo-comments").jump_next()
+                end,
+                desc = "Next todo comment",
+            },
+            {
+                "[t",
+                function()
+                    require("todo-comments").jump_prev()
+                end,
+                desc = "Previous todo comment",
+            },
+            -- stylua: ignore end
+            { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
+            { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+            { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
+        },
+    },
 }
