@@ -57,3 +57,6 @@ map("n", "<leader>|", "<C-W>v", { desc = "Split window right" })
 
 -- buffers
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
+
+-- command alias for saving the buffer
+vim.api.nvim_create_user_command("W", "w", {})
