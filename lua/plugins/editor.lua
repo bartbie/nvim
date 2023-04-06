@@ -1,5 +1,4 @@
-local lib = require("lib")
-local icons = lib.diagnostics_symbols
+local icons = require("utils.lib").diagnostics_symbols
 
 return {
     {
@@ -161,11 +160,11 @@ return {
         },
         opts = {
             signs = {
-                error = lib.diagnostics_symbols.error,
-                warning = lib.diagnostics_symbols.warning,
-                hint = lib.diagnostics_symbols.hint,
-                information = lib.diagnostics_symbols.info,
-                other = lib.diagnostics_symbols.otehr,
+                error = icons.error,
+                warning = icons.warning,
+                hint = icons.hint,
+                information = icons.info,
+                other = icons.other,
             },
         },
     },
