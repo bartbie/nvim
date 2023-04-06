@@ -1,4 +1,4 @@
-local lib = require("utils.lib")
+local lib = require("bartbie.utils.lib")
 local M = {
     lib = lib,
 }

@@ -1,4 +1,4 @@
-local utils = require("utils")
+local utils = require("bartbie.utils")
 local cmp_icons = utils.lib.cmp_icons
 local icons = utils.lib.diagnostics_symbols
 

@@ -1,4 +1,4 @@
-local icons = require("utils.lib").diagnostics_symbols
+local icons = require("bartbie.utils.lib").diagnostics_symbols
 
 return {
     {
