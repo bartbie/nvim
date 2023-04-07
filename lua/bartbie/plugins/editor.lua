@@ -2,6 +2,10 @@ local icons = require("bartbie.utils.lib").diagnostics_symbols
 
 return {
     {
+        "nvim-lua/plenary.nvim",
+        lazy = true,
+    },
+    {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,

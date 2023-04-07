@@ -1,5 +1,15 @@
 local FN = require("bartbie.plugins.lsp.lsp_utils")
 
+---loads json config from /assets/lsp_configs/
+---@param name string
+---@return table
+local function load_config(name)
+    local UTILS = require("bartbie.utils")
+    local x = UTILS.assets.lsp_config(name)
+    return x and x:decode() or {}
+end
+--
+
 local ENSURE_INSTALLED = {
     "vimls",
     "grammarly",
@@ -17,11 +27,25 @@ local ENSURE_INSTALLED = {
 -- INFO:
 -- instead of writing custom setup for each server inside config function
 -- add it via opts inside config table
--- if more control is needed, you can use opts.setup table
+-- if more control is needed, you can use the SERVER_SETUPS table
 --
 ---@type lspconfig.options
 local SERVER_CONFIGS = {
-    jsonls = {},
+    pyright = {
+        settings = {
+            pyright = {
+                python = {
+                    analysis = {
+                        autoImportCompletions = true,
+                        autoSearchPaths = true,
+                        diagnosticMode = "workspace",
+                        useLibraryCodeForTypes = true,
+                        diagnosticSeverityOverrides = load_config("pyrightconfig.json"),
+                    },
+                },
+            },
+        },
+    },
     lua_ls = {
         settings = {
             Lua = {

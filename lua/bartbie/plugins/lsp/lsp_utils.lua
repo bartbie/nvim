@@ -62,7 +62,7 @@ end
 ---sests up keymaps for LSP server
 ---@param _ any client
 ---@param bufnr any
----@param keymaps table { string, string, string | function, table}
+---@param keymaps table { string, string, string | function, table}[]
 function FN.setup_keymaps(_, bufnr, keymaps)
     local function map(mode, lhs, rhs, opts)
         local defaults = { silent = true, buffer = bufnr }
