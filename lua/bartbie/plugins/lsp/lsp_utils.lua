@@ -16,7 +16,7 @@ function FN.setup_signs()
         use_space = use_space or false
         vim.fn.sign_define(name, { text = symbol .. (use_space and " " or ""), texthl = name })
     end
-    local icons = UTILS.lib.diagnostics_symbols
+    local icons = UTILS.lib.diagnostics_symbols.core
     sign_define("DiagnosticSignError", icons.error)
     sign_define("DiagnosticSignWarn", icons.warn)
     sign_define("DiagnosticSignInfo", icons.info)
@@ -42,7 +42,7 @@ end
 ---format virtual text diagnostics
 ---@return string
 function FN.format_diagnostics(diagnostic)
-    local icons = UTILS.lib.diagnostics_symbols
+    local icons = UTILS.lib.diagnostics_symbols.core
     local s = vim.diagnostic.severity
     local severity = function(level)
         return level == diagnostic.severity

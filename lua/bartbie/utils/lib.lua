@@ -1,12 +1,16 @@
 return {
     diagnostics_symbols = {
-        error = "",
-        warn = "",
-        hint = "",
-        info = "",
-        other = "✓",
-        action = "",
-        bug = "",
+        core = {
+            error = "",
+            warn = "",
+            hint = "",
+            info = "",
+        },
+        rest = {
+            other = "✓",
+            action = "",
+            bug = "",
+        },
     },
     cmp_icons = {
         Array = " ",

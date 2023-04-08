@@ -21,7 +21,8 @@ local ENSURE_INSTALLED = {
     "tailwindcss",
     "html",
     "jsonls",
-    "stylua",
+    -- TODO: fix this
+    -- "stylua",
 }
 
 -- INFO:
