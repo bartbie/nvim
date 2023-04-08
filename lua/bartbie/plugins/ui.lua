@@ -1,6 +1,5 @@
 local UTILS = require("bartbie.utils")
 local LIB = UTILS.lib
-
 return {
     {
         "rcarriga/nvim-notify",
@@ -107,5 +106,129 @@ return {
                 },
             },
         },
+    },
+    {
+        "nvim-lualine/lualine.nvim",
+        event = "VeryLazy",
+        opts = function()
+            local theme = require("lualine.themes.auto")
+            for _, mode in ipairs(vim.tbl_keys(theme)) do
+                -- theme[mode].b.bg = theme.normal.c.bg
+                theme[mode].b = theme.normal.c
+            end
+
+            local function get_curr_mode()
+                return require("lualine.highlight").get_mode_suffix():gsub("_", "")
+            end
+
+            local function color_text(_)
+                return { fg = theme[get_curr_mode()].a.bg }
+            end
+
+            return {
+                options = {
+                    theme = function()
+                        return theme
+                    end,
+                    globalstatus = true,
+                    disabled_filetypes = { statusline = { "dashboard", "alpha" } },
+                    component_separators = { left = "", right = "" },
+                    section_separators = { left = "", right = "" },
+                },
+                sections = {
+                    lualine_a = { "mode" },
+                    lualine_b = {
+                        { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+                        {
+                            "filename",
+                            path = 1,
+                            symbols = { modified = "", readonly = "✘", unnamed = "", new = "" },
+                        },
+                    },
+                    lualine_c = {
+                        {
+                            "branch",
+                            color = color_text,
+                        },
+                        {
+                            "diff",
+                            source = function()
+                                local gitsigns = vim.b.gitsigns_status_dict
+                                if gitsigns then
+                                    return {
+                                        added = gitsigns.added,
+                                        modified = gitsigns.changed,
+                                        removed = gitsigns.removed,
+                                    }
+                                end
+                            end,
+                        },
+                    },
+
+                    lualine_x = {
+                        { "diagnostics", symbols = LIB.diagnostics_symbols.core },
+                    },
+                    lualine_y = {
+                        { "encoding", fmt = string.upper },
+                        {
+                            "fileformat",
+                            symbols = {
+                                unix = UTILS.os.is_macos and "" or "",
+                                dos = "",
+                                mac = "",
+                            },
+                            padding = { left = 1, right = 0 },
+                            color = color_text,
+                        },
+                        {
+                            "fileformat",
+                            symbols = {
+                                unix = "UNIX",
+                                dos = "DOS",
+                                mac = "MAC",
+                            },
+                            padding = { left = 0, right = 1 },
+                        },
+                        "progress",
+                    },
+                    lualine_z = {
+                        {
+                            "location",
+                            fmt = function(str, _)
+                                return " " .. vim.trim(str) .. " "
+                            end,
+                        },
+                    },
+                },
+                extensions = {
+                    "lazy",
+                    "fugitive",
+                    "man",
+                    "neo-tree",
+                    "nvim-dap-ui",
+                    "quickfix",
+                    "toggleterm",
+                    "trouble",
+                    {
+                        filetypes = { "TelescopePrompt" },
+                        sections = {
+                            lualine_a = {
+                                {
+                                    "mode",
+                                    fmt = function(_, _)
+                                        return "Telescope"
+                                    end,
+                                    color = function()
+                                        local mode = get_curr_mode()
+                                        return mode == "command" and theme.normal.a or theme[mode].a
+                                    end,
+                                },
+                            },
+                            lualine_b = { "branch" },
+                        },
+                    },
+                },
+            }
+        end,
     },
 }

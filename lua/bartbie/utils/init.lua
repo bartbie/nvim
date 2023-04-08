@@ -58,8 +58,10 @@ local M = {
     lazy = {},
     assets = {},
     os = {
+        is_macos = vim.loop.os_uname().sysname == "Darwin",
         is_windows = vim.fn.has("win32") == 1 or vim.fn.has("win32unix") == 1,
     },
+    git = {},
 }
 
 --- check if plugin is on the plugin list
@@ -95,6 +97,19 @@ function M.assets.lsp_config(filename)
     ---@type Path
     local file = PRIVATE.lsp_configs_path():joinpath(filename)
     return file:exists() and PRIVATE.createAsset(file) or nil
+end
+
+--- check if remote is set to githubvim
+---@return boolean
+function M.git.github_remote()
+    local response = vim.fn.system("git remote -v")
+    if response == "" then
+        return false
+    end
+
+    local fetch_link = vim.split(response, " ")[1] ---@diagnostic disable-line
+    local hostname = vim.split(fetch_link, "//")[2] ---@diagnostic disable-line
+    return vim.startswith(hostname, "github")
 end
 
 return M

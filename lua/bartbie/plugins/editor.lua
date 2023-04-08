@@ -87,6 +87,7 @@ return {
     },
     {
         "tpope/vim-fugitive",
+        cmd = { "Git", "G" },
         keys = {
             { "<leader>gg", "<CMD>Git<CR>", desc = "Open Git Menu" },
             { "<leader>gC", "<CMD>Git commit<CR>", desc = "Commit Staged Files" },
