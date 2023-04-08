@@ -1,3 +1,6 @@
+local UTILS = require("bartbie.utils")
+local LIB = UTILS.lib
+
 return {
     {
         "rcarriga/nvim-notify",
@@ -57,5 +60,52 @@ return {
             vim.lsp.handlers["textDocument/hover"] = noice.hover
             vim.lsp.handlers["textDocument/signatureHelp"] = noice.signature
         end,
+    },
+    {
+        "akinsho/bufferline.nvim",
+        event = "VeryLazy",
+        version = "v3.*",
+        dependencies = "nvim-tree/nvim-web-devicons",
+        keys = {
+            { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
+            { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
+        },
+        opts = {
+            options = {
+                diagnostics = "nvim_lsp",
+                diagnostics_indicator = function(_, _, diag)
+                    local icons = LIB.diagnostics_symbols.core
+                    local ret = (diag.error and icons.error .. diag.error .. " " or "")
+                        .. (diag.warning and icons.warn .. diag.warning or "")
+                    return vim.trim(ret)
+                end,
+                -- NOTE: this will be called a lot so don't do any heavy processing here
+                custom_filter = function(buf_number)
+                    local types = LIB.special_types
+                    local filetype = vim.bo[buf_number].filetype
+                    local bufname = vim.fn.bufname(buf_number)
+                    local buftype = vim.bo[buf_number].buftype
+                    return not (
+                        vim.tbl_contains(types.filetypes, filetype)
+                        or vim.tbl_contains(types.bufnames, bufname)
+                        or vim.tbl_contains(types.buftypes, buftype)
+                    )
+                end,
+                offsets = {
+                    {
+                        filetype = "neo-tree",
+                        -- text = "Neo-tree",
+                        text = "♪.ılılıll|̲̅̅●̲̅̅|̲̅̅=̲̅̅|̲̅̅●̲̅̅|llılılı.♪",
+                        highlight = "Directory",
+                        text_align = "center",
+                    },
+                },
+                hover = {
+                    enabled = true,
+                    delay = 200,
+                    reveal = { "close" },
+                },
+            },
+        },
     },
 }

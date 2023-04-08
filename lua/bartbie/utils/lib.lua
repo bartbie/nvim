@@ -49,4 +49,23 @@ return {
         Value = " ",
         Variable = " ",
     },
+    special_types = {
+        filetypes = {
+            "neo-tree",
+            "lazy",
+            "mason",
+            "dbui",
+            "fugitive",
+            "gitcommit",
+            "fugitiveblame",
+            "Trouble",
+            "TelescopePrompt",
+            "alpha",
+            -- "NvimTree",
+            -- "packer",
+            -- "startify",
+        },
+        buftypes = {},
+        bufnames = {},
+    },
 }
