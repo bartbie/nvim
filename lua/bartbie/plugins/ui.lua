@@ -215,9 +215,11 @@ return {
                             lualine_a = {
                                 {
                                     "mode",
-                                    fmt = function(_, _)
+                                    fmt = function()
                                         return "Telescope"
                                     end,
+                                    -- Telescope changes for a split second to COMMAND mode when hitting either end of the picker
+                                    -- we hide it by making it look like NORMAL mode
                                     color = function()
                                         local mode = get_curr_mode()
                                         return mode == "command" and theme.normal.a or theme[mode].a
@@ -230,5 +232,28 @@ return {
                 },
             }
         end,
+    },
+    {
+        "utilyre/barbecue.nvim",
+        name = "barbecue",
+        event = { "BufReadPre", "BufNewFile" },
+        version = "*",
+        cmd = "Barbecue",
+        keys = {
+            ["<leader>cn"] = {
+                "n",
+                function()
+                    require("barbecue.ui").toggle()
+                end,
+                desc = "Toggle code navigation",
+            },
+        },
+        dependencies = {
+            "SmiteshP/nvim-navic",
+            "nvim-tree/nvim-web-devicons",
+        },
+        opts = {
+            kinds = LIB.cmp_icons,
+        },
     },
 }
