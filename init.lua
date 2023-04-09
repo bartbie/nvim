@@ -15,5 +15,6 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 
 require("bartbie.config")
+require("bartbie.autocmds")
 require("lazy").setup("bartbie.plugins")
 require("bartbie.keymaps")
