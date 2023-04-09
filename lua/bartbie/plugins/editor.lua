@@ -2,10 +2,6 @@ local icons = require("bartbie.utils.lib").diagnostics_symbols.core
 
 return {
     {
-        "nvim-lua/plenary.nvim",
-        lazy = true,
-    },
-    {
         "folke/tokyonight.nvim",
         lazy = false,
         priority = 1000,
@@ -307,7 +303,7 @@ return {
                 ["<leader>g"] = { name = "+git" },
                 ["<leader>gh"] = { name = "+hunks" },
                 -- ["<leader><tab>"] = { name = "+tabs" },
-                -- ["<leader>q"] = { name = "+quit/session" },
+                ["<leader>q"] = { name = "+quit/session" },
                 ["<leader>s"] = { name = "+search" },
                 -- ["<leader>sn"] = { name = "+noice" },
                 -- ["<leader>u"] = { name = "+ui" },

@@ -258,4 +258,97 @@ return {
             kinds = LIB.cmp_icons,
         },
     },
+    {
+        "goolord/alpha-nvim",
+        event = "VimEnter",
+        opts = function()
+            local logo = {
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠋⣠⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣡⣾⣿⣿⣿⣿⣿⢿⣿⣿⣿⣿⣿⣿⣟⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⡿⢫⣷⣿⣿⣿⣿⣿⣿⣿⣾⣯⣿⡿⢧⡚⢷⣌⣽⣿⣿⣿⣿⣿⣶⡌⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⠇⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣮⣇⣘⠿⢹⣿⣿⣿⣿⣿⣻⢿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⠀⢸⣿⣿⡇⣿⣿⣿⣿⣿⣿⣿⣿⡟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⣻⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⡇⠀⣬⠏⣿⡇⢻⣿⣿⣿⣿⣿⣿⣿⣷⣼⣿⣿⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⠀⠈⠁⠀⣿⡇⠘⡟⣿⣿⣿⣿⣿⣿⣿⣿⡏⠿⣿⣟⣿⣿⣿⣿⣿⣿⣿⣿⣇⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⡏⠀⠀⠐⠀⢻⣇⠀⠀⠹⣿⣿⣿⣿⣿⣿⣩⡶⠼⠟⠻⠞⣿⡈⠻⣟⢻⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⢿⠀⡆⠀⠘⢿⢻⡿⣿⣧⣷⢣⣶⡃⢀⣾⡆⡋⣧⠙⢿⣿⣿⣟⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⡥⠂⡐⠀⠁⠑⣾⣿⣿⣾⣿⣿⣿⡿⣷⣷⣿⣧⣾⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⡿⣿⣍⡴⠆⠀⠀⠀⠀⠀⠀⠀⠀⣼⣄⣀⣷⡄⣙⢿⣿⣿⣿⣿⣯⣶⣿⣿⢟⣾⣿⣿⢡⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⡏⣾⣿⣿⣿⣷⣦⠀⠀⠀⢀⡀⠀⠀⠠⣭⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⣡⣾⣿⣿⢏⣾⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⣿⣿⣿⣿⣿⡴⠀⠀⠀⠀⠀⠠⠀⠰⣿⣿⣿⣷⣿⠿⠿⣿⣿⣭⡶⣫⠔⢻⢿⢇⣾⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⣿⣿⣿⡿⢫⣽⠟⣋⠀⠀⠀⠀⣶⣦⠀⠀⠀⠈⠻⣿⣿⣿⣾⣿⣿⣿⣿⡿⣣⣿⣿⢸⣾⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⡿⠛⣹⣶⣶⣶⣾⣿⣷⣦⣤⣤⣀⣀⠀⠀⠀⠀⠀⠀⠉⠛⠻⢿⣿⡿⠫⠾⠿⠋⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⢀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣀⡆⣠⢀⣴⣏⡀⠀⠀⠀⠉⠀⠀⢀⣠⣰⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⠿⠛⠛⠛⠛⠛⠛⠻⢿⣿⣿⣿⣿⣯⣟⠷⢷⣿⡿⠋⠀⠀⠀⠀⣵⡀⢠⡿⠋⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠉⠛⢿⣿⣿⠂⠀⠀⠀⠀⠀⢀⣽⣿⣿⣿⣿⣿⣿⣿⣍⠛⠿⣿⣿⣿⣿⣿⣿⣿    ]],
+                [[                               __                ]],
+                [[  ___     ___    ___   __  __ /\_\    ___ ___    ]],
+                [[ / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  ]],
+                [[/\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \/\ \ ]],
+                [[\ \_\ \_\ \____\ \____/\ \___/  \ \_\ \_\ \_\ \_\]],
+                [[ \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/_/\/_/]],
+                -- [[       Neovim  Genesis  Evangelion      ]],
+                --                   --                   --
+            } --
+
+            local DASH = require("alpha.themes.dashboard")
+            local buttons = {
+                DASH.button("f", " " .. " Find file", ":Telescope find_files <CR>"),
+                DASH.button("n", " " .. " New file", ":ene <BAR> startinsert <CR>"),
+                DASH.button("h", " " .. " Recent files", ":Telescope oldfiles <CR>"),
+                DASH.button("g", " " .. " Find text", ":Telescope live_grep <CR>"),
+                DASH.button("c", " " .. " Config", ":e $MYVIMRC <CR>"),
+                DASH.button("s", " " .. " Restore Session", [[:lua require("persistence").load() <cr>]]),
+                DASH.button("l", "󰒲 " .. " Lazy", ":Lazy<CR>"),
+                DASH.button("q", " " .. " Quit", ":qa<CR>"),
+            }
+
+            DASH.section.header.val = logo
+            DASH.section.buttons.val = buttons
+
+            for _, button in ipairs(DASH.section.buttons.val) do
+                button.opts.hl = "AlphaButtons"
+                button.opts.hl_shortcut = "AlphaShortcut"
+            end
+            DASH.section.header.opts.hl = "AlphaHeader"
+            DASH.section.buttons.opts.hl = "AlphaButtons"
+            DASH.section.footer.opts.hl = "AlphaFooter"
+            DASH.opts.layout[1].val = 8
+            return DASH
+        end,
+        config = function(_, DASH)
+            -- close Lazy and re-open when the dashboard is ready
+            if vim.o.filetype == "lazy" then
+                vim.cmd.close()
+                vim.api.nvim_create_autocmd("User", {
+                    pattern = "AlphaReady",
+                    callback = function()
+                        require("lazy").show()
+                    end,
+                })
+            end
+
+            require("alpha").setup(DASH.opts)
+
+            vim.api.nvim_create_autocmd("User", {
+                callback = function()
+                    local stats = require("lazy").stats()
+                    local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+                    local ver = vim.version()
+                    local version = ver and " " .. ver.major .. "." .. ver.minor .. "." .. ver.patch or ""
+                    DASH.section.footer.val = (
+                        "  Neovim"
+                        .. version
+                        .. " loaded "
+                        .. stats.count
+                        .. " plugins in "
+                        .. ms
+                        .. "ms"
+                    )
+                    pcall(vim.cmd.AlphaRedraw)
+                end,
+            })
+        end,
+    },
 }
