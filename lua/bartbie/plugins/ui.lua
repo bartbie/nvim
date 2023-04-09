@@ -71,6 +71,7 @@ return {
         },
         opts = {
             options = {
+                always_show_bufferline = false,
                 diagnostics = "nvim_lsp",
                 diagnostics_indicator = function(_, _, diag)
                     local icons = LIB.diagnostics_symbols.core
@@ -240,7 +241,8 @@ return {
         version = "*",
         cmd = "Barbecue",
         keys = {
-            ["<leader>cn"] = {
+            {
+                "<leader>cn",
                 "n",
                 function()
                     require("barbecue.ui").toggle()

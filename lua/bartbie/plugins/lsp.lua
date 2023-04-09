@@ -1,5 +1,6 @@
 local FN = require("bartbie.plugins.lsp.lsp_utils")
 
+-- PERF this functionality is quite slow, in future i should move to better lazy-loading solution
 ---loads json config from /assets/lsp_configs/
 ---@param name string
 ---@return table
