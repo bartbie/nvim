@@ -17,6 +17,9 @@ return {
     },
     {
         "nvim-neo-tree/neo-tree.nvim",
+        branch = "v2.0",
+        cmd = "Neotree",
+        -- event = { "VimEnter" },
         keys = {
             { "<leader>n", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
         },
@@ -25,6 +28,25 @@ return {
             "nvim-tree/nvim-web-devicons",
             "MunifTanjim/nui.nvim",
         },
+        opts = {
+            filesystem = {
+                hijack_netrw_behavior = "open_current",
+            },
+        },
+        deactivate = function()
+            vim.cmd([[Neotree close]])
+        end,
+        init = function()
+            vim.g.neo_tree_remove_legacy_commands = 1
+            if vim.fn.argc() == 1 then
+                local stat = vim.loop.fs_stat(vim.fn.argv(0))
+                if stat and stat.type == "directory" then
+                    vim.g.loaded_netrwPlugin = 1
+                    vim.g.loaded_netrw = 1
+                    require("neo-tree")
+                end
+            end
+        end,
     },
     {
         "nvim-treesitter/nvim-treesitter",
