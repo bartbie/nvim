@@ -1,4 +1,4 @@
-local icons = require("bartbie.utils.lib").diagnostics_symbols.core
+local icons = require("bartbie.utils.lib").diagnostics_symbols
 local diffview_opened = false
 
 return {
@@ -198,11 +198,12 @@ return {
         },
         opts = {
             signs = {
-                error = icons.error,
-                warning = icons.warning,
-                hint = icons.hint,
-                information = icons.info,
-                other = icons.other,
+                error = icons.core.error,
+                warning = icons.core.warning,
+                hint = icons.core.hint,
+                information = icons.core.info,
+                --
+                other = icons.rest.other,
             },
         },
     },
