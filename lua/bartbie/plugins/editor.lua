@@ -343,7 +343,7 @@ return {
                 ["<leader>s"] = { name = "+search" },
                 ["<leader>h"] = { name = "+harpoon" },
                 -- ["<leader>sn"] = { name = "+noice" },
-                ["<leader>u"] = { name = "+ui" },
+                ["<leader>o"] = { name = "+ui options" },
                 ["<leader>w"] = { name = "+windows" },
                 ["<leader>x"] = { name = "+diagnostics/quickfix" },
             })
@@ -457,5 +457,8 @@ return {
     },
     {
         "mbbill/undotree",
+        keys = {
+            { "<leader>u", "<CMD>UndotreeToggle<CR>", desc = "undotree" },
+        },
     },
 }
