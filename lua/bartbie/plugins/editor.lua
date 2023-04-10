@@ -148,17 +148,20 @@ return {
             { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
             { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
         },
-        config = function()
+        opts = {
+            extensions = {
+                "harpoon",
+            },
+        },
+        config = function(_, opts)
             local ts = require("telescope")
             ts.setup({})
-
             local fzf, _ = pcall(require, "fzf_lib")
             if fzf then
                 ts.load_extension("fzf")
             end
 
-            local extensions = {}
-            for _, v in ipairs(extensions) do
+            for _, v in ipairs(opts.extensions) do
                 ts.load_extension(v)
             end
         end,
@@ -336,6 +339,7 @@ return {
                 -- ["<leader><tab>"] = { name = "+tabs" },
                 ["<leader>q"] = { name = "+quit/session" },
                 ["<leader>s"] = { name = "+search" },
+                ["<leader>h"] = { name = "+harpoon" },
                 -- ["<leader>sn"] = { name = "+noice" },
                 -- ["<leader>u"] = { name = "+ui" },
                 ["<leader>w"] = { name = "+windows" },
@@ -427,5 +431,26 @@ return {
                 end,
             },
         },
+    },
+    {
+        "ThePrimeagen/harpoon",
+        keys = {
+            { "<leader>hh", "<cmd>Telescope harpoon marks<CR>", desc = "Open list" },
+            {
+                "<leader>ha",
+                function()
+                    require("harpoon.mark").add_file()
+                end,
+                desc = "Add file",
+            },
+            {
+                "<leader>hr",
+                function()
+                    require("harpoon.mark").rm_file()
+                end,
+                desc = "Remove file",
+            },
+        },
+        config = true,
     },
 }
