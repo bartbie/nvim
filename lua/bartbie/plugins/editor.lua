@@ -1,4 +1,5 @@
 local icons = require("bartbie.utils.lib").diagnostics_symbols.core
+local diffview_opened = false
 
 return {
     {
@@ -106,8 +107,17 @@ return {
         "tpope/vim-fugitive",
         cmd = { "Git", "G" },
         keys = {
-            { "<leader>gg", "<CMD>Git<CR>", desc = "Open Git Menu" },
+            {
+                "<leader>gg",
+                function()
+                    local cmd = vim.bo.filetype == "fugitive" and "q" or "Git"
+                    vim.cmd(cmd)
+                end,
+                desc = "Open Git Menu",
+            },
             { "<leader>gC", "<CMD>Git commit<CR>", desc = "Commit Staged Files" },
+            { "<leader>gp", "<CMD>Git pull<CR>", desc = "Pull changes" },
+            { "<leader>gP", "<CMD>Git push<CR>", desc = "Push changes" },
         },
     },
     {
@@ -398,6 +408,24 @@ return {
             { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
             { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
             { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
+        },
+    },
+    {
+        "sindrets/diffview.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        keys = {
+            {
+                "<leader>gd",
+                function()
+                    if not diffview_opened then
+                        vim.cmd("DiffviewOpen")
+                        diffview_opened = true
+                    else
+                        vim.cmd("DiffviewClose")
+                        diffview_opened = false
+                    end
+                end,
+            },
         },
     },
 }
