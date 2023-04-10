@@ -126,6 +126,29 @@ return {
                 return { fg = theme[get_curr_mode()].a.bg }
             end
 
+            ---create simple extention
+            ---@param filetypes string[]
+            ---@param text string | nil
+            ---@param rest? table | nil
+            ---@return table
+            local function create_extention(filetypes, text, rest)
+                local lualine_a = { { "mode" } }
+                if text then
+                    lualine_a[1].fmt = function()
+                        return text
+                    end
+                end
+                lualine_a[1] = vim.tbl_extend("force", lualine_a[1], rest or {})
+                -- vim.notify(vim.inspect(lualine_a))
+                return {
+                    filetypes = filetypes,
+                    sections = {
+                        lualine_a = lualine_a,
+                        lualine_b = { "branch" },
+                    },
+                }
+            end
+
             return {
                 options = {
                     theme = function()
@@ -210,26 +233,13 @@ return {
                     "quickfix",
                     "toggleterm",
                     "trouble",
-                    {
-                        filetypes = { "TelescopePrompt" },
-                        sections = {
-                            lualine_a = {
-                                {
-                                    "mode",
-                                    fmt = function()
-                                        return "Telescope"
-                                    end,
-                                    -- Telescope changes for a split second to COMMAND mode when hitting either end of the picker
-                                    -- we hide it by making it look like NORMAL mode
-                                    color = function()
-                                        local mode = get_curr_mode()
-                                        return mode == "command" and theme.normal.a or theme[mode].a
-                                    end,
-                                },
-                            },
-                            lualine_b = { "branch" },
-                        },
-                    },
+                    create_extention({ "TelescopePrompt" }, "Telescope", {
+                        color = function()
+                            local mode = get_curr_mode()
+                            return mode == "command" and theme.normal.a or theme[mode].a
+                        end,
+                    }),
+                    create_extention({ "undotree" }, "Undo-tree"),
                 },
             }
         end,
