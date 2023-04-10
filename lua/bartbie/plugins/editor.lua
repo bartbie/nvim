@@ -461,4 +461,11 @@ return {
             { "<leader>u", "<CMD>UndotreeToggle<CR>", desc = "undotree" },
         },
     },
+    {
+        "folke/zen-mode.nvim",
+        config = true,
+        keys = {
+            { "<leader>z", "<CMD>ZenMode<CR>", desc = "zen-mode" },
+        },
+    },
 }
