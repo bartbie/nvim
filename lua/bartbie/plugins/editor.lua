@@ -148,11 +148,13 @@ return {
             { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
             { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
         },
+        ---@class TelescopeOpts
         opts = {
             extensions = {
                 "harpoon",
             },
         },
+        ---@param opts TelescopeOpts
         config = function(_, opts)
             local ts = require("telescope")
             ts.setup({})
@@ -161,8 +163,8 @@ return {
                 ts.load_extension("fzf")
             end
 
-            for _, v in ipairs(opts.extensions) do
-                ts.load_extension(v)
+            for k, v in pairs(opts.extensions) do
+                ts.load_extension(type(k) == "number" and v or k)
             end
         end,
     },
@@ -452,5 +454,8 @@ return {
             },
         },
         config = true,
+    },
+    {
+        "mbbill/undotree",
     },
 }
