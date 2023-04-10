@@ -66,6 +66,8 @@ return function(formatting_disabled)
                     })
                 end,
             })
+            -- add keymap for formatting
+            vim.keymap.set("n", "<leader>cf", "<CMD>LspFormat<CR>", { desc = "Format buffer" })
         end,
     })
 end
