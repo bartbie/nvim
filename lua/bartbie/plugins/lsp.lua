@@ -1,17 +1,18 @@
 local FN = require("bartbie.plugins.lsp.lsp_utils")
+local UTILS = require("bartbie.utils")
 
--- PERF this functionality is quite slow, in future i should move to better lazy-loading solution
+-- PERF this functionality is quite slow, in future i should move to a better lazy-loading solution
 ---loads json config from /assets/lsp_configs/
 ---@param name string
 ---@return table
 local function load_config(name)
-    local UTILS = require("bartbie.utils")
     local x = UTILS.assets.lsp_config(name)
     return x and x:decode() or {}
 end
---
 
-local ENSURE_INSTALLED = {
+-----
+
+local ENSURE_INSTALLED_SERVERS = {
     "vimls",
     "grammarly",
     "lua_ls",
@@ -22,8 +23,12 @@ local ENSURE_INSTALLED = {
     "tailwindcss",
     "html",
     "jsonls",
-    -- TODO: fix this
-    -- "stylua",
+}
+
+local ENSURE_INSTALLED_TOOLS = {
+    "stylua",
+    "shfmt,",
+    "black",
 }
 
 -- INFO:
@@ -79,6 +84,8 @@ local SERVER_SETUPS = {
 local FORMATTING_DISABLED = {
     "lua_ls",
 }
+
+-----
 
 local function rename()
     return ":IncRename " .. vim.fn.expand("<cword>")
@@ -187,7 +194,7 @@ return {
     {
         "williamboman/mason-lspconfig.nvim",
         opts = {
-            ensure_installed = ENSURE_INSTALLED,
+            ensure_installed = ENSURE_INSTALLED_SERVERS,
         },
     },
     {
@@ -195,18 +202,26 @@ return {
         event = { "BufReadPre", "BufNewFile" },
         dependencies = { "mason.nvim" },
         opts = function()
-            local nls = require("null-ls")
+            -- local nls = require("null-ls")
             return {
                 root_dir = require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git"),
-                sources = {
-                    nls.builtins.formatting.fish_indent,
-                    nls.builtins.diagnostics.fish,
-                    nls.builtins.formatting.stylua,
-                    nls.builtins.formatting.shfmt,
-                    -- nls.builtins.diagnostics.flake8,
-                },
+                -- vvv Anything not supported by mason.
+                -- sources = {}
             }
         end,
+    },
+    {
+        "jay-babu/mason-null-ls.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        dependencies = {
+            "williamboman/mason.nvim",
+            "jose-elias-alvarez/null-ls.nvim",
+        },
+        opts = {
+            ensure_installed = ENSURE_INSTALLED_TOOLS,
+            automatic_setup = true,
+            handlers = {},
+        },
     },
     {
         "smjonas/inc-rename.nvim",
