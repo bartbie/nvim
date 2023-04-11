@@ -19,7 +19,6 @@ return {
     {
         "nvim-neo-tree/neo-tree.nvim",
         cmd = "Neotree",
-        -- event = { "VimEnter" },
         keys = {
             { "<leader>n", "<cmd>Neotree toggle<cr>", desc = "NeoTree" },
         },
@@ -322,6 +321,9 @@ return {
                 ["<leader>"] = "SPC",
                 ["<cr>"] = "RET",
                 ["<tab>"] = "TAB",
+            },
+            layout = {
+                align = "center",
             },
         },
         config = function(_, opts)

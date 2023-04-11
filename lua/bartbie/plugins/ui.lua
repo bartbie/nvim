@@ -1,6 +1,8 @@
 local UTILS = require("bartbie.utils")
 local LIB = UTILS.lib
 return {
+    { "nvim-tree/nvim-web-devicons" },
+    { "MunifTanjim/nui.nvim" },
     {
         "rcarriga/nvim-notify",
         keys = {
@@ -128,15 +130,16 @@ return {
 
             ---create simple extention
             ---@param filetypes string[]
-            ---@param text string | nil
+            ---@param text function | string | nil
             ---@param rest? table | nil
             ---@return table
             local function create_extention(filetypes, text, rest)
                 local lualine_a = { { "mode" } }
                 if text then
-                    lualine_a[1].fmt = function()
-                        return text
-                    end
+                    lualine_a[1].fmt = type(text) == "function" and text
+                        or function()
+                            return text
+                        end
                 end
                 lualine_a[1] = vim.tbl_extend("force", lualine_a[1], rest or {})
                 -- vim.notify(vim.inspect(lualine_a))
@@ -144,9 +147,13 @@ return {
                     filetypes = filetypes,
                     sections = {
                         lualine_a = lualine_a,
-                        lualine_b = { "branch" },
+                        lualine_b = { { "branch", color = color_text } },
                     },
                 }
+            end
+
+            local function get_short_cwd()
+                return vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
             end
 
             return {
@@ -228,9 +235,10 @@ return {
                     "lazy",
                     "fugitive",
                     "man",
-                    "neo-tree",
+                    -- "neo-tree",
                     "nvim-dap-ui",
                     "quickfix",
+                    -- "symbols-outline",
                     "toggleterm",
                     "trouble",
                     create_extention({ "TelescopePrompt" }, "Telescope", {
@@ -240,6 +248,8 @@ return {
                         end,
                     }),
                     create_extention({ "undotree" }, "Undo-tree"),
+                    create_extention({ "Outline" }, "Outline"),
+                    create_extention({ "neo-tree" }, get_short_cwd),
                 },
             }
         end,
