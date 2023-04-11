@@ -239,6 +239,10 @@ return {
             end, UTILS.lib.cmp_icons),
         },
     },
+    {
+        "RRethy/vim-illuminate",
+        event = { "BufReadPre", "BufNewFile" },
+    },
     { -- rust
         {
             "simrat39/rust-tools.nvim",
