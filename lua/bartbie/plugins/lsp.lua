@@ -227,6 +227,18 @@ return {
         "smjonas/inc-rename.nvim",
         config = true,
     },
+    {
+        "simrat39/symbols-outline.nvim",
+        keys = {
+            { "<leader>N", "<CMD>SymbolsOutline<CR>", desc = "Symbols Outline" },
+        },
+        opts = {
+            autofold_depth = 0,
+            symbols = vim.tbl_map(function(sym)
+                return { icon = sym }
+            end, UTILS.lib.cmp_icons),
+        },
+    },
     { -- rust
         {
             "simrat39/rust-tools.nvim",
