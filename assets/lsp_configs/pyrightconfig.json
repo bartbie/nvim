@@ -36,7 +36,7 @@
     "reportUndefinedVariable": "error",
     "reportUninitializedInstanceVariable": "warning",
     "reportUnknownArgumentType": "error",
-    "reportUnknownLambdaType": "error",
+    "reportUnknownLambdaType": "warning",
     "reportUnknownMemberType": "error",
     "reportUnknownParameterType": "error",
     "reportUnknownVariableType": "error",
