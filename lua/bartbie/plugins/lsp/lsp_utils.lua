@@ -75,11 +75,33 @@ function FN.setup_keymaps(_, bufnr, keymaps)
     end
 end
 
+--- functions defined for shorter keymaps setup code
+
 function FN.diag_go(next, severity)
     local fn = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
     return function()
         fn({ severity = severity })
     end
+end
+
+function FN.source_code_action()
+    vim.lsp.buf.code_action({ context = { only = { "source" }, diagnostics = {} } })
+end
+
+function FN.rename()
+    return ":IncRename " .. vim.fn.expand("<cword>")
+end
+
+function FN.setup_cursor()
+    -- Show diagnostic popup on cursor hover
+    local diag_float_grp = vim.api.nvim_create_augroup("DiagnosticFloat", { clear = true })
+    vim.api.nvim_create_autocmd("CursorHold", {
+        callback = function()
+            vim.diagnostic.open_float(nil, { focusable = false })
+        end,
+        group = diag_float_grp,
+    })
+    vim.o.updatetime = 100
 end
 
 return FN

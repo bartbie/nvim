@@ -85,17 +85,8 @@ local FORMATTING_DISABLED = {
     "lua_ls",
 }
 
------
-
-local function rename()
-    return ":IncRename " .. vim.fn.expand("<cword>")
-end
-
-local function code_action()
-    vim.lsp.buf.code_action({ context = { only = { "source" }, diagnostics = {} } })
-end
-
 local KEYMAPS = {
+    { "n", "ga", vim.lsp.buf.code_action, { desc = "Code Action" } },
     { "n", "go", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" } },
     { "n", "<leader>cl", "<cmd>LspInfo<cr>", { desc = "Lsp Info" } },
     { "n", "gd", "<cmd>Telescope lsp_definitions<CR>", { desc = "Goto Definition" } },
@@ -103,13 +94,18 @@ local KEYMAPS = {
     { "n", "gD", vim.lsp.buf.declaration, { desc = "Goto Declaration" } },
     { "n", "gt", "<cmd>Telescope lsp_type_definitions<cr>", { desc = "Goto Type Definition" } },
     { "n", "K", vim.lsp.buf.hover, { desc = "Hover" } },
-    { "n", "gn", rename, { desc = "Rename", expr = true } },
-    { "n", "<leader>cA", code_action, { desc = "Source Action" } },
+    { "n", "gn", FN.rename, { desc = "Rename", expr = true } },
+    { "n", "<leader>cA", FN.source_code_action, { desc = "Source Action" } },
     { "n", "gj", FN.diag_go(true), { desc = "Jump to Next Diagnostic" } },
     { "n", "gk", FN.diag_go(false), { desc = "Jump to Prev Diagnostic" } },
     { "n", "]e", FN.diag_go(true, "ERROR"), { desc = "Next Error" } },
     { "n", "[e", FN.diag_go(false, "ERROR"), { desc = "Prev Error" } },
 }
+
+local DEFAULT_ON_ATTACH = function(client, bufnr)
+    FN.setup_keymaps(client, bufnr, KEYMAPS)
+    FN.setup_cursor()
+end
 
 return {
     {
@@ -155,9 +151,7 @@ return {
                     require("lspconfig").util.default_config.capabilities,
                     require("cmp_nvim_lsp").default_capabilities()
                 ),
-                on_attach = function(client, bufnr)
-                    FN.setup_keymaps(client, bufnr, KEYMAPS)
-                end,
+                on_attach = DEFAULT_ON_ATTACH,
             }
 
             local custom_server_config = opts.servers or {}
@@ -246,7 +240,37 @@ return {
     { -- rust
         {
             "simrat39/rust-tools.nvim",
-            config = true,
+            opts = {
+                tools = {
+                    runnables = {
+                        use_telescope = true,
+                    },
+                    inlay_hints = {
+                        auto = true,
+                        show_parameter_hints = false,
+                        parameter_hints_prefix = "",
+                        other_hints_prefix = "",
+                    },
+                },
+
+                -- all the opts to send to nvim-lspconfig
+                -- these override the defaults set by rust-tools.nvim
+                -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
+                server = {
+                    -- on_attach is a callback called when the language server attachs to the buffer
+                    on_attach = DEFAULT_ON_ATTACH,
+                    settings = {
+                        -- to enable rust-analyzer settings visit:
+                        -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+                        ["rust-analyzer"] = {
+                            -- enable clippy on save
+                            checkOnSave = {
+                                command = "clippy",
+                            },
+                        },
+                    },
+                },
+            },
         },
         {
             "saecki/crates.nvim",
