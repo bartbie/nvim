@@ -237,6 +237,18 @@ return {
         "RRethy/vim-illuminate",
         event = { "BufReadPre", "BufNewFile" },
     },
+    {
+        "kosayoda/nvim-lightbulb",
+        opts = {
+            autocmd = {
+                enabled = true,
+            },
+        },
+        config = function(_, opts)
+            require("nvim-lightbulb").setup(opts)
+            FN.sign_define("LightBulbSign", UTILS.lib.diagnostics_symbols.rest.action)
+        end,
+    },
     { -- rust
         {
             "simrat39/rust-tools.nvim",

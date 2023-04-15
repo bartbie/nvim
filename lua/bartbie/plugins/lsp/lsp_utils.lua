@@ -6,21 +6,22 @@ local FN = {}
 
 local UTILS = require("bartbie.utils")
 
+--- define a sign
+---@param name string
+---@param symbol string
+---@param use_space boolean | nil
+function FN.sign_define(name, symbol, use_space)
+    use_space = use_space or false
+    vim.fn.sign_define(name, { text = symbol .. (use_space and " " or ""), texthl = name })
+end
+
 --- set up diagnostic symbols used by nvim and plugins
 function FN.setup_signs()
-    --- Define signs
-    ---@param name string
-    ---@param symbol string
-    ---@param use_space boolean | nil
-    local function sign_define(name, symbol, use_space)
-        use_space = use_space or false
-        vim.fn.sign_define(name, { text = symbol .. (use_space and " " or ""), texthl = name })
-    end
     local icons = UTILS.lib.diagnostics_symbols.core
-    sign_define("DiagnosticSignError", icons.error)
-    sign_define("DiagnosticSignWarn", icons.warn)
-    sign_define("DiagnosticSignInfo", icons.info)
-    sign_define("DiagnosticSignHint", icons.hint)
+    FN.sign_define("DiagnosticSignError", icons.error)
+    FN.sign_define("DiagnosticSignWarn", icons.warn)
+    FN.sign_define("DiagnosticSignInfo", icons.info)
+    FN.sign_define("DiagnosticSignHint", icons.hint)
 end
 
 --- set up workspace commands
