@@ -211,7 +211,7 @@ return {
             ensure_installed = {
                 "bash",
                 "vim",
-                "help",
+                -- "help",
                 "html",
                 "lua",
                 "json",
