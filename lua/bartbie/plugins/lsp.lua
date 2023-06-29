@@ -23,6 +23,7 @@ local ENSURE_INSTALLED_SERVERS = {
     "tailwindcss",
     "html",
     "jsonls",
+    "nil_ls",
 }
 
 local ENSURE_INSTALLED_TOOLS = {
@@ -62,6 +63,13 @@ local SERVER_CONFIGS = {
                 completion = {
                     callSnippet = "Replace",
                 },
+            },
+        },
+    },
+    nil_ls = { -- idk if it actually works lol
+        settings = {
+            ["nil"] = {
+                formatting = { command = { "nixpkgs-fmt" } },
             },
         },
     },
