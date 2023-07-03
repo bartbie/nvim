@@ -112,7 +112,9 @@ return {
     },
     {
         "nvim-lualine/lualine.nvim",
-        event = "VeryLazy",
+        -- for some reasom, after we moved to config-as-plugin,
+        -- this cannot be lazy or we get vanilla statusline when opening neovim
+        -- event = "VeryLazy",
         opts = function()
             local theme = require("lualine.themes.auto")
             for _, mode in ipairs(vim.tbl_keys(theme)) do

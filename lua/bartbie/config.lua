@@ -10,6 +10,7 @@ o.smartcase = true
 o.scrolloff = 1
 o.termguicolors = true
 o.mouse = "a"
+o.signcolumn = "yes"
 
 -- indent
 o.tabstop = 4
