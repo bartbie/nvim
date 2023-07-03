@@ -580,6 +580,7 @@ return {
         keys = {
             {
                 "<leader>gd",
+                desc = "Open diff menu",
                 function()
                     if not diffview_opened then
                         vim.cmd("DiffviewOpen")
