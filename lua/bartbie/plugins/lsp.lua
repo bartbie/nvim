@@ -66,7 +66,7 @@ local SERVER_CONFIGS = {
             },
         },
     },
-    nil_ls = { -- idk if it actually works lol
+    nil_ls = {
         settings = {
             ["nil"] = {
                 formatting = { command = { "nixpkgs-fmt" } },
