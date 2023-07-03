@@ -20,11 +20,11 @@
             curl
           ];
 
-          # make our config a plugin for nvim to load
-          bartbie-config = pkgs.vimUtils.buildVimPlugin {
-            name = "bartbie-config";
-            src = ./.;
-          };
+          # # make our config a plugin for nvim to load
+          # bartbie-config = pkgs.vimUtils.buildVimPlugin {
+          #   name = "bartbie-config";
+          #   src = ./.;
+          # };
           # add dependencies for our plugins to neovim
           neovim-modified = pkgs.neovim-unwrapped.overrideAttrs (old: {
             buildInputs = old.buildInputs ++ dependencies;
@@ -47,9 +47,9 @@
                 ''
                   EOF
                 '';
-                packages.myPlugins = {
-                  start = [ bartbie-config ];
-                };
+                # packages.myPlugins = {
+                #   start = [ bartbie-config ];
+                # };
               };
             };
           packages.default = packages.bartbie-nvim;
