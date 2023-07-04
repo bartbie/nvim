@@ -13,11 +13,15 @@
             inherit system;
           };
           dependencies = with pkgs; [
-            fzf
             gcc
-            ripgrep
-            git
+            cmake
             curl
+            unzip
+            git
+            ripgrep
+            fzf
+            fd
+            jq
           ];
 
           # # make our config a plugin for nvim to load
