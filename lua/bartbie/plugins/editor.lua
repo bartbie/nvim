@@ -190,6 +190,7 @@ return {
         deactivate = function()
             vim.cmd([[Neotree close]])
         end,
+        branch = "v3.x",
         init = function()
             vim.g.neo_tree_remove_legacy_commands = 1
             if vim.fn.argc() == 1 then

@@ -36,6 +36,7 @@ return {
             { "hrsh7th/cmp-nvim-lsp-signature-help" },
             { "L3MON4D3/LuaSnip" },
         },
+        event = { "InsertEnter", "CmdlineEnter" },
         opts = function()
             local cmp = require("cmp")
             local luasnip = require("luasnip")
@@ -44,7 +45,7 @@ return {
                 preselect = cmp.PreselectMode.None,
                 snippet = {
                     expand = function(args)
-                        require("luasnip").lsp_expand(args.body)
+                        luasnip.lsp_expand(args.body)
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({

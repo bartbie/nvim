@@ -58,6 +58,7 @@ map("n", "<leader>|", "<C-W>v", { desc = "Split window right" })
 -- buffers
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>bd", "<CMD>bd<CR>", { desc = "Delete buffer" })
+map("n", "<leader>bD", "<CMD>%bd<CR>", { desc = "Delete all buffers" })
 map("n", "<TAB>", "<CMD>bnext<CR>", { desc = "Next Buffer" })
 map("n", "<S-TAB>", "<CMD>bprevious<CR>", { desc = "Prev Buffer" })
 
