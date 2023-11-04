@@ -163,6 +163,15 @@ return {
                     CmpItemKindEnumMember = { fg = palette.lotusGreen },
                     CmpItemKindOperator = { fg = palette.springGreen },
                     CmpItemKindSnippet = { fg = palette.fujiGray },
+
+                    IblRed = { fg = palette.dragonRed },
+                    IblYellow = { fg = palette.dragonYellow },
+                    IblBlue = { fg = palette.dragonBlue },
+                    IblOrange = { fg = palette.dragonOrange },
+                    IblGreen = { fg = palette.dragonGreen },
+                    -- IblViolet = { fg = palette.dragonViolet},
+                    -- IblCyan = { fg = palette.dragonTeal },
+                    IblAqua = { fg = palette.dragonAqua },
                 }
             end,
         },
@@ -395,29 +404,42 @@ return {
     { "tpope/vim-repeat" },
     {
         "lukas-reineke/indent-blankline.nvim",
+        --- @type ibl.config
         opts = {
-            use_treesitter = true,
-            show_end_of_line = true,
-            show_current_context = true,
-            show_current_context_start = true,
-            -- char_blankline = '┆',
-            -- space_char_blankline = "",
-            show_trailing_blankline_indent = false,
-            show_first_indent_level = false,
-            filetype_exclude = {
-                "lspinfo",
-                "packer",
-                "checkhealth",
-                "help",
-                "man",
-                "fugitive",
-                "",
+            indent = {
+                char = "│",
+                highlight = {
+                    -- "IblCyan",
+                    -- "IblViolet",
+                    "IblBlue",
+                    "IblAqua",
+                    "IblGreen",
+                    "IblYellow",
+                    "IblOrange",
+                    "IblRed",
+                },
+            },
+            exclude = {
+                filetypes = {
+                    "",
+                    -- "TelescopePrompt",
+                    -- "TelescopeResults",
+                    "checkhealth",
+                    "fugitive",
+                    "gitcommit",
+                    "help",
+                    "lspinfo",
+                    "man",
+                    "packer",
+                },
             },
         },
         config = function(_, opts)
             vim.opt.list = true
             vim.opt.listchars:append("eol:↴")
-            require("indent_blankline").setup(opts)
+            require("ibl").setup(opts)
+            local hooks = require("ibl.hooks")
+            hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
         end,
     },
     {

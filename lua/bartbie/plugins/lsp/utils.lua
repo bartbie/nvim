@@ -105,4 +105,13 @@ function FN.setup_cursor()
     vim.o.updatetime = 100
 end
 
+-- PERF this functionality is quite slow, in future i should move to a better lazy-loading solution
+---loads json config from /assets/lsp_configs/
+---@param name string
+---@return table
+function FN.load_config(name)
+    local x = UTILS.assets.lsp_config(name)
+    return x and x:decode() or {}
+end
+
 return FN

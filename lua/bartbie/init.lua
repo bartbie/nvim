@@ -1,7 +1,7 @@
 return {
     setup = function()
-        require("bartbie.config")
-        require("bartbie.autocmds")
-        require("bartbie.keymaps")
+        require("bartbie.config.options")
+        require("bartbie.config.autocmds")
+        require("bartbie.config.keymaps")
     end,
 }
