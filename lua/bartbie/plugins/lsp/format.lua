@@ -13,8 +13,8 @@ local can_fmt = function(client, formatting_disabled)
 end
 
 ---@param formatting_disabled string[]
-local any_active_can_fmt = function(formatting_disabled)
-    for _, client in ipairs(vim.lsp.get_active_clients()) do
+local any_active_buf_can_fmt = function(formatting_disabled)
+    for _, client in ipairs(vim.lsp.get_active_clients({ bufnr = 0 })) do
         if can_fmt(client, formatting_disabled) then
             return true
         end
@@ -53,7 +53,7 @@ local setup_commands = function(formatting_disabled)
 
     -- Formatting function
     vim.api.nvim_create_user_command("Format", function()
-        if not any_active_can_fmt(formatting_disabled) then
+        if not any_active_buf_can_fmt(formatting_disabled) then
             vim.notify("No possible servers for formatting!", vim.log.levels.WARN)
             return
         end
@@ -63,6 +63,9 @@ end
 
 local setup_keymaps = function()
     vim.keymap.set("n", "<leader>cf", "<CMD>Format<CR>", { desc = "Format buffer" })
+    vim.keymap.set("n", "<leader>off", "<CMD>FormatToggle<CR>", { desc = "Format toggle" })
+    vim.keymap.set("n", "<leader>ofn", "<CMD>FormatEnable<CR>", { desc = "Format On" })
+    vim.keymap.set("n", "<leader>ofo", "<CMD>FormatDisable<CR>", { desc = "Format Off" })
 end
 
 ---@param formatting_disabled string[]
