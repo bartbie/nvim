@@ -52,13 +52,13 @@ local setup_commands = function(formatting_disabled)
     })
 
     -- Formatting function
-    vim.api.nvim_create_user_command("Format", function(bufnr)
+    vim.api.nvim_create_user_command("Format", function()
         if not any_active_can_fmt(formatting_disabled) then
             vim.notify("No possible servers for formatting!", vim.log.levels.WARN)
             return
         end
-        return vim.lsp.buf.format({ bufnr = bufnr })
-    end, { desc = "Format buffer with language server" })
+        return vim.lsp.buf.format()
+    end, { desc = "Format buffer" })
 end
 
 local setup_keymaps = function()
