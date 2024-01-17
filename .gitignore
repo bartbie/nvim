@@ -2,3 +2,4 @@ plugin/
 test.*
 *.org
 *.vim
+result

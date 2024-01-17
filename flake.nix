@@ -12,7 +12,10 @@
           pkgs = import nixpkgs {
             inherit system;
           };
-          dependencies = with pkgs; [
+
+          inherit (pkgs) lib;
+
+          bins = with pkgs; [
             gcc
             cmake
             curl
@@ -24,18 +27,13 @@
             jq
           ];
 
-          # # make our config a plugin for nvim to load
-          # bartbie-config = pkgs.vimUtils.buildVimPlugin {
-          #   name = "bartbie-config";
-          #   src = ./.;
-          # };
-          # add dependencies for our plugins to neovim
-          neovim-modified = pkgs.neovim-unwrapped.overrideAttrs (old: {
-            buildInputs = old.buildInputs ++ dependencies;
-          });
-        in
-        rec {
-          packages.bartbie-nvim = pkgs.wrapNeovim neovim-modified
+          # make our config a plugin for nvim to load
+          bartbie-config = pkgs.vimUtils.buildVimPlugin {
+            name = "bartbie";
+            src = ./.;
+          };
+
+          bartbie-neovim = pkgs.neovim.override
             {
               viAlias = true;
               vimAlias = true;
@@ -44,18 +42,26 @@
               configure = {
                 # since init.lua is outside our bartbie/ package,
                 # we will add it manually
-                customRC = ''
-                  lua << EOF
-                ''
-                + pkgs.lib.readFile ./init.lua +
-                ''
-                  EOF
-                '';
-                # packages.myPlugins = {
-                #   start = [ bartbie-config ];
-                # };
+                customRC = "lua << EOF\n${pkgs.lib.readFile ./init.lua}\nEOF";
+                packages.myPlugins = {
+                  start = [ bartbie-config ];
+                };
               };
             };
+
+          # add runtime deps
+          neovim = pkgs.symlinkJoin {
+            name = "bartbie-nvim";
+            paths = [ bartbie-neovim ] ++ bins;
+            buildInputs = [ pkgs.makeWrapper ];
+            postBuild = ''
+              wrapProgram $out/bin/nvim \
+                --prefix PATH : ${lib.makeBinPath bins}
+            '';
+          };
+        in
+        rec {
+          packages.bartbie-nvim = neovim;
           packages.default = packages.bartbie-nvim;
           apps.bartbie-nvim = flake-utils.lib.mkApp {
             drv = packages.bartbie-nvim;
@@ -64,7 +70,7 @@
           };
           apps.default = apps.bartbie-nvim;
           devShell = pkgs.mkShell {
-            buildInputs = [ packages.bartbie-nvim ] ++ dependencies;
+            packages = [ packages.bartbie-nvim ] ++ bins;
           };
         }
 
