@@ -1,12 +1,4 @@
--- this file is used only when running as .config/nvim (or whatever your XDG setup is)
--- which is what i personally do
-
---- set up the config
---- runs only when in nvim's init.lua
----@param developing_mode boolean
----@param dev_path string
-local function init(developing_mode, dev_path)
-    -- set up lazy.nvim
+local download_lazy = function()
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
     if not vim.loop.fs_stat(lazypath) then
         vim.fn.system({
@@ -19,17 +11,19 @@ local function init(developing_mode, dev_path)
         })
     end
     vim.opt.rtp:prepend(lazypath)
+end
 
-    vim.g.mapleader = " "
+local setup_lazy_with_plugins = function()
     require("lazy").setup({
         spec = {
-            -- manage self as a plugin
-            { "bartbie/nvim", config = true, import = "bartbie.plugins", dev = developing_mode },
+            { import = "bartbie.plugins" },
         },
+        -- load the colorscheme when starting an installation during startup
         install = { colorscheme = { "kanagawa" } },
-        defaults = { dev = { path = dev_path } },
     })
 end
 
--- change it when developing or forking/using different machine
-init(false, "~/Projects/Personal/Lua")
+download_lazy()
+vim.g.mapleader = " "
+setup_lazy_with_plugins()
+require("bartbie").setup()

@@ -14,7 +14,7 @@ local DEPENDENCIES = {
     "fzf",
 }
 
-local MINIMAL_VERSION = "0.8.0"
+local MINIMAL_VERSION = "0.9.2"
 
 function M.check()
     start("bartbie's nvim config")
