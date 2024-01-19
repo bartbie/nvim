@@ -18,6 +18,15 @@ local setup_lazy_with_plugins = function()
         spec = {
             { import = "bartbie.plugins" },
         },
+        performance = {
+            reset_packpath = false,
+            -- rtp = {
+            --
+            --     paths = {
+            --
+            --     }
+            -- }
+        },
         -- load the colorscheme when starting an installation during startup
         install = { colorscheme = { "kanagawa" } },
     })
