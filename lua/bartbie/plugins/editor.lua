@@ -96,7 +96,8 @@ return {
             {
                 "<leader>gg",
                 function()
-                    local cmd = vim.bo.filetype == "fugitive" and "q" or "Git"
+                    local filetype = vim.bo.filetype
+                    local cmd = (filetype == "fugitive" or filetype == "git") and "q" or "Git"
                     vim.cmd(cmd)
                 end,
                 desc = "Open Git Menu",
