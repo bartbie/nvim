@@ -75,3 +75,18 @@ vim.api.nvim_create_user_command("W", "w", { desc = "Save File" })
 local q_modes = { "n", "x" }
 map(q_modes, "qq", "q", { desc = "Start/Stop recording macro" })
 map(q_modes, "q", "reg_recording() != '' ? 'q' : '<Nop>'", { expr = true, desc = "Stop recording macro" })
+
+-- yank into system clipboard
+map({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank motion (OS)" })
+map({ "n", "v" }, "<leader>Y", '"+Y', { desc = "Yank line (OS)" })
+
+-- delete into system clipboard
+map({ "n", "v" }, "<leader>d", '"+d', { desc = "Delete motion (OS)" })
+map({ "n", "v" }, "<leader>D", '"+D', { desc = "Delete line (OS)" })
+
+-- paste from system clipboard
+map("n", "<leader>p", '"+p', { desc = "Paste after (OS)" })
+map("n", "<leader>P", '"+P', { desc = "Paste before (OS)" })
+
+-- files
+map("n", "<leader>fn", "<CMD>enew<CR>", { desc = "New File" })
