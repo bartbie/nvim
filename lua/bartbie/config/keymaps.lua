@@ -1,27 +1,33 @@
 -- keymaps that don't require any plugins (besides lazy.nvim)
--- for keymaps associated with keymaps see "keys" pairs in plugins.lua
+-- for keymaps associated with plugins see "keys" pairs in plugins.lua
 
+local DEFAULTS = { silent = true }
+
+--- function for setting up keymaps
+---@param mode string | string[]
+---@param lhs string
+---@param rhs string | function
+---@param opts table?
 local map = function(mode, lhs, rhs, opts)
-    local defaults = { silent = true }
     local keys = require("lazy.core.handler").handlers.keys
     -- do not create the keymap if a lazy keys handler exists
     if keys.active[keys.parse({ lhs, mode = mode }).id] then
         return
     end
-    opts = vim.tbl_extend("force", defaults, opts or {})
+    opts = vim.tbl_extend("force", DEFAULTS, opts or {})
     vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 -- better up/down
-map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, desc = "Move Down" })
+map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, desc = "Move Up" })
 
 -- better indentation
-map("v", "<", "<gv")
-map("v", ">", ">gv")
+map("v", "<", "<gv", { desc = "Indent selected text left" })
+map("v", ">", ">gv", { desc = "Indent selected text right" })
 
 -- lazy
-map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Lazy" })
+map("n", "<leader>l", "<cmd>:Lazy<cr>", { desc = "Open Lazy" })
 
 -- save file
 map({ "i", "v", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
@@ -42,8 +48,8 @@ map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window wi
 map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
 -- Move selected text up/down
-map("x", "K", ":move '<-2<CR>gv=gv")
-map("x", "J", ":move '>+1<CR>gv=gv")
+map("x", "K", ":move '<-2<CR>gv=gv", { desc = "Move selected text up" })
+map("x", "J", ":move '>+1<CR>gv=gv", { desc = "Move selected text down" })
 
 -- windows
 map("n", "<leader>ww", "<C-W>p", { desc = "Other window" })
@@ -63,4 +69,9 @@ map("n", "<TAB>", "<CMD>bnext<CR>", { desc = "Next Buffer" })
 map("n", "<S-TAB>", "<CMD>bprevious<CR>", { desc = "Prev Buffer" })
 
 -- command alias for saving the buffer
-vim.api.nvim_create_user_command("W", "w", {})
+vim.api.nvim_create_user_command("W", "w", { desc = "Save File" })
+
+-- make macros activation harder to start accidentally
+local q_modes = { "n", "x" }
+map(q_modes, "qq", "q", { desc = "Start/Stop recording macro" })
+map(q_modes, "q", "reg_recording() != '' ? 'q' : '<Nop>'", { expr = true, desc = "Stop recording macro" })

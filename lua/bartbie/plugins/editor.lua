@@ -102,6 +102,7 @@ return {
                 desc = "Open Git Menu",
             },
             { "<leader>gC", "<CMD>Git commit<CR>", desc = "Commit Staged Files" },
+            { "<leader>gA", "<CMD>Git commit --amend<CR>", desc = "Amend Commit" },
             { "<leader>gp", "<CMD>Git pull<CR>", desc = "Pull changes" },
             { "<leader>gP", "<CMD>Git push<CR>", desc = "Push changes" },
         },
@@ -340,7 +341,7 @@ return {
                 ["<leader>c"] = { name = "+code" },
                 ["<leader>f"] = { name = "+file/find" },
                 ["<leader>g"] = { name = "+git" },
-                ["<leader>gh"] = { name = "+hunks" },
+                ["<leader>gh"] = { name = "+hunks" }, -- FIXME: the name doesn't display.
                 -- ["<leader><tab>"] = { name = "+tabs" },
                 ["<leader>q"] = { name = "+quit/session" },
                 ["<leader>s"] = { name = "+search" },

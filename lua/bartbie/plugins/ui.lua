@@ -374,6 +374,24 @@ return {
                                 end
                             end,
                         },
+                        --- macro recording
+                        {
+                            padding = { right = 0 },
+                            function(_, _)
+                                return "@"
+                            end,
+                            cond = function(_, _)
+                                local rec_reg = vim.fn.reg_recording()
+                                return rec_reg ~= ""
+                            end,
+                            color = color_text,
+                        },
+                        {
+                            padding = { left = 0 },
+                            function(_, _)
+                                return vim.fn.reg_recording()
+                            end,
+                        },
                     },
 
                     lualine_x = {
@@ -465,6 +483,39 @@ return {
                     create_extention({ "neo-tree" }, get_short_cwd),
                 },
             }
+        end,
+        config = function(_, opts)
+            local lualine = require("lualine")
+            lualine.setup(opts)
+            -- https://www.reddit.com/r/neovim/comments/xy0tu1/comment/irfegvd
+            -- ^ thanks
+            vim.api.nvim_create_autocmd("RecordingEnter", {
+                callback = function()
+                    lualine.refresh({
+                        place = { "statusline" },
+                    })
+                end,
+            })
+            vim.api.nvim_create_autocmd("RecordingLeave", {
+                callback = function()
+                    -- This is going to seem really weird!
+                    -- Instead of just calling refresh we need to wait a moment because of the nature of
+                    -- `vim.fn.reg_recording`. If we tell lualine to refresh right now it actually will
+                    -- still show a recording occuring because `vim.fn.reg_recording` hasn't emptied yet.
+                    -- So what we need to do is wait a tiny amount of time (in this instance 50 ms) to
+                    -- ensure `vim.fn.reg_recording` is purged before asking lualine to refresh.
+                    local timer = vim.loop.new_timer()
+                    timer:start(
+                        50,
+                        0,
+                        vim.schedule_wrap(function()
+                            lualine.refresh({
+                                place = { "statusline" },
+                            })
+                        end)
+                    )
+                end,
+            })
         end,
     },
     {
