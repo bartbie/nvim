@@ -19,13 +19,10 @@ local setup_lazy_with_plugins = function()
             { import = "bartbie.plugins" },
         },
         performance = {
+            -- TODO:
+            -- find out where nix buildVimPlugin puts plugins and just add it instead
             reset_packpath = false,
-            -- rtp = {
-            --
-            --     paths = {
-            --
-            --     }
-            -- }
+            -- rtp = { paths = { } }
         },
         -- load the colorscheme when starting an installation during startup
         install = { colorscheme = { "kanagawa" } },
