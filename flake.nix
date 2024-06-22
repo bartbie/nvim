@@ -69,12 +69,13 @@
             exePath = "/bin/nvim";
           };
           apps.default = apps.bartbie-nvim;
-          devShell = pkgs.mkShell {
+          devShells.default = pkgs.mkShell {
             packages = [ packages.bartbie-nvim ] ++ bins;
             shellHook = ''
-                export NVIM_APPNAME=$PWD
+                export MYVIMRC=$PWD
             '';
           };
+          devShell = devShells.default;
         }
 
       );

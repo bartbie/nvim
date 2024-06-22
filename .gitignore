@@ -3,3 +3,4 @@ test.*
 *.org
 *.vim
 result
+.direnv
