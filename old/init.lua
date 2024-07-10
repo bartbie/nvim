@@ -1,6 +1,3 @@
--- needed by nix devshell
-local RTP_THIS_LUA = vim.env.IN_NIX_SHELL and vim.o.path .. "/lua"
-
 local download_lazy = function()
     local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
     if not vim.loop.fs_stat(lazypath) then
@@ -25,15 +22,14 @@ local setup_lazy_with_plugins = function()
             -- TODO:
             -- find out where nix buildVimPlugin puts plugins and just add it instead
             reset_packpath = false,
-            rtp = { paths = { RTP_THIS_LUA } }
+            -- rtp = { paths = { } }
         },
         -- load the colorscheme when starting an installation during startup
         install = { colorscheme = { "kanagawa" } },
     })
 end
 
-
 download_lazy()
 vim.g.mapleader = " "
--- setup_lazy_with_plugins()
--- require("bartbie").setup()
+setup_lazy_with_plugins()
+require("bartbie").setup()
