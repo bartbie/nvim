@@ -70,9 +70,10 @@
           };
           apps.default = apps.bartbie-nvim;
           devShells.default = pkgs.mkShell {
-            packages = [ packages.bartbie-nvim ] ++ bins;
+            packages = [ pkgs.neovim ] ++ bins;
             shellHook = ''
-                export MYVIMRC=$PWD
+                export MYVIMRC=$PWD/init.lua 
+                export VIMINIT='source $MYVIMRC'
             '';
           };
           devShell = devShells.default;
