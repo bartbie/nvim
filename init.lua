@@ -19,13 +19,12 @@ end
 local setup_lazy_with_plugins = function()
     require("lazy").setup({
         spec = {
+            { "Olical/nfnl", ft = "fennel" },
             { import = "bartbie.plugins" },
         },
         performance = {
-            -- TODO:
-            -- find out where nix buildVimPlugin puts plugins and just add it instead
             reset_packpath = false,
-            rtp = { paths = { RTP_THIS_LUA } }
+            rtp = { reset = false, paths = { RTP_THIS_LUA } },
         },
         -- load the colorscheme when starting an installation during startup
         install = { colorscheme = { "kanagawa" } },
@@ -35,5 +34,5 @@ end
 
 download_lazy()
 vim.g.mapleader = " "
--- setup_lazy_with_plugins()
+setup_lazy_with_plugins()
 -- require("bartbie").setup()
