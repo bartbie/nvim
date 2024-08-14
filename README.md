@@ -57,3 +57,13 @@ I don't think anyone will particularly use this repo as a plugin in their very o
 
 ## Acknowledgments
 Thanks to [@folke](https://github.com/folke) for creating both `lazy.nvim`, which powers this whole thing, and `LazyVim`, which I got inspired a lot while creating this personalized and lovely mess of a config.
+
+## Licensing
+
+This repository as a whole is licensed under the GNU General Public License v2.0 (GPL-2.0), the same license as the template it is based on.
+
+However, only files originating from the template's nix configuration are subject to the GPL.
+
+All other files in this repository are original to this project and are dual-licensed under the MIT license.
+
+You may freely reuse these non-GPL files under the terms of either the GPL or MIT license, at your discretion.
