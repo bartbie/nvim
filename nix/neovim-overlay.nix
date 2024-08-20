@@ -44,6 +44,30 @@ in {
     plugins = all-plugins;
   };
 
+  # dofile hack
+  # instead of putting the config files into nix store,
+  # we dynamically load them at runtime
+  # obv use it only for devShell running in same dir as repo
+  devShell-nvim = let
+    shim-init =
+      pkgs.writeTextDir "init.lua"
+      # lua
+      ''
+        local __conf_path = vim.env.PWD .. "/nvim"
+        if vim.fn.filereadable(__conf_path .. "/init.lua") then
+            vim.opt.packpath:prepend(__conf_path)
+            vim.opt.runtimepath:prepend(__conf_path)
+            vim.opt.runtimepath:append(__conf_path .. "/after")
+            dofile(__conf_path .. "/init.lua")
+        end
+      '';
+  in
+    mkNeovim {
+      src = shim-init;
+      plugins = all-plugins;
+      inherit extraPackages;
+    };
+
   # You can add as many derivations as you like.
   # Use `ignoreConfigRegexes` to filter out config
   # files you would not like to include.

@@ -34,6 +34,7 @@ with lib;
     # if the appName is something different than "nvim"
     viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
     vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
+    src ? ../nvim, # Use this repo as src?
   }: let
     # This is the structure of a plugin definition.
     # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -68,18 +69,15 @@ with lib;
 
     # This uses the ignoreConfigRegexes list to filter
     # the nvim directory
-    nvimRtpSrc = let
-      src = ../nvim;
-    in
-      lib.cleanSourceWith {
-        inherit src;
-        name = "nvim-rtp-src";
-        filter = path: tyoe: let
-          srcPrefix = toString src + "/";
-          relPath = lib.removePrefix srcPrefix (toString path);
-        in
-          lib.all (regex: builtins.match regex relPath == null) ignoreConfigRegexes;
-      };
+    nvimRtpSrc = lib.cleanSourceWith {
+      inherit src;
+      name = "nvim-rtp-src";
+      filter = path: tyoe: let
+        srcPrefix = toString src + "/";
+        relPath = lib.removePrefix srcPrefix (toString path);
+      in
+        lib.all (regex: builtins.match regex relPath == null) ignoreConfigRegexes;
+    };
 
     # Split runtimepath into 3 directories:
     # - lua, to be prepended to the rtp at the beginning of init.lua
@@ -97,8 +95,11 @@ with lib;
       '';
 
       installPhase = ''
-        cp -r lua $out/lua
-        rm -r lua
+        # Copy nvim/after only if it exists
+        if [ -d "lua" ]; then
+            cp -r lua $out/lua
+            rm -r lua
+        fi
         # Copy nvim/after only if it exists
         if [ -d "after" ]; then
             cp -r after $out/after
@@ -122,7 +123,7 @@ with lib;
         vim.opt.rtp:prepend('${nvimRtp}/lua')
       ''
       # Wrap init.lua
-      + (builtins.readFile ../nvim/init.lua)
+      + (builtins.readFile (src + /init.lua))
       # Bootstrap/load dev plugins
       + optionalString (devPlugins != []) (
         ''
