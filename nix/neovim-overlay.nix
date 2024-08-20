@@ -26,6 +26,7 @@ with final.pkgs.lib; let
   #   ...
   # }
   all-plugins = with pkgs.vimPlugins; [
+    nfnl
   ];
 
   extraPackages = with pkgs; [

@@ -1,1 +1,0 @@
-(print :fennel-test)
