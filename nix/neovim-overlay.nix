@@ -26,7 +26,9 @@ with final.pkgs.lib; let
   #   ...
   # }
   all-plugins = with pkgs.vimPlugins; [
+    rocks-nvim
     nfnl
+    nvim-treesitter.withAllGrammars
   ];
 
   extraPackages = with pkgs; [

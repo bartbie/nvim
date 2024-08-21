@@ -3,3 +3,4 @@ test.*
 *.vim
 result
 .direnv
+.luarc.json

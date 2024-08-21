@@ -35,6 +35,7 @@ with lib;
     viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
     vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
     src ? ../nvim, # Use this repo as src?
+    withNvimRocks ? true, # add nvim-rocks to init.lua
   }: let
     # This is the structure of a plugin definition.
     # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -122,6 +123,31 @@ with lib;
         -- prepend lua directory
         vim.opt.rtp:prepend('${nvimRtp}/lua')
       ''
+      # Add nvim-rocks setup to init.lua
+      + optionalString withNvimRocks (with pkgs.luajitPackages;
+        # lua
+          ''
+            local rocks_config = {
+                rocks_path = vim.fn.stdpath("data") .. "/rocks",
+                luarocks_binary = "${luarocks}/bin/luarocks",
+            }
+
+            vim.g.rocks_nvim = rocks_config
+
+            local luarocks_path = {
+                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
+                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
+            }
+            package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
+
+            local luarocks_cpath = {
+                vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
+                vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
+            }
+            package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+
+            vim.opt.runtimepath:append(vim.fs.joinpath("${rocks-nvim}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
+          '')
       # Wrap init.lua
       + (builtins.readFile (src + /init.lua))
       # Bootstrap/load dev plugins
