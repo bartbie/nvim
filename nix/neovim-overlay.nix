@@ -3,12 +3,9 @@
 with final.pkgs.lib; let
   pkgs = final;
 
-  # Use this to create a plugin from a flake input
-  mkNvimPlugin = src: pname:
-    pkgs.vimUtils.buildVimPlugin {
-      inherit pname src;
-      version = src.lastModifiedDate;
-    };
+  # filter out attr keys
+  filterAttrs = keys: set:
+    attrsets.filterAttrs (n: _: !(builtins.elem n keys)) set;
 
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
@@ -17,6 +14,21 @@ with final.pkgs.lib; let
   # This is the helper function that builds the Neovim derivation.
   mkNeovim = pkgs.callPackage ./mkNeovim.nix {inherit pkgs-wrapNeovim;};
 
+  # map string -> plugin from pkgs.vimPlugins
+  mapNameToPlugin = s: (pipe s [
+    (builtins.replaceStrings ["."] ["-"])
+    (x: pkgs.vimPlugins."${x}")
+  ]);
+
+  mapNamesToPlugins =
+    attrsets.mapAttrsToList (n: _: (mapNameToPlugin n));
+
+  # Use this to create a plugin from a flake input
+  mkNvimPlugin = src: pname:
+    pkgs.vimUtils.buildVimPlugin {
+      inherit pname src;
+      version = src.lastModifiedDate;
+    };
   # A plugin can either be a package or an attrset, such as
   # { plugin = <plugin>; # the package, e.g. pkgs.vimPlugins.nvim-cmp
   #   config = <config>; # String; a config that will be loaded with the plugin
@@ -25,11 +37,29 @@ with final.pkgs.lib; let
   #   optional = <true|false>; # Default: false
   #   ...
   # }
-  all-plugins = with pkgs.vimPlugins; [
-    rocks-nvim
-    nfnl
-    nvim-treesitter.withAllGrammars
-  ];
+
+  ###
+
+  rocks-toml-src = ../nvim/rocks.toml;
+  rocks-toml = with builtins; let
+    exclude-plugins = [
+      # "rocks-treesitter.nvim"
+    ];
+    exclude-rocks = [
+    ];
+    inherit (fromTOML (readFile rocks-toml-src)) plugins rocks;
+  in {
+    rocks = filterAttrs exclude-rocks rocks;
+    plugins = filterAttrs exclude-plugins plugins;
+  };
+
+  all-plugins = with pkgs.vimPlugins;
+    [
+      # rocks-nvim
+      # nfnl
+      nvim-treesitter.withAllGrammars
+    ]
+    ++ (mapNamesToPlugins rocks-toml.plugins);
 
   extraPackages = with pkgs; [
     lua-language-server
