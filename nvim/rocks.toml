@@ -7,5 +7,8 @@
 [plugins]
 "rocks.nvim" = "2.36.0"
 "rocks-config.nvim" = "2.2.0"
+"rocks-git.nvim" = "2.0.1-1"
 
 "neo-tree.nvim" = "3.26"
+"kanagawa.nvim" = "scm"
+"vim-fugitive" = { git = "tpope/vim-fugitive" }

@@ -3,10 +3,6 @@
 with final.pkgs.lib; let
   pkgs = final;
 
-  # filter out attr keys
-  filterAttrs = keys: set:
-    attrsets.filterAttrs (n: _: !(builtins.elem n keys)) set;
-
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
   pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
@@ -14,43 +10,20 @@ with final.pkgs.lib; let
   # This is the helper function that builds the Neovim derivation.
   mkNeovim = pkgs.callPackage ./mkNeovim.nix {inherit pkgs-wrapNeovim;};
 
-  # map string -> plugin from pkgs.vimPlugins
-  mapNameToPlugin = s: (pipe s [
-    (builtins.replaceStrings ["."] ["-"])
-    (x: pkgs.vimPlugins."${x}")
-  ]);
+  helpers = pkgs.callPackage ./overlay-helpers.nix {};
 
-  mapNamesToPlugins =
-    attrsets.mapAttrsToList (n: _: (mapNameToPlugin n));
-
-  # Use this to create a plugin from a flake input
-  mkNvimPlugin = src: pname:
-    pkgs.vimUtils.buildVimPlugin {
-      inherit pname src;
-      version = src.lastModifiedDate;
-    };
-  # A plugin can either be a package or an attrset, such as
-  # { plugin = <plugin>; # the package, e.g. pkgs.vimPlugins.nvim-cmp
-  #   config = <config>; # String; a config that will be loaded with the plugin
-  #   # Boolean; Whether to automatically load the plugin as a 'start' plugin,
-  #   # or as an 'opt' plugin, that can be loaded with `:packadd!`
-  #   optional = <true|false>; # Default: false
-  #   ...
-  # }
+  inherit (helpers) readRocksToml mapNamesToPlugins shim-init-lua;
 
   ###
 
-  rocks-toml-src = ../nvim/rocks.toml;
-  rocks-toml = with builtins; let
-    exclude-plugins = [
+  rocks-toml = readRocksToml {
+    src = ../nvim/rocks.toml;
+    exclude.plugins = [
       # "rocks-treesitter.nvim"
+      "rocks-git.nvim"
     ];
-    exclude-rocks = [
+    exclude.rocks = [
     ];
-    inherit (fromTOML (readFile rocks-toml-src)) plugins rocks;
-  in {
-    rocks = filterAttrs exclude-rocks rocks;
-    plugins = filterAttrs exclude-plugins plugins;
   };
 
   all-plugins = with pkgs.vimPlugins;
@@ -76,29 +49,12 @@ in {
     plugins = all-plugins;
   };
 
-  # dofile hack
-  # instead of putting the config files into nix store,
-  # we dynamically load them at runtime
-  # obv use it only for devShell running in same dir as repo
-  devShell-nvim = let
-    shim-init =
-      pkgs.writeTextDir "init.lua"
-      # lua
-      ''
-        local __conf_path = vim.env.PWD .. "/nvim"
-        if vim.fn.filereadable(__conf_path .. "/init.lua") then
-            vim.opt.packpath:prepend(__conf_path)
-            vim.opt.runtimepath:prepend(__conf_path)
-            vim.opt.runtimepath:append(__conf_path .. "/after")
-            dofile(__conf_path .. "/init.lua")
-        end
-      '';
-  in
-    mkNeovim {
-      src = shim-init;
-      plugins = all-plugins;
-      inherit extraPackages;
-    };
+  # nvim for devshell that dynamically loads config at runtime
+  devShell-nvim = mkNeovim {
+    src = shim-init-lua;
+    plugins = all-plugins;
+    inherit extraPackages;
+  };
 
   # You can add as many derivations as you like.
   # Use `ignoreConfigRegexes` to filter out config
