@@ -2,7 +2,8 @@
   description = "bartbie Neovim config";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    #  lua-language-server build's broken, this commit fixes it, remove later
+    nixpkgs.url = "github:NixOS/nixpkgs/1a9767900c410ce390d4eee9c70e59dd81ddecb5";
     flake-utils.url = "github:numtide/flake-utils";
     gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
   };
@@ -17,7 +18,8 @@
     # This is where the Neovim derivation is built.
     neovim-overlay = import ./nix/neovim-overlay.nix {inherit inputs;};
   in
-    flake-utils.lib.eachDefaultSystem (system: let
+    flake-utils.lib.eachDefaultSystem
+    (system: let
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
