@@ -1,1 +1,1 @@
-print("hello xd")
+vim.notify("hello")

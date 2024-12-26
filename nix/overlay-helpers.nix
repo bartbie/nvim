@@ -59,12 +59,20 @@ in rec {
     pkgs.writeTextDir "init.lua"
     # lua
     ''
-      local __conf_path = vim.env.PWD .. "/nvim"
-      if vim.fn.filereadable(__conf_path .. "/init.lua") then
-          vim.opt.packpath:prepend(__conf_path)
-          vim.opt.runtimepath:prepend(__conf_path)
-          vim.opt.runtimepath:append(__conf_path .. "/after")
-          dofile(__conf_path .. "/init.lua")
+      local join = vim.fs.joinpath
+      local pwd = vim.env.PWD
+      local nvim_root = vim.fs.root(pwd, {"init.lua"})
+      local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
+      local conf_path = nvim_root or join(repo_root or pwd, "nvim")
+
+      local init_path = join(conf_path, "init.lua")
+      if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
+          vim.opt.packpath:prepend(conf_path)
+          vim.opt.runtimepath:prepend(conf_path)
+          vim.opt.runtimepath:append(join(conf_path, "after"))
+          dofile(init_path)
+      else
+          vim.notify("shim couldn't find the config to load!")
       end
     '';
 }
