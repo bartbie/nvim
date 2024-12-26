@@ -28,8 +28,6 @@ with final.pkgs.lib; let
 
   all-plugins = with pkgs.vimPlugins;
     [
-      # rocks-nvim
-      # nfnl
       nvim-treesitter.withAllGrammars
     ]
     ++ (mapNamesToPlugins rocks-toml.plugins);
@@ -37,6 +35,9 @@ with final.pkgs.lib; let
   extraPackages = with pkgs; [
     lua-language-server
     nil
+    gcc
+    ripgrep
+    fd
   ];
 in {
   bartbie-nvim = mkNeovim {
