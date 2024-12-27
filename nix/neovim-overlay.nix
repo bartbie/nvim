@@ -38,6 +38,7 @@ with final.pkgs.lib; let
     gcc
     ripgrep
     fd
+    luarocks
   ];
 in {
   bartbie-nvim = mkNeovim {

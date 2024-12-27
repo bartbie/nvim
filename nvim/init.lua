@@ -1,15 +1,8 @@
-local is_nix
-do
-    local in_store = vim.v.progpath:match("nix/store") ~= nil
-    local uses_flake = in_store
-        and vim.iter(vim.opt.rtp:get()):any(function(s)
-            return s:match("nix/store.*rocks")
-        end)
-    is_nix = uses_flake
+if vim.g.is_nix == nil then
+    vim.g.is_nix = false
 end
+local is_nix = vim.g.is_nix
 
-local install_location
-local rocks_config
 if not is_nix then
     -- Specifies where to install/use rocks.nvim
     install_location = vim.fs.joinpath(vim.fn.stdpath("data"), "rocks")
@@ -39,29 +32,27 @@ if not is_nix then
     vim.opt.runtimepath:append(
         vim.fs.joinpath(rocks_config.rocks_path, "lib", "luarocks", "rocks-5.1", "rocks.nvim", "*")
     )
-end
+    -- If rocks.nvim is not installed then install it!
+    if not pcall(require, "rocks") then
+        vim.notify("Downloading and installing rocks.nvim.", vim.log.levels.INFO)
+        local rocks_location = vim.fs.joinpath(vim.fn.stdpath("cache"), "rocks.nvim")
 
--- If rocks.nvim is not installed then install it!
-if not is_nix and not pcall(require, "rocks") then
-    local rocks_location = vim.fs.joinpath(vim.fn.stdpath("cache"), "rocks.nvim")
+        if not vim.uv.fs_stat(rocks_location) then
+            -- Pull down rocks.nvim
+            vim.fn.system({
+                "git",
+                "clone",
+                "--filter=blob:none",
+                "https://github.com/nvim-neorocks/rocks.nvim",
+                rocks_location,
+            })
+        end
 
-    if not vim.uv.fs_stat(rocks_location) then
-        -- Pull down rocks.nvim
-        vim.fn.system({
-            "git",
-            "clone",
-            "--filter=blob:none",
-            "https://github.com/nvim-neorocks/rocks.nvim",
-            rocks_location,
-        })
+        -- If the clone was successful then source the bootstrapping script
+        assert(vim.v.shell_error == 0, "rocks.nvim installation failed. Try exiting and re-entering Neovim!")
+
+        vim.cmd.source(vim.fs.joinpath(rocks_location, "bootstrap.lua"))
+
+        vim.fn.delete(rocks_location, "rf")
     end
-
-    -- If the clone was successful then source the bootstrapping script
-    assert(vim.v.shell_error == 0, "rocks.nvim installation failed. Try exiting and re-entering Neovim!")
-
-    vim.cmd.source(vim.fs.joinpath(rocks_location, "bootstrap.lua"))
-
-    vim.fn.delete(rocks_location, "rf")
 end
-
-vim.notify("hello")

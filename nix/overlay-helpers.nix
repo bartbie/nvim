@@ -59,33 +59,37 @@ in rec {
     pkgs.writeTextDir "init.lua"
     # lua
     ''
-      local join = vim.fs.joinpath
-
-      -- find our config
-      local conf_path 
       do
-          local pwd = vim.env.PWD
-          local nvim_root = vim.fs.root(pwd, {"init.lua"})
-          local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
-      	  conf_path = nvim_root or join(repo_root or pwd, "nvim")
-      end
+          local join = vim.fs.joinpath
 
-      -- hide the system-wide config
-      do
-        local rtp = vim.opt.runtimepath
-      	local system_conf = vim.fn.stdpath("config")
-        rtp:remove(system_conf)
-        rtp:remove(join(system_conf, "after"))
-      end
+          -- find our config
+          local conf_path 
+          do
+              local pwd = vim.env.PWD
+              local nvim_root = vim.fs.root(pwd, {"init.lua"})
+              local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
+              conf_path = nvim_root or join(repo_root or pwd, "nvim")
+          end
 
-      local init_path = join(conf_path, "init.lua")
-      if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
-          vim.opt.packpath:prepend(conf_path)
-          vim.opt.runtimepath:prepend(conf_path)
-          vim.opt.runtimepath:append(join(conf_path, "after"))
-          dofile(init_path)
-      else
-          vim.notify("shim couldn't find the config to load!")
+          -- hide the system-wide config
+          do
+            local rtp = vim.opt.runtimepath
+            local system_conf = vim.fn.stdpath("config")
+            if not system_conf:match("nix/store") then
+                rtp:remove(system_conf)
+                rtp:remove(join(system_conf, "after"))
+            end
+          end
+
+          local init_path = join(conf_path, "init.lua")
+          if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
+              vim.opt.packpath:prepend(conf_path)
+              vim.opt.runtimepath:prepend(conf_path)
+              vim.opt.runtimepath:append(join(conf_path, "after"))
+              dofile(init_path)
+          else
+              vim.notify("shim couldn't find the config to load!")
+          end
       end
     '';
 }

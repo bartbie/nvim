@@ -118,7 +118,9 @@ with lib;
     # and prepends the nvim and after directory to the RTP
     # It also adds logic for bootstrapping dev plugins (for plugin developers)
     initLua =
+      # lua
       ''
+        vim.g.is_nix = true
         vim.loader.enable()
         -- prepend lua directory
         vim.opt.rtp:prepend('${nvimRtp}/lua')
