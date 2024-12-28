@@ -35,7 +35,7 @@ with lib;
     viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
     vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
     src ? ../nvim, # Use this repo as src?
-    withNvimRocks ? true, # add nvim-rocks to init.lua
+    withNvimRocks ? true, # Add rocks.nvim config to init.lua?
   }: let
     # This is the structure of a plugin definition.
     # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -158,6 +158,7 @@ with lib;
       ''
       # Bootstrap/load dev plugins
       + optionalString (devPlugins != []) (
+        # lua
         ''
           local dev_pack_path = vim.fn.stdpath('data') .. '/site/pack/dev'
           local dev_plugins_dir = dev_pack_path .. '/opt'
@@ -165,14 +166,16 @@ with lib;
         ''
         + strings.concatMapStringsSep
         "\n"
-        (plugin: ''
-          dev_plugin_path = dev_plugins_dir .. '/${plugin.name}'
-          if vim.fn.empty(vim.fn.glob(dev_plugin_path)) > 0 then
-            vim.notify('Bootstrapping dev plugin ${plugin.name} ...', vim.log.levels.INFO)
-            vim.cmd('!${pkgs.git}/bin/git clone ${plugin.url} ' .. dev_plugin_path)
-          end
-          vim.cmd('packadd! ${plugin.name}')
-        '')
+        (plugin:
+          # lua
+          ''
+            dev_plugin_path = dev_plugins_dir .. '/${plugin.name}'
+            if vim.fn.empty(vim.fn.glob(dev_plugin_path)) > 0 then
+              vim.notify('Bootstrapping dev plugin ${plugin.name} ...', vim.log.levels.INFO)
+              vim.cmd('!${pkgs.git}/bin/git clone ${plugin.url} ' .. dev_plugin_path)
+            end
+            vim.cmd('packadd! ${plugin.name}')
+          '')
         devPlugins
       )
       # Prepend nvim and after directories to the runtimepath
@@ -180,7 +183,9 @@ with lib;
       # because of a bug in Neovim that can cause filetype plugins
       # to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
       # We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
-      + ''
+      +
+      # lua
+      ''
         vim.opt.rtp:prepend('${nvimRtp}/nvim')
         vim.opt.rtp:prepend('${nvimRtp}/after')
       '';
