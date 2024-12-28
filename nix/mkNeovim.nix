@@ -149,6 +149,7 @@ with lib;
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
                 luarocks_binary = "${luarocks}/bin/luarocks",
+                config_path = vim.fs.joinpath("${nvimRtp}", "nvim/rocks.toml")
             }
 
             vim.g.rocks_nvim = rocks_config
