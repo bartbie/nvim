@@ -151,7 +151,11 @@ with lib;
             vim.opt.runtimepath:append(vim.fs.joinpath("${rocks-nvim}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
           '')
       # Wrap init.lua
-      + (builtins.readFile (src + /init.lua))
+      + ''
+        do
+        ${(builtins.readFile (src + /init.lua))}
+        end
+      ''
       # Bootstrap/load dev plugins
       + optionalString (devPlugins != []) (
         ''
