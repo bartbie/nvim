@@ -51,10 +51,43 @@ in rec {
       plugins = filterAttrsByName exclude.plugins plugins;
     };
 
+  overwriteRocksToml = {
+    data,
+    src,
+    name ? "nvim",
+    toml-path ? "./rocks.toml",
+  }: let
+    inherit (pkgs.formats.toml {}) generate;
+    rocks-toml = generate "rocks.toml" data;
+  in
+    pkgs.runCommand "${name}-rocks.nvim-overwritten" {
+      inherit src;
+    } ''
+      cp -r "$src"/* .
+      rm "${toml-path}"
+      cp -r "${rocks-toml}" "${toml-path}"
+      mkdir -p "$out"
+      cp -r ./* "$out"
+    '';
+
+  mkWithNewRocksToml = {
+    src,
+    name ? "nvim",
+    exclude,
+  }:
+    overwriteRocksToml {
+      inherit src name;
+      data = readRocksToml {
+        src = "${src}/rocks.toml";
+        inherit exclude;
+      };
+    };
+
   # dofile hack
   # instead of putting the config files into nix store,
   # we dynamically load them at runtime
   # obv use it only for devShell running in same dir as repo
+
   shim-init-lua =
     pkgs.writeTextDir "init.lua"
     # lua
@@ -91,5 +124,15 @@ in rec {
               vim.notify("shim couldn't find the config to load!")
           end
       end
+    '';
+
+  mkShimConfig = {src}:
+    pkgs.runCommand "nvim-shim-config" {inherit src;} ''
+      if [ -f "$src/rocks.toml" ]; then
+        cp -r "$src/rocks.toml" .
+      fi
+      cp -r ${shim-init-lua}/init.lua .
+      mkdir -p "$out"
+      cp -r ./* "$out"
     '';
 }

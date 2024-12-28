@@ -12,15 +12,16 @@ with final.pkgs.lib; let
 
   helpers = pkgs.callPackage ./overlay-helpers.nix {};
 
-  inherit (helpers) readRocksToml mapNamesToPlugins shim-init-lua;
+  inherit (helpers) mkWithNewRocksToml mapNamesToPlugins mkShimConfig;
 
   ###
 
-  rocks-toml = readRocksToml {
-    src = ../nvim/rocks.toml;
+  src = mkWithNewRocksToml {
+    src = ../nvim;
     exclude.plugins = [
-      # "rocks-treesitter.nvim"
+      "rocks.nvim" # mkNeovim will add it
       "rocks-git.nvim"
+      # "rocks-treesitter.nvim"
     ];
     exclude.rocks = [
     ];
@@ -46,6 +47,7 @@ in {
   bartbie-nvim-extraPackages = extraPackages;
 
   bartbie-nvim = mkNeovim {
+    inherit src;
     plugins = all-plugins;
     inherit extraPackages;
   };
@@ -57,10 +59,11 @@ in {
 
   # nvim for devshell that dynamically loads config at runtime
   devShell-nvim = mkNeovim {
-    src = shim-init-lua;
+    src = mkShimConfig {inherit src;};
     plugins = all-plugins;
     inherit extraPackages;
   };
+
   # You can add as many derivations as you like.
   # Use `ignoreConfigRegexes` to filter out config
   # files you would not like to include.
