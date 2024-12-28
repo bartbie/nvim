@@ -69,6 +69,47 @@ with lib;
       plugins = normalizedPlugins;
     };
 
+    luaInterpreter = neovim-unwrapped.lua;
+
+    luaRocksConfig = let
+      generate = config-gen-args: rest-args:
+        pipe config-gen-args [
+          pkgs.lua.pkgs.luaLib.generateLuarocksConfig
+          (x: lib.recursiveUpdate x rest-args)
+          (lib.generators.toLua {asBindings = false;})
+        ];
+
+      luarocksStore = luaInterpreter.pkgs.luarocks;
+      luacurlPkg = luaInterpreter.pkgs.lua-curl;
+    in
+      generate {externalDeps = [pkgs.curl.dev];} {
+        lua_version = "5.1";
+        rocks_trees = [
+          {
+            name = "rocks.nvim";
+            root = "~/.local/share/nvim/rocks";
+          }
+          {
+            name = "rocks-generated.nvim";
+            root = "${luarocksStore}";
+          }
+          {
+            name = "lua-curl";
+            root = "${luacurlPkg}";
+          }
+          {
+            name = "sqlite.lua";
+            root = "${luaInterpreter.pkgs.sqlite}";
+          }
+        ];
+
+        # to help some package need variables for lib-curl.lua to be installable
+        variables = {
+          # MYSQL_INCDIR = "${libmysqlclient.dev}/include/mysql";
+          # MYSQL_LIBDIR = "${libmysqlclient}/lib/mysql";
+        };
+      };
+
     # This uses the ignoreConfigRegexes list to filter
     # the nvim directory
     nvimRtpSrc = lib.cleanSourceWith {
@@ -146,10 +187,13 @@ with lib;
       + optionalString withNvimRocks (with pkgs.luajitPackages;
         # lua
           ''
+            local luarocks_config = ${luaRocksConfig}
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                luarocks_binary = "${luarocks}/bin/luarocks",
-                config_path = vim.fs.joinpath("${nvimRtp}", "nvim/rocks.toml")
+                config_path = vim.fs.joinpath("${nvimRtp}", "nvim/rocks.toml"),
+                luarocks_binary = "${luaInterpreter.pkgs.luarocks}/bin/luarocks",
+                luarocks_config = luarocks_config,
+                _log_level = vim.log.levels.TRACE,
             }
 
             vim.g.rocks_nvim = rocks_config
