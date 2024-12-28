@@ -39,6 +39,11 @@
           stylua
           luajitPackages.luacheck
           devShell-nvim
+	  # keep it in sync with nvim deps
+	  gcc
+	  ripgrep
+	  fd
+	  luarocks
         ];
         shellHook = ''
           # symlink the .luarc.json generated in the overlay
