@@ -36,6 +36,7 @@ with lib;
     vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
     src ? ../nvim, # Use this repo as src?
     withNvimRocks ? true, # Add rocks.nvim config to init.lua?
+    hideSystemConfig ? withNvimRocks, # Remove stdpath("config"|"configdirs") from RTP?
   }: let
     # This is the structure of a plugin definition.
     # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -124,6 +125,22 @@ with lib;
         vim.loader.enable()
         -- prepend lua directory
         vim.opt.rtp:prepend('${nvimRtp}/lua')
+      ''
+      + optionalString hideSystemConfig
+      # lua
+      ''
+        -- hide the system-wide config
+        do
+            local stdp = vim.fn.stdpath
+            local rtp = vim.opt.runtimepath
+            local system_confs = {stdp("config"), unpack(stdp("config_dirs"))}
+            for _, path in ipairs(system_confs) do
+                if not path:match("nix/store") then
+                    rtp:remove(path)
+                    rtp:remove(vim.fs.joinpath(path, "after"))
+                end
+            end
+        end
       ''
       # Add nvim-rocks setup to init.lua
       + optionalString withNvimRocks (with pkgs.luajitPackages;
