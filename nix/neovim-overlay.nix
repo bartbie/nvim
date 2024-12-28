@@ -29,8 +29,9 @@ with final.pkgs.lib; let
   all-plugins = with pkgs.vimPlugins;
     [
       nvim-treesitter.withAllGrammars
-    ]
-    ++ (mapNamesToPlugins rocks-toml.plugins);
+      rocks-nvim
+    ];
+    # ++ (mapNamesToPlugins rocks-toml.plugins);
 
   extraPackages = with pkgs; [
     lua-language-server

@@ -63,7 +63,7 @@ in rec {
           local join = vim.fs.joinpath
 
           -- find our config
-          local conf_path 
+          local conf_path
           do
               local pwd = vim.env.PWD
               local nvim_root = vim.fs.root(pwd, {"init.lua"})
