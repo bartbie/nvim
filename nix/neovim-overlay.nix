@@ -26,12 +26,11 @@ with final.pkgs.lib; let
     ];
   };
 
-  all-plugins = with pkgs.vimPlugins;
-    [
-      nvim-treesitter.withAllGrammars
-      rocks-nvim
-    ];
-    # ++ (mapNamesToPlugins rocks-toml.plugins);
+  all-plugins = with pkgs.vimPlugins; [
+    nvim-treesitter.withAllGrammars
+    rocks-nvim
+  ];
+  # ++ (mapNamesToPlugins rocks-toml.plugins);
 
   extraPackages = with pkgs; [
     lua-language-server
@@ -42,6 +41,10 @@ with final.pkgs.lib; let
     luarocks
   ];
 in {
+  # pass our extra packages via the overlay
+  # maybe a bit ugly but hey it works
+  bartbie-nvim-extraPackages = extraPackages;
+
   bartbie-nvim = mkNeovim {
     plugins = all-plugins;
     inherit extraPackages;
@@ -58,7 +61,6 @@ in {
     plugins = all-plugins;
     inherit extraPackages;
   };
-
   # You can add as many derivations as you like.
   # Use `ignoreConfigRegexes` to filter out config
   # files you would not like to include.

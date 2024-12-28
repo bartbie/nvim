@@ -32,19 +32,15 @@
       };
       shell = pkgs.mkShell {
         name = "nvim-devShell";
-        buildInputs = with pkgs; [
-          # Tools for Lua and Nix development, useful for editing files in this repo
-          lua-language-server
-          nil
-          stylua
-          luajitPackages.luacheck
-          devShell-nvim
-	  # keep it in sync with nvim deps
-	  gcc
-	  ripgrep
-	  fd
-	  luarocks
-        ];
+        buildInputs = with pkgs;
+          [
+            # Tools for Lua and Nix development, useful for editing files in this repo
+            stylua
+            luajitPackages.luacheck
+            alejandra
+            devShell-nvim
+          ]
+          ++ pkgs.bartbie-nvim-extraPackages;
         shellHook = ''
           # symlink the .luarc.json generated in the overlay
           ln -fs ${pkgs.nvim-luarc-json} .luarc.json
