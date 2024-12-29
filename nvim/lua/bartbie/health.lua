@@ -20,15 +20,13 @@ local DEPENDENCIES = {
 
 local MINIMAL_VERSION = "0.10.0"
 
-local is_nix = vim.g.is_nix
-
 local function main_check()
     start("bartbie's nvim config")
     do
-        local fmt = function(ver)
-            return table.concat(ver, ".")
-        end
-        if version ~= nil and version.ge(version(), version.parse(MINIMAL_VERSION)) then
+        local try, res = pcall(function()
+            return version ~= nil and version.ge(version(), version.parse(MINIMAL_VERSION))
+        end)
+        if try and res then
             ok(("Using Neovim `%s` >= `%s`"):format(version(), MINIMAL_VERSION))
         else
             error(
@@ -41,7 +39,7 @@ local function main_check()
         if jit then
             ok("Using JIT")
         else
-            warn("Not using JIT!")
+            error("Not using JIT!")
         end
     end
     do
@@ -66,29 +64,102 @@ local function main_check()
     end
 end
 
+local nix_error_state = {
+    is_nix = {
+        state = false,
+        msg = "`vim.g.is_nix` not set!",
+    },
+    is_nix_shim = {
+        state = false,
+        msg = "`vim.g.is_nix_shim` not set!",
+    },
+    is_nix_mismatch = {
+        state = false,
+        msg = "`vim.g.is_nix_shim` is `true` while `vim.g.is_nix` is not!",
+    },
+}
+local nix_error_state_set = false
+
+local function check_nix_err()
+    if nix_error_state_set then
+        return true
+    end
+    for _, data in pairs(nix_error_state) do
+        if data.state then
+            nix_error_state_set = true
+            return true
+        end
+    end
+    return false
+end
+
+local function nix_info()
+    if check_nix_err() then
+        return nil
+    end
+
+    local is_nix = vim.g.is_nix
+    local is_nix_shim = vim.g.is_nix_shim
+    local err = nix_error_state
+
+    err.is_nix.state = is_nix == nil
+    err.is_nix_shim.state = is_nix_shim == nil
+    err.is_nix_mismatch.state = is_nix_shim == true and is_nix ~= true
+
+    if check_nix_err() then
+        return nil
+    end
+
+    local in_nix_shell = vim.env.IN_NIX_SHELL
+    local exists = in_nix_shell ~= nil
+
+    -- exists = true
+    -- is_nix = true
+    -- is_nix_shim = true
+
+    return {
+        is_nix = is_nix,
+        is_nix_shim = is_nix_shim,
+        shell = {
+            exists = exists,
+            purity = in_nix_shell,
+            name = exists and vim.env.name or nil,
+            ours = exists and is_nix_shim,
+        },
+    }
+end
+
 local function nix_check()
     start("nix check")
-    do
-        local in_nix_shell = vim.fn.IN_NIX_SHELL
-        local function info_nix_shell()
-            info(in_nix_shell and "In Nix Shell" or "Not in Nix Shell")
-        end
-        if is_nix == nil then
-            error("vim.g.is_nix not set!")
-            info_nix_shell()
-            return
-        end
-        if not is_nix then
-            if not in_nix_shell then
-                ok("Not managed via Nix")
-                info_nix_shell()
-                return
+    local nix = nix_info()
+    if nix == nil then
+        for _, data in pairs(nix_error_state) do
+            if data.state then
+                error(data.msg)
             end
-            warn("Not managed via Nix yet in a Nix Shell!")
-        else
-            ok("Managed via Nix")
         end
-        info_nix_shell()
+        return
+    end
+    do
+        if nix.is_nix then
+            ok("Managed via Nix")
+            if nix.is_nix_shim then
+                ok("Using Nix config shim")
+            end
+        elseif not nix.shell.exists then
+            ok("Not managed via Nix")
+        elseif not nix.shell.ours then
+            warn(
+                ("Not managed via Nix yet in a Nix Shell!"):format(name),
+                "This may be fine and you're simply using your own project's devShell"
+            )
+        else
+            error(("Not managed via Nix while using `%s`!"):format(nix.shell.name))
+        end
+    end
+    -- pester about impure config paths and nix shell only if we use nix or nix shell
+    if not (nix.is_nix or nix.shell.exists) then
+        return
     end
     do
         local rtp = vim.opt.runtimepath:get()
@@ -109,17 +180,27 @@ local function nix_check()
             ok("runtimepath does not contain impure config paths")
         end
     end
+    do
+        start("nix shell info")
+        info(("Using Nix Shell: `%s`"):format(nix.shell.exists and "YES" or "NO"))
+        if nix.shell.exists then
+            info(("Nix Shell name: `%s`"):format(nix.shell.name))
+            info(("Nix Shell purity: `%s`"):format(nix.shell.purity))
+        end
+    end
 end
 
 local function rocks_check()
     start("rocks.nvim check")
+    local nix = nix_info()
+    local is_nix = nix and nix.is_nix or false
     local function check_path(path, name)
         if path:match("nix/store") then
             ok(("Rocks.nvim uses `%s` from Nix"):format(name))
-        elseif is_nix then
-            error(("Rocks.nvim does not use %s from Nix"):format(name))
         else
-            ok(("Rocks.nvim does not use %s from Nix"):format(name))
+            local report = is_nix and error or ok
+            local exc = is_nix and "!" or ""
+            report(("Rocks.nvim does not use %s from Nix%s"):format(name, exc))
         end
         info(("%s path: `%s`"):format(name, path))
     end
@@ -140,6 +221,7 @@ end
 
 local function stats()
     start("additional info")
+    local nix = nix_info()
     do
         local paths = {
             "config",
@@ -156,16 +238,48 @@ local function stats()
         if fs == nil then
             return
         end
+
         local source = fs.normalize(debug.getinfo(2, "S").source:sub(2))
-        if source:match("nix/store") then
-            local parent = vim.iter(fs.parents(source)):skip(1):next()
-            info(("rtp root of this config: `%s`"):format(parent))
-        else
-            local function root(...)
-                return fs.root(source, vim.tbl_flatten({ ... }))
+        local function root(...)
+            return fs.root(source, vim.tbl_flatten({ ... }))
+        end
+
+        local function fmt_info(name)
+            return function(s)
+                if s == nil then
+                    warn(("Couldn't find %s of this config"):format(name))
+                    info(("source: `%s`"):format(source))
+                else
+                    ok(("%s of this config: `%s`"):format(name, s))
+                end
             end
-            info(("rtp root of this config: `%s`"):format(root("rocks.toml") or root("init.lua")))
-            info(("location of this config: `%s`"):format(root("flake.nix") or root("rocks.toml")))
+        end
+
+        local rtp_info = fmt_info("rtp root")
+
+        if source:match("nix/store") then
+            -- if we are at nix/store then just jump through parents
+            local parent = vim.iter(fs.parents(source)):skip(2):next()
+            rtp_info(parent)
+        elseif nix and nix.shell.ours then
+            -- if we are using our dev shell just find rocks.toml
+            rtp_info(root("rocks.toml"))
+        else
+            rtp_info(root("rocks.toml") or root("init.lua"))
+        end
+
+        local loc_info = fmt_info("location")
+
+        if nix and nix.is_nix then
+            if nix.shell.ours then
+                loc_info(root("flake.nix"))
+            elseif nix.shell.exists and nix.shell.name:match("bartbie%-nvim%-nix%-shell") then
+                loc_info(fs.root(vim.env.PWD, "flake.nix"))
+            else
+                ok("Can't locate this config when using Nix without config-devShell's shim.")
+            end
+        else
+            loc_info(root("flake.nix") or root("rocks.toml"))
         end
     end
 end

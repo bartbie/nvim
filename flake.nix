@@ -31,7 +31,7 @@
         ];
       };
       shell = pkgs.mkShell {
-        name = "nvim-devShell";
+        name = "bartbie-nvim-nix-shell";
         buildInputs = with pkgs;
           [
             # Tools for Lua and Nix development, useful for editing files in this repo

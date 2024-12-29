@@ -93,6 +93,8 @@ in rec {
     # lua
     ''
       do
+          -- set global flag to mark our shim config
+	  vim.g.is_nix_shim = true
           local join = vim.fs.joinpath
 
           -- find our config
