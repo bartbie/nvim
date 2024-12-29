@@ -20,8 +20,7 @@ with final.pkgs.lib; let
     src = ../nvim;
     exclude.plugins = [
       "rocks.nvim" # mkNeovim will add it
-      "rocks-git.nvim"
-      # "rocks-treesitter.nvim"
+      "rocks-treesitter.nvim" # nix installs them
     ];
     exclude.rocks = [
     ];
