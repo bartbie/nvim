@@ -194,9 +194,11 @@ local function rocks_check()
     start("rocks.nvim check")
     local nix = nix_info()
     local is_nix = nix and nix.is_nix or false
-    local function check_path(path, name)
+    local function check_path(path, name, check_shim)
         if path:match("nix/store") then
             ok(("Rocks.nvim uses `%s` from Nix"):format(name))
+        elseif check_shim and nix and nix.shell.ours then
+            ok(("Rocks.nvim uses `%s` from devShell"):format(name))
         else
             local report = is_nix and error or ok
             local exc = is_nix and "!" or ""
@@ -210,7 +212,7 @@ local function rocks_check()
             error("Rocks.nvim is not installed!")
             return
         end
-        check_path(rocks.get_rocks_toml_path(), "rocks.toml")
+        check_path(rocks.get_rocks_toml_path(), "rocks.toml", true)
     end
     do
         local config = vim.g.rocks_nvim
@@ -262,8 +264,8 @@ local function stats()
             local parent = vim.iter(fs.parents(source)):skip(2):next()
             rtp_info(parent)
         elseif nix and nix.shell.ours then
-            -- if we are using our dev shell just find rocks.toml
-            rtp_info(root("rocks.toml"))
+            -- if we are using our dev shell just find our flake.nix
+            rtp_info(vim.fs.joinpath(root("flake.nix"), "nvim"))
         else
             rtp_info(root("rocks.toml") or root("init.lua"))
         end

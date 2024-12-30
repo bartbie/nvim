@@ -94,7 +94,7 @@ in rec {
     ''
          do
              -- set global flag to mark our shim config
-      vim.g.is_nix_shim = true
+             vim.g.is_nix_shim = true
              local join = vim.fs.joinpath
 
              -- find our config
@@ -115,15 +115,5 @@ in rec {
                  vim.notify("shim couldn't find the config to load!")
              end
          end
-    '';
-
-  mkShimConfig = {src}:
-    pkgs.runCommand "nvim-shim-config" {inherit src;} ''
-      if [ -f "$src/rocks.toml" ]; then
-        cp -r "$src/rocks.toml" .
-      fi
-      cp -r ${shim-init-lua}/init.lua .
-      mkdir -p "$out"
-      cp -r ./* "$out"
     '';
 }

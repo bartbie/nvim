@@ -37,6 +37,7 @@ with lib;
     src ? ../nvim, # Use this repo as src?
     withNvimRocks ? true, # Add rocks.nvim config to init.lua?
     hideSystemConfig ? withNvimRocks, # Remove stdpath("config"|"configdirs") from RTP?
+    rocksConfigPath ? null,
   }: let
     # This is the structure of a plugin definition.
     # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -193,12 +194,17 @@ with lib;
       ''
       # Add nvim-rocks setup to init.lua
       + optionalString withNvimRocks (with pkgs.luajitPackages;
+      let
+        # ugly hack so we can put arbitrary code if needed (it is.)
+        config_root = if rocksConfigPath == null then ''"${nvimRtp}/nvim"'' else rocksConfigPath;
+      in
         # lua
           ''
             local luarocks_config = ${luaRocksConfig}
+            local config_path_root = ${config_root}
             local rocks_config = {
                 rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                config_path = vim.fs.joinpath("${nvimRtp}", "nvim/rocks.toml"),
+                config_path = vim.fs.joinpath(config_path_root, "rocks.toml"),
                 luarocks_binary = "${luaInterpreter.pkgs.luarocks}/bin/luarocks",
                 luarocks_config = luarocks_config,
                 _log_level = vim.log.levels.TRACE,

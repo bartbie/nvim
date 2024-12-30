@@ -12,7 +12,7 @@ with final.pkgs.lib; let
 
   helpers = pkgs.callPackage ./overlay-helpers.nix {};
 
-  inherit (helpers) mkWithNewRocksToml mapNamesToPlugins mkShimConfig;
+  inherit (helpers) mkWithNewRocksToml shim-init-lua;
 
   ###
 
@@ -20,7 +20,6 @@ with final.pkgs.lib; let
     src = ../nvim;
     exclude.plugins = [
       "rocks.nvim" # mkNeovim will add it
-      "rocks-treesitter.nvim" # nix installs them
     ];
     exclude.rocks = [
     ];
@@ -57,8 +56,9 @@ in {
 
   # nvim for devshell that dynamically loads config at runtime
   devShell-nvim = mkNeovim {
-    src = mkShimConfig {inherit src;};
     inherit plugins extraPackages;
+    src = shim-init-lua;
+    rocksConfigPath = /*lua*/''vim.fs.joinpath(vim.fs.root(vim.env.PWD, "flake.nix"), "nvim")'';
   };
 
   # You can add as many derivations as you like.
