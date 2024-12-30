@@ -53,14 +53,22 @@ with lib;
     externalPackages = extraPackages ++ (optionals withSqlite [pkgs.sqlite]);
 
     # Map all plugins to an attrset { plugin = <plugin>; config = <config>; optional = <tf>; ... }
-    normalizedPlugins = map (x:
-      defaultPlugin
-      // (
-        if x ? plugin
-        then x
-        else {plugin = x;}
-      ))
-    plugins;
+    normalizedPlugins = let
+      filterRocks = filter (pkg: pkg.pname != "rocks.nvim");
+      addOptionalRocks = x: x ++ (optionals withNvimRocks [pkgs.vimPlugins.rocks-nvim]);
+      coerceToPlugin = x:
+        defaultPlugin
+        // (
+          if x ? plugin
+          then x
+          else {plugin = x;}
+        );
+    in
+      pipe plugins [
+        filterRocks
+        addOptionalRocks
+        (map coerceToPlugin)
+      ];
 
     # This nixpkgs util function creates an attrset
     # that pkgs.wrapNeovimUnstable uses to configure the Neovim build.

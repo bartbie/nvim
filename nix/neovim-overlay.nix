@@ -26,11 +26,9 @@ with final.pkgs.lib; let
     ];
   };
 
-  all-plugins = with pkgs.vimPlugins; [
+  plugins = with pkgs.vimPlugins; [
     nvim-treesitter.withAllGrammars
-    rocks-nvim
   ];
-  # ++ (mapNamesToPlugins rocks-toml.plugins);
 
   extraPackages = with pkgs; [
     lua-language-server
@@ -46,21 +44,21 @@ in {
   bartbie-nvim-extraPackages = extraPackages;
 
   bartbie-nvim = mkNeovim {
-    inherit src;
-    plugins = all-plugins;
-    inherit extraPackages;
+    inherit src plugins extraPackages;
+    ignoreConfigRegexes = [
+      "^lua/bartbie/bootstrap.lua"  # we don't need rocks bootstrap
+    ];
   };
 
   # This can be symlinked in the devShell's shellHook
   nvim-luarc-json = final.mk-luarc-json {
-    plugins = all-plugins;
+    inherit plugins;
   };
 
   # nvim for devshell that dynamically loads config at runtime
   devShell-nvim = mkNeovim {
     src = mkShimConfig {inherit src;};
-    plugins = all-plugins;
-    inherit extraPackages;
+    inherit plugins extraPackages;
   };
 
   # You can add as many derivations as you like.
