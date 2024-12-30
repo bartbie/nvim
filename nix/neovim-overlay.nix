@@ -46,7 +46,7 @@ in {
   bartbie-nvim = mkNeovim {
     inherit src plugins extraPackages;
     ignoreConfigRegexes = [
-      "^lua/bartbie/bootstrap.lua"  # we don't need rocks bootstrap
+      "^lua/bartbie/bootstrap.lua" # we don't need rocks bootstrap
     ];
   };
 
