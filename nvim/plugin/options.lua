@@ -35,6 +35,9 @@ o.foldenable = true
 o.splitright = true
 o.splitbelow = true
 
+-- netrw
+vim.g.netrw_liststyle = 1
+
 -- ui
 o.number = true
 o.relativenumber = true

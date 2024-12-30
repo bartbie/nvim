@@ -5,4 +5,3 @@ local is_nix = vim.g.is_nix
 if not is_nix then
     require("bartbie.bootstrap").bootstrap_rocks()
 end
-require("bartbie.config.options")
