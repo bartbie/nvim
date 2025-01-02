@@ -58,7 +58,11 @@ in {
   devShell-nvim = mkNeovim {
     inherit plugins extraPackages;
     src = shim-init-lua;
-    rocksConfigPath = /*lua*/''vim.fs.joinpath(vim.fs.root(vim.env.PWD, "flake.nix"), "nvim")'';
+    rocksConfigPath =
+      /*
+      lua
+      */
+      ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, "flake.nix"), "nvim")'';
   };
 
   # You can add as many derivations as you like.

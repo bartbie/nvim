@@ -40,16 +40,32 @@ in rec {
 
   readRocksToml = {
     src, # path
-    exclude, # {plugins = [""], rocks = [""]}
+    exclude ? {}, # {plugins = [""], rocks = [""]}
+    override ? {},
   }:
     with builtins; let
-      inherit (fromTOML (readFile src)) plugins rocks;
+      default-exclude = {
+        plugins = [
+          /*
+          "rocks.nvim"
+          */
+        ];
+        rocks = [
+          /*
+          "toml"
+          */
+        ];
+      };
       filterAttrsByName = keys: set:
         attrsets.filterAttrs (n: _: !(elem n keys)) set;
-    in {
-      rocks = filterAttrsByName exclude.rocks rocks;
-      plugins = filterAttrsByName exclude.plugins plugins;
-    };
+      exc = default-exclude // exclude;
+      old = fromTOML (readFile src);
+      new = {
+        rocks = filterAttrsByName exc.rocks old.rocks;
+        plugins = filterAttrsByName exc.plugins old.plugins;
+      };
+    in
+      attrsets.recursiveUpdate old new;
 
   overwriteRocksToml = {
     data,
@@ -73,13 +89,14 @@ in rec {
   mkWithNewRocksToml = {
     src,
     name ? "nvim",
-    exclude,
+    exclude ? {},
+    override ? {},
   }:
     overwriteRocksToml {
       inherit src name;
       data = readRocksToml {
         src = "${src}/rocks.toml";
-        inherit exclude;
+        inherit exclude override;
       };
     };
 
@@ -92,28 +109,28 @@ in rec {
     pkgs.writeTextDir "init.lua"
     # lua
     ''
-         do
-             -- set global flag to mark our shim config
-             vim.g.is_nix_shim = true
-             local join = vim.fs.joinpath
+      do
+          -- set global flag to mark our shim config
+          vim.g.is_nix_shim = true
+          local join = vim.fs.joinpath
 
-             -- find our config
-             local conf_path = (function()
-                 local pwd = vim.env.PWD
-                 local nvim_root = vim.fs.root(pwd, {"init.lua"})
-                 local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
-                 return nvim_root or join(repo_root or pwd, "nvim")
-             end)()
+          -- find our config
+          local conf_path = (function()
+              local pwd = vim.env.PWD
+              local nvim_root = vim.fs.root(pwd, {"init.lua"})
+              local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
+              return nvim_root or join(repo_root or pwd, "nvim")
+          end)()
 
-             local init_path = join(conf_path, "init.lua")
-             if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
-                 vim.opt.packpath:prepend(conf_path)
-                 vim.opt.runtimepath:prepend(conf_path)
-                 vim.opt.runtimepath:append(join(conf_path, "after"))
-                 dofile(init_path)
-             else
-                 vim.notify("shim couldn't find the config to load!")
-             end
-         end
+          local init_path = join(conf_path, "init.lua")
+          if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
+              vim.opt.packpath:prepend(conf_path)
+              vim.opt.runtimepath:prepend(conf_path)
+              vim.opt.runtimepath:append(join(conf_path, "after"))
+              dofile(init_path)
+          else
+              vim.notify("shim couldn't find the config to load!")
+          end
+      end
     '';
 }

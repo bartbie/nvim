@@ -193,39 +193,41 @@ with lib;
         end
       ''
       # Add nvim-rocks setup to init.lua
-      + optionalString withNvimRocks (with pkgs.luajitPackages;
-      let
+      + optionalString withNvimRocks (with pkgs.luajitPackages; let
         # ugly hack so we can put arbitrary code if needed (it is.)
-        config_root = if rocksConfigPath == null then ''"${nvimRtp}/nvim"'' else rocksConfigPath;
+        config_root =
+          if rocksConfigPath == null
+          then ''"${nvimRtp}/nvim"''
+          else rocksConfigPath;
       in
         # lua
-          ''
-            local luarocks_config = ${luaRocksConfig}
-            local config_path_root = ${config_root}
-            local rocks_config = {
-                rocks_path = vim.fn.stdpath("data") .. "/rocks",
-                config_path = vim.fs.joinpath(config_path_root, "rocks.toml"),
-                luarocks_binary = "${luaInterpreter.pkgs.luarocks}/bin/luarocks",
-                luarocks_config = luarocks_config,
-                _log_level = vim.log.levels.TRACE,
-            }
+        ''
+          local luarocks_config = ${luaRocksConfig}
+          local config_path_root = ${config_root}
+          local rocks_config = {
+              rocks_path = vim.fn.stdpath("data") .. "/rocks",
+              config_path = vim.fs.joinpath(config_path_root, "rocks.toml"),
+              luarocks_binary = "${luaInterpreter.pkgs.luarocks}/bin/luarocks",
+              luarocks_config = luarocks_config,
+              _log_level = vim.log.levels.TRACE,
+          }
 
-            vim.g.rocks_nvim = rocks_config
+          vim.g.rocks_nvim = rocks_config
 
-            local luarocks_path = {
-                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
-                vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
-            }
-            package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
+          local luarocks_path = {
+              vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
+              vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
+          }
+          package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
 
-            local luarocks_cpath = {
-                vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
-                vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
-            }
-            package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
+          local luarocks_cpath = {
+              vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
+              vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
+          }
+          package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
 
-            vim.opt.runtimepath:append(vim.fs.joinpath("${rocks-nvim}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
-          '')
+          vim.opt.runtimepath:append(vim.fs.joinpath("${rocks-nvim}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
+        '')
       # Wrap init.lua
       + ''
         do
