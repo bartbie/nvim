@@ -114,7 +114,7 @@ function find.loc_root(source, nix)
             return vim.NIL -- using this sentinel value is pretty ugly but eh
         end
     end
-    return root.find(source, "flake.nix") or root.find(source,"rocks.toml")
+    return root.find(source, "flake.nix") or root.find(source, "rocks.toml")
 end
 
 function M.get_roots(source)

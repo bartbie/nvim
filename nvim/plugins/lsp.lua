@@ -68,9 +68,7 @@ local servers = {
 local lspconfig = require("lspconfig")
 for name, opts in pairs(servers) do
     local overwrite = { capabilities = blink.get_lsp_capabilities(opts.capabilities) }
-    lspconfig[name].setup(
-        vim.tbl_extend("force", opts, overwrite)
-    )
+    lspconfig[name].setup(vim.tbl_extend("force", opts, overwrite))
 end
 
 require("lazydev").setup({
