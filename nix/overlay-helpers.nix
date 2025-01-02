@@ -116,10 +116,9 @@ in rec {
 
           -- find our config
           local conf_path = (function()
-              local pwd = vim.env.PWD
-              local nvim_root = vim.fs.root(pwd, {"init.lua"})
-              local repo_root = not nvim_root and vim.fs.root(pwd, {"flake.nix"})
-              return nvim_root or join(repo_root or pwd, "nvim")
+	      local pwd = vim.env.PWD
+	      local root = vim.fs.root(pwd, {"flake.nix"})
+	      return join(root, "nvim")
           end)()
 
           local init_path = join(conf_path, "init.lua")
