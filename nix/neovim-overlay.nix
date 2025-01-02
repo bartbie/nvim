@@ -62,7 +62,7 @@ in {
       /*
       lua
       */
-      ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, "flake.nix"), "nvim")'';
+      ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, {"flake.nix"}), "nvim")'';
   };
 
   # You can add as many derivations as you like.

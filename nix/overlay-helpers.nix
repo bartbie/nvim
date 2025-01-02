@@ -112,17 +112,19 @@ in rec {
       do
           -- set global flag to mark our shim config
           vim.g.is_nix_shim = true
+
           local join = vim.fs.joinpath
+	      local pwd = vim.env.PWD
 
           -- find our config
           local conf_path = (function()
-	      local pwd = vim.env.PWD
 	      local root = vim.fs.root(pwd, {"flake.nix"})
 	      return join(root, "nvim")
           end)()
 
           local init_path = join(conf_path, "init.lua")
           if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
+              package.path = package.path .. ";" .. join(conf_path, "/?.lua")
               vim.opt.packpath:prepend(conf_path)
               vim.opt.runtimepath:prepend(conf_path)
               vim.opt.runtimepath:append(join(conf_path, "after"))
