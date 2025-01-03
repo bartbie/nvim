@@ -37,4 +37,3 @@ function M.bootstrap_plugins_loader()
 end
 
 return M
-

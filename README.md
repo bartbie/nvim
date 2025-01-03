@@ -4,6 +4,8 @@
     </h1>
     <img src="https://img.shields.io/badge/NeoVim-%2357A143.svg?&style=for-the-badge&logo=neovim&logoColor=white" alt="Neovim"/>
     <img src="https://img.shields.io/badge/lua-%232C2D72.svg?style=for-the-badge&logo=lua&logoColor=white" alt="Lua"/>
+    <img src="https://img.shields.io/badge/nix-0175C2?style=for-the-badge&logo=NixOS&logoColor=white" alt="Nix"/>
+
 </div>
 
 ## What's this about?
@@ -20,8 +22,8 @@ nvim
 │  ├─ rocks.toml
 │  ├─ lua              # lazy-loaded
 │  │  └─ bartbie
-│  │     ├─ *          # my std-lib
 │  │     ├─ health.lua
+│  │     ├─ *          # my std-lib
 │  │     └─ bootstrap
 │  │        └─ *       # logic needed for bootstrapping
 │  ├─ plugin
