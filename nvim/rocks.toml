@@ -11,12 +11,7 @@
 "rocks-treesitter.nvim" = "1.3.0"
 "rocks-lazy.nvim" = "1.1.1"
 
-"kanagawa.nvim" = { version = "scm", colorscheme = [
-  "kanagawa",
-  "kanagawa-dragon",
-  "kanagawa-lotus",
-  "kanagawa-wave",
-] }
+"kanagawa.nvim" = { version = "scm" }
 "vim-fugitive" = { git = "tpope/vim-fugitive" }
 "blink.cmp" = { git = 'saghen/blink.cmp', build = "nix run .#build-plugin" }
 "oil.nvim" = "2.14.0"
@@ -29,7 +24,6 @@ auto_highlight = "all"
 auto_install = "false" # true | false | prompt
 
 [config]
-colorscheme = "kanagawa"
 
 [bundles.lsp]
 items = [
