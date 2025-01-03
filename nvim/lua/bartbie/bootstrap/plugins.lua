@@ -30,7 +30,8 @@ end
 function M.bootstrap_plugins_loader()
     local rtp = assert(nix.get_roots().rtp_root)
     if fs.basename(rtp) == "lua" then
-        rtp = fs.joinpath(vim.iter(fs.parents(rtp)):next(), "nvim")
+        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
+        rtp = fs.joinpath(parent, "nvim")
     end
     set_plugins_loader(rtp)
 end
