@@ -7,56 +7,55 @@
 </div>
 
 ## What's this about?
-Neovim is a lightweight yet powerful text editor/IDE/[PDE](https://youtu.be/QMVIJhC9Veg) focused on extensibility and user ergonomics.
-This config written in Lua is tailor-made for me for (completely subjective) maximum comfort and occasional productivity.
-Enjoy if you want.
+My spin on [PDE](https://youtu.be/QMVIJhC9Veg).
 
 ## File Structure and Architecture
-This config is essentially divided into three parts:
-1. `init.lua`, which, when put in `$XDG_CONFIG_HOME/nvim`, bootstraps the plugin manager and installs the plugin part,
-2. `lua/bartbie`, which acts as a plugin that managers can download and load,
-3. `assets`, which is a folder containing all the assets needed for the config that are not `lua` files.
  
 ```sh
-bartbie/nvim
-3. ├─ assets
-   │  └─ lsp_configs
-   │     └─ # config files of lsps, like pyrightconfig.json
-2. ├─ lua
-   │  └─ bartbie
-   │     ├─ utils
-   │     ├─ plugins
-   │     │  └─ # specs of the plugins
-   │     │ # modules not dependent on plugins other than lazy
-   │     ├─ config.lua
-   │     ├─ keymaps.lua
-   │     ├─ autocmds.lua
-   │     │ # plugin's init.lua and healthcheck
-   │     ├─ health.lua
-   │     └─ init.lua
-1. └─  init.lua # nvim's init.lua
-```
-### Rationale
-This architecture allows this config to pull updates via `lazy.nvim`, without the need for the user to pull the newest git changes themselves.
-
-Moreover, by de facto separating `lua/bartbie/`, as it now acts as a standalone plugin, defining the Nix flake for the package turns out to be relatively easy. 
-## Installation
-### Nix
-Use the provided flake.
-### Nvim's config
-Clone the repo either on `main` branch and let the `init.lua` handle the rest.
-```sh
-# change these if different XDG setup
-mv .config/nvim .config/nvim.bak
-mv ~/.local/share/nvim ~/.local/share/nvim.bak
-git clone --depth 1 https://github.com/bartbie/nvim ~/.config/nvim
 nvim
+├─ flake.nix
+├─ flake.lock
+├─ nvim                # sorted by order of initialization
+│  ├─ init.lua         # entry-point
+│  ├─ rocks.toml
+│  ├─ lua              # lazy-loaded
+│  │  └─ bartbie
+│  │     ├─ *          # my std-lib
+│  │     ├─ health.lua
+│  │     └─ bootstrap
+│  │        └─ *       # logic needed for bootstrapping
+│  ├─ plugin
+│  │  └─ *             # general non-plugin-specific configs
+│  ├─ plugins
+│  │  └─ *             # 3rd-party-plugins configs 
+│  └─ after
+│     └─ *             # configs (lazy-)loaded after everything else
+└─ nix
+   └─ *                # nix helpers
 ```
-### manually added plugin (lazy.nvim)
-I don't think anyone will particularly use this repo as a plugin in their very own config, but it is technically possible, and very much leveraged by the previously mentioned Installation strategies.
 
-## Acknowledgments
-Thanks to [@folke](https://github.com/folke) for creating both `lazy.nvim`, which powers this whole thing, and `LazyVim`, which I got inspired a lot while creating this personalized and lovely mess of a config.
+Follows Neovim's [order of initialization](https://neovim.io/doc/user/starting.html#_initialization)
+with an added twist of plugins configs loaded after `plugin` (but before `after`).
+
+`lua/` acts as the project's library and is not loaded unless explicitly by a `require` in configs.
+
+## Installation
+
+#### Nix
+
+Use the provided flake.
+
+You can use the provided devShell to hack on lua without needing to nix rebuild it everytime.
+
+#### Non-Nix
+
+Clone the repo's `nvim` folder
+
+<br/>
+
+`:Rocks sync` to install needed plugins
+
+`:healthcheck` to check config's health
 
 ## Licensing
 
