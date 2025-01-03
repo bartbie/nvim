@@ -5,3 +5,6 @@ local is_nix = vim.g.is_nix
 if not is_nix then
     require("bartbie.bootstrap").bootstrap_rocks()
 end
+
+-- i really just prefer to store plugins outside lua/ lol
+require("bartbie.nix").set_plugins_loader()
