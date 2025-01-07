@@ -26,6 +26,9 @@ o.spelllang = "en"
 -- undo
 o.undofile = true
 
+-- swap
+o.updatetime = 100
+
 -- fold
 o.foldenable = true
 
@@ -55,6 +58,8 @@ o.hlsearch = true
 
 o.termguicolors = vim.fn.has("termguicolors") == 1
 o.lazyredraw = true
+
+-- diagnostics ui
 
 local symbols = require("bartbie.symbols")
 
