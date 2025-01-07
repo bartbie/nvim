@@ -58,6 +58,3 @@ map("c", "%%", function()
         return "%%"
     end
 end, { expr = true, desc = "Expand to current buffer's directory" })
-
--- command alias for saving the buffer
-vim.api.nvim_create_user_command("W", "w", {})

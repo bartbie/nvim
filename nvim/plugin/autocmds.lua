@@ -1,6 +1,3 @@
--- autocmds that don't require any plugins
--- yanked from lazyvim
-
 local function augroup(name)
     return vim.api.nvim_create_augroup("bartbie_" .. name, { clear = true })
 end
