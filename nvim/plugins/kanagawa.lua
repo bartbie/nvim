@@ -10,7 +10,7 @@ kanagawa.setup({
             },
         },
     },
-    ---@param colors { theme: kanagawa.ThemeColors, palette: kanagawa.PaletteColors}
+    ---@param colors { theme: ThemeColors, palette: PaletteColors}
     overrides = function(colors)
         local theme = colors.theme
         local palette = colors.palette

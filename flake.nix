@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay"; 
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
   outputs = inputs @ {
@@ -35,22 +35,23 @@
           gen-luarc.overlays.default
         ];
       };
-      mkShell = nvim: pkgs.mkShell {
-        name = "bartbie-nvim-nix-shell";
-        buildInputs = with pkgs;
-          [
-            # Tools for Lua and Nix development, useful for editing files in this repo
-            stylua
-            luajitPackages.luacheck
-            alejandra
-            nvim
-          ]
-          ++ pkgs.bartbie-nvim-extraPackages;
-        shellHook = ''
-          # symlink the .luarc.json generated in the overlay
-          ln -fs ${pkgs.nvim-luarc-json} .luarc.json
-        '';
-      };
+      mkShell = nvim:
+        pkgs.mkShell {
+          name = "bartbie-nvim-nix-shell";
+          buildInputs = with pkgs;
+            [
+              # Tools for Lua and Nix development, useful for editing files in this repo
+              stylua
+              luajitPackages.luacheck
+              alejandra
+              nvim
+            ]
+            ++ pkgs.bartbie-nvim-extraPackages;
+          # shellHook = ''
+          #   # symlink the .luarc.json generated in the overlay
+          #   ln -fs ${pkgs.nvim-luarc-json} .luarc.json
+          # '';
+        };
     in {
       packages = rec {
         nvim = pkgs.bartbie-nvim;
