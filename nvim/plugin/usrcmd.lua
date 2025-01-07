@@ -4,6 +4,18 @@ usercmd("W", "w", {
     desc = "Command alias for saving the buffer.",
 })
 
+usercmd("LspWorkspaceAdd", function()
+    vim.lsp.buf.add_workspace_folder()
+end, { desc = "Add folder to workspace" })
+
+usercmd("LspWorkspaceList", function()
+    vim.notify(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+end, { desc = "List workspace folders" })
+
+usercmd("LspWorkspaceRemove", function()
+    vim.lsp.buf.remove_workspace_folder()
+end, { desc = "Remove folder from workspace" })
+
 do
     vim.g.disable_autoformat = false
     vim.b.disable_autoformat = false
