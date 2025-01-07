@@ -2,9 +2,6 @@ local o = vim.o
 local g = vim.g
 local opt = vim.opt
 
-g.mapleader = " "
-g.maplocalleader = " "
-
 -- general
 o.compatible = false
 g.editorconfig = true

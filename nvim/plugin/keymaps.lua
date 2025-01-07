@@ -3,6 +3,9 @@ local map = function(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", defaults, opts or {}))
 end
 
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 -- better up/down
 map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
 map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
@@ -58,3 +61,23 @@ map("c", "%%", function()
         return "%%"
     end
 end, { expr = true, desc = "Expand to current buffer's directory" })
+
+-- make macros activation harder to start accidentally
+local q_modes = { "n", "x" }
+map(q_modes, "qq", "q", { desc = "Start/Stop recording macro" })
+map(q_modes, "q", "reg_recording() != '' ? 'q' : '<Nop>'", { expr = true, desc = "Stop recording macro" })
+
+-- yank into system clipboard
+map({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank motion (OS)" })
+map({ "n", "v" }, "<leader>Y", '"+Y', { desc = "Yank line (OS)" })
+
+-- delete into system clipboard
+map({ "n", "v" }, "<leader>d", '"+d', { desc = "Delete motion (OS)" })
+map({ "n", "v" }, "<leader>D", '"+D', { desc = "Delete line (OS)" })
+
+-- paste from system clipboard
+map("n", "<leader>p", '"+p', { desc = "Paste after (OS)" })
+map("n", "<leader>P", '"+P', { desc = "Paste before (OS)" })
+
+-- files
+map("n", "<leader>fn", "<CMD>enew<CR>", { desc = "New File" })
