@@ -15,6 +15,16 @@ blink.setup(
                 "fallback",
             },
             ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+            cmdline = {
+                preset = "enter",
+                ["<Tab>"] = {
+                    "show",
+                    "snippet_forward",
+                    "select_next",
+                    "fallback",
+                },
+                ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+            },
         },
         completion = {
             list = {
