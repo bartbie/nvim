@@ -18,6 +18,7 @@
 "nvim-lspconfig" = "1.2.0"
 "lazydev.nvim" = "1.9.0"
 "conform.nvim" = "8.3.0"
+fzf-lua = "0.0.1626"
 
 [treesitter]
 # NOTE: These are parsers, not filetypes.

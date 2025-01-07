@@ -1,5 +1,5 @@
 local defaults = { silent = true }
-local map = function(mode, lhs, rhs, opts)
+local function map(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", defaults, opts or {}))
 end
 
@@ -81,3 +81,61 @@ map("n", "<leader>P", '"+P', { desc = "Paste before (OS)" })
 
 -- files
 map("n", "<leader>fn", "<CMD>enew<CR>", { desc = "New File" })
+
+-- LSP
+do
+    local lspb = vim.lsp.buf
+
+    ---jump diagnostics
+    ---@param count 1 | -1
+    ---@param severity? vim.diagnostic.Severity|vim.diagnostic.Severity[]|{ min: vim.diagnostic.Severity, max: vim.diagnostic.Severity }
+    local function diag_jmp(count, severity)
+        return function()
+            vim.diagnostic.jump({
+                count = count,
+                severity = severity,
+            })
+        end
+    end
+
+    local function source_code_action()
+        lspb.code_action({ context = { only = { "source" }, diagnostics = {} } })
+    end
+
+    vim.api.nvim_create_autocmd("LspAttach", {
+        group = require("bartbie.augroup")("lsp_attach_keymaps"),
+        callback = function()
+            local has_fzf, fzf = pcall(require, "fzf-lua")
+            fzf = fzf or {}
+            ---@param fzf_fn function
+            ---@param vim_fn function
+            ---@return function
+            local function fzf_or(fzf_fn, vim_fn)
+                return has_fzf and fzf_fn or vim_fn
+            end
+
+            map("n", "<leader>cl", "<cmd>LspInfo<cr>", { desc = "Lsp Info" })
+            map("n", "<leader>cA", source_code_action, { desc = "Source Action" })
+
+            -- defaults from nvim docs (https://neovim.io/doc/user/lsp.html#lsp-defaults)
+            -- "grn"    - N   - lspb.rename()
+            -- "gra"    - N V - lspb.code_action()
+            -- "gri"    - N   - lspb.implementation()
+            -- "gO"     - N   - lspb.document_symbol()
+            -- "CTRL-S" - I   - lspb.signature_help()
+            -- "K"      - N   - lspb.hover()
+
+            map("n", "gd", fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
+            map("n", "grd", fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
+            map("n", "grr", fzf_or(fzf.lsp_references, lspb.references), { desc = "Goto References" })
+            map("n", "grt", fzf_or(fzf.lsp_typedefs, lspb.type_definition), { desc = "Goto Type Definition" })
+            map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
+            --
+            map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
+            map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })
+            map("n", "grk", diag_jmp(-1), { desc = "Jump to Prev Diagnostic" })
+            map("n", "]e", diag_jmp(1, "ERROR"), { desc = "Next Error" })
+            map("n", "[e", diag_jmp(-1, "ERROR"), { desc = "Prev Error" })
+        end,
+    })
+end
