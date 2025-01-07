@@ -1,7 +1,4 @@
-local function augroup(name)
-    return vim.api.nvim_create_augroup("bartbie_" .. name, { clear = true })
-end
-
+local augroup = require("bartbie.augroup")
 local autocmd = vim.api.nvim_create_autocmd
 
 -- Check if we need to reload the file when it changed
@@ -79,5 +76,13 @@ autocmd({ "BufWritePre" }, {
         end
         local file = vim.uv.fs_realpath(event.match) or event.match
         vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
+    end,
+})
+
+-- Show diagnostic popup on cursor hover
+autocmd("CursorHold", {
+    group = augroup("diagnostic_float", { clear = true }),
+    callback = function()
+        vim.diagnostic.open_float(nil, { focusable = false })
     end,
 })
