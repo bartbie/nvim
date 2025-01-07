@@ -2,10 +2,10 @@
   description = "bartbie Neovim config";
 
   inputs = {
-    #  lua-language-server build's broken, this commit fixes it, remove later
-    nixpkgs.url = "github:NixOS/nixpkgs/1a9767900c410ce390d4eee9c70e59dd81ddecb5";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay"; 
   };
 
   outputs = inputs @ {
@@ -13,6 +13,7 @@
     nixpkgs,
     flake-utils,
     gen-luarc,
+    neovim-nightly-overlay,
     ...
   }: let
     # This is where the Neovim derivation is built.
@@ -23,6 +24,10 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [
+          # Add the neovim nightly package to the list of packages.
+          (final: prev: {
+            neovim-nightly-unwrapped = neovim-nightly-overlay.packages.${system}.default;
+          })
           neovim-overlay
           # This adds a function can be used to generate a .luarc.json
           # containing the Neovim API all plugins in the workspace directory.
@@ -30,7 +35,7 @@
           gen-luarc.overlays.default
         ];
       };
-      shell = pkgs.mkShell {
+      mkShell = nvim: pkgs.mkShell {
         name = "bartbie-nvim-nix-shell";
         buildInputs = with pkgs;
           [
@@ -38,7 +43,7 @@
             stylua
             luajitPackages.luacheck
             alejandra
-            devShell-nvim
+            nvim
           ]
           ++ pkgs.bartbie-nvim-extraPackages;
         shellHook = ''
@@ -49,10 +54,13 @@
     in {
       packages = rec {
         nvim = pkgs.bartbie-nvim;
-        default = nvim;
+        nvim-nightly = pkgs.bartbie-nvim-nightly;
+        default = nvim-nightly;
       };
-      devShells = {
-        default = shell;
+      devShells = rec {
+        stable = mkShell pkgs.devShell-nvim;
+        nightly = mkShell pkgs.devShell-nvim-nightly;
+        default = nightly;
       };
     })
     // {
