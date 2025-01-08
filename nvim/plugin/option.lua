@@ -75,8 +75,9 @@ vim.diagnostic.config({
         text = symbols_table,
     },
     virtual_text = {
-        prefix = function(d, _, _)
-            return symbols_table[d.severity]
+        prefix = "",
+        format = function(d)
+            return ("%s %s"):format(symbols_table[d.severity], d.message)
         end,
     },
     severity_sort = true,

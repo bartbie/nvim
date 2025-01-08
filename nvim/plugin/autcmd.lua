@@ -81,7 +81,7 @@ autocmd({ "BufWritePre" }, {
 
 -- Show diagnostic popup on cursor hover
 autocmd("CursorHold", {
-    group = augroup("diagnostic_float", { clear = true }),
+    group = augroup("diagnostic_float"),
     callback = function()
         vim.diagnostic.open_float(nil, { focusable = false })
     end,

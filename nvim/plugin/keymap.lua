@@ -27,6 +27,7 @@ map("n", "<C-k>", "<C-w>k", { desc = "Focus upper window" })
 map("n", "<C-l>", "<C-w>l", { desc = "Focus right window" })
 
 -- Resize window using <ctrl> HJKL keys
+-- FIXME
 map("n", "<C-H>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
 map("n", "<C-J>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 map("n", "<C-K>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
@@ -119,8 +120,6 @@ do
 
             -- defaults from nvim docs (https://neovim.io/doc/user/lsp.html#lsp-defaults)
             -- "grn"    - N   - lspb.rename()
-            -- "gra"    - N V - lspb.code_action()
-            -- "gri"    - N   - lspb.implementation()
             -- "gO"     - N   - lspb.document_symbol()
             -- "CTRL-S" - I   - lspb.signature_help()
             -- "K"      - N   - lspb.hover()
@@ -130,6 +129,8 @@ do
             map("n", "grr", fzf_or(fzf.lsp_references, lspb.references), { desc = "Goto References" })
             map("n", "grt", fzf_or(fzf.lsp_typedefs, lspb.type_definition), { desc = "Goto Type Definition" })
             map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
+            map("n", "gri", fzf_or(fzf.lsp_implementations, lspb.implementation), { desc = "Goto implementation" })
+            map("n", "gra", fzf_or(fzf.lsp_code_actions, lspb.code_action), { desc = "Goto implementation" })
             --
             map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
             map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })
