@@ -130,7 +130,7 @@ do
             map("n", "grt", fzf_or(fzf.lsp_typedefs, lspb.type_definition), { desc = "Goto Type Definition" })
             map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
             map("n", "gri", fzf_or(fzf.lsp_implementations, lspb.implementation), { desc = "Goto implementation" })
-            map("n", "gra", fzf_or(fzf.lsp_code_actions, lspb.code_action), { desc = "Goto implementation" })
+            map("n", "gra", fzf_or(fzf.lsp_code_actions, lspb.code_action), { desc = "Goto code actions" })
             --
             map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
             map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })

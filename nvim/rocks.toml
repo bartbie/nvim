@@ -20,6 +20,7 @@
 "conform.nvim" = "8.3.0"
 fzf-lua = "0.0.1626"
 "mini.nvim" = {version ="scm"}
+"which-key.nvim" = "3.15.0"
 
 [treesitter]
 # NOTE: These are parsers, not filetypes.
