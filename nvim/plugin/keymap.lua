@@ -108,6 +108,7 @@ do
         callback = function()
             local has_fzf, fzf = pcall(require, "fzf-lua")
             fzf = fzf or {}
+
             ---@param fzf_fn function
             ---@param vim_fn function
             ---@return function
@@ -139,4 +140,32 @@ do
             map("n", "[e", diag_jmp(-1, "ERROR"), { desc = "Prev Error" })
         end,
     })
+end
+
+-- Oil
+local has_oil, oil = pcall(require, "oil")
+if has_oil then
+    map("n", "-", oil.open, { desc = "Open file browser" })
+end
+
+-- fzf
+local has_fzf, fzf = pcall(require, "fzf-lua")
+if has_fzf then
+    map("n", "<leader>:", fzf.command_history, { desc = "Command History" })
+    -- find
+    map("n", "<leader>,", fzf.buffers, { desc = "Find Buffers" })
+    map("n", "<leader>fb", fzf.buffers, { desc = "Find Buffers" })
+    map("n", "<leader>ff", fzf.files, { desc = "Find Files" })
+    map("n", "<leader>fh", fzf.oldfiles, { desc = "Find Recent Files" })
+    -- search
+    map("n", "<leader>sg", fzf.live_grep_native, { desc = "Grep" })
+    map("n", "<leader>sw", fzf.grep_curbuf, { desc = "Buffer" })
+    map("n", "<leader>sd", fzf.diagnostics_document, { desc = "Diagnostics" })
+    map("n", "<leader>sD", fzf.diagnostics_workspace, { desc = "Diagnostics (Workspace)" })
+    map("n", "<leader>sh", fzf.helptags, { desc = "Helptags" })
+    map("n", "<leader>sk", fzf.keymaps, { desc = "Keymaps" })
+    map("n", "<leader>sm", fzf.marks, { desc = "Marks" })
+    -- git
+    map("n", "<leader>gc", fzf.git_commits, { desc = "commits" })
+    map("n", "<leader>gs", fzf.git_status, { desc = "status" })
 end
