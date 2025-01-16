@@ -13,7 +13,7 @@
 
 "kanagawa.nvim" = { version = "scm" }
 "vim-fugitive" = { git = "tpope/vim-fugitive" }
-"blink.cmp" = { git = 'saghen/blink.cmp', ignore_tags = true, build = "nix run .#build-plugin" }
+"blink.cmp" = { git = 'saghen/blink.cmp', rev = "a5402a1ae0ef71a3d47e5f82e35cefe7299ba508", build = "nix run .#build-plugin" }
 "oil.nvim" = "2.14.0"
 "nvim-lspconfig" = "1.2.0"
 "lazydev.nvim" = "1.9.0"
