@@ -77,6 +77,7 @@ blink.setup(
 
 local servers = {
     lua_ls = {},
+    ts_ls = {},
 }
 
 local lspconfig = require("lspconfig")
