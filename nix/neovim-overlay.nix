@@ -1,14 +1,18 @@
 # This overlay, when applied to nixpkgs, adds the final neovim derivation to nixpkgs.
 {inputs}: final: prev:
 with final.pkgs.lib; let
-  pkgs = final;
+  pkgs = prev;
 
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
   # pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
 
   # This is the helper function that builds the Neovim derivation.
-  mkNeovim = pkgs.callPackage ./mkNeovim.nix {/*inherit pkgs-wrapNeovim;*/};
+  mkNeovim = pkgs.callPackage ./mkNeovim.nix {
+    /*
+    inherit pkgs-wrapNeovim;
+    */
+  };
 
   helpers = pkgs.callPackage ./overlay-helpers.nix {};
 
@@ -41,24 +45,25 @@ with final.pkgs.lib; let
 
   # we define both of them twice
 
-  mkPkgNvim = neovim-unwrapped: mkNeovim {
-    inherit src plugins extraPackages neovim-unwrapped;
-    ignoreConfigRegexes = [
-      "^lua/bartbie/bootstrap/rocks.lua" # we don't need rocks bootstrap
-    ];
-  };
+  mkPkgNvim = neovim-unwrapped:
+    mkNeovim {
+      inherit src plugins extraPackages neovim-unwrapped;
+      ignoreConfigRegexes = [
+        "^lua/bartbie/bootstrap/rocks.lua" # we don't need rocks bootstrap
+      ];
+    };
 
   # nvim for devshell that dynamically loads config at runtime
-  mkDevShellNvim = neovim-unwrapped: mkNeovim {
-    inherit plugins extraPackages neovim-unwrapped;
-    src = shim-init-lua;
-    rocksConfigPath =
-      /*
-      lua
-      */
-      ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, {"flake.nix"}), "nvim")'';
-  };
-
+  mkDevShellNvim = neovim-unwrapped:
+    mkNeovim {
+      inherit plugins extraPackages neovim-unwrapped;
+      src = shim-init-lua;
+      rocksConfigPath =
+        /*
+        lua
+        */
+        ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, {"flake.nix"}), "nvim")'';
+    };
 in {
   # pass our extra packages via the overlay
   # maybe a bit ugly but hey it works
