@@ -45,6 +45,7 @@
               luajitPackages.luacheck
               alejandra
               nvim
+              nil
             ]
             ++ pkgs.bartbie-nvim-extraPackages;
           # shellHook = ''
@@ -53,11 +54,13 @@
           # '';
         };
     in {
-      packages = rec {
-        nvim = pkgs.bartbie-nvim;
-        nvim-nightly = pkgs.bartbie-nvim-nightly;
-        default = nvim-nightly;
-      };
+      packages =
+        rec {
+          nvim = pkgs.bartbie-nvim;
+          nvim-nightly = pkgs.bartbie-nvim-nightly;
+          default = nvim-nightly;
+        }
+        // {inherit (pkgs) bartbie-nvim bartbie-nvim-nightly;};
       devShells = rec {
         stable = mkShell pkgs.devShell-nvim;
         nightly = mkShell pkgs.devShell-nvim-nightly;
