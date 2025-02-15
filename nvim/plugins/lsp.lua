@@ -78,6 +78,28 @@ blink.setup(
 local servers = {
     lua_ls = {},
     ts_ls = {},
+    nil_ls = {},
+    rust_analyzer = {
+        root_dir = require("lspconfig.util").root_pattern("Cargo.toml"),
+        settings = {
+            ["rust-analyzer"] = {
+                cargo = {
+                    allFeatures = true,
+                },
+            },
+        },
+    },
+    gopls = {},
+    htmx = {},
+    jqls = {},
+    zls = {},
+    fish_lsp = {},
+    gleam = {},
+    cssls = {},
+    jsonls = {},
+    yamlls = {},
+    csharp_ls = {},
+    clojure_lsp = {},
 }
 
 local lspconfig = require("lspconfig")
