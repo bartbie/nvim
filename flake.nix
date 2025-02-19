@@ -21,13 +21,7 @@
     (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [
-          # Add the neovim nightly package to the list of packages.
-          (_: _: {
-            neovim-nightly-unwrapped = neovim-nightly-overlay.packages.${system}.default;
-          })
-          neovim-overlay
-        ];
+        overlays = [neovim-overlay];
       };
       mkShell = nvim:
         pkgs.mkShell {

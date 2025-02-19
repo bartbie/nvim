@@ -16,7 +16,8 @@
   helpers = pkgs.callPackage ./overlay-helpers.nix {};
   inherit (helpers) mkWithNewRocksToml shim-init-lua;
 
-  inherit (pkgs) neovim-nightly-unwrapped neovim-unwrapped;
+  neovim-nightly-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+  inherit (pkgs) neovim-unwrapped;
   ###
 
   src = mkWithNewRocksToml {
