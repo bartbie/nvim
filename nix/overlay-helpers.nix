@@ -4,21 +4,6 @@
   stdenv,
 }: let
   rpipe = ps: x: lib.pipe x ps;
-in rec {
-  # Use this to create a plugin from a flake input
-  mkNvimPlugin = src: pname:
-    pkgs.vimUtils.buildVimPlugin {
-      inherit pname src;
-      version = src.lastModifiedDate;
-    };
-  # A plugin can either be a package or an attrset, such as
-  # { plugin = <plugin>; # the package, e.g. pkgs.vimPlugins.nvim-cmp
-  #   config = <config>; # String; a config that will be loaded with the plugin
-  #   # Boolean; Whether to automatically load the plugin as a 'start' plugin,
-  #   # or as an 'opt' plugin, that can be loaded with `:packadd!`
-  #   optional = <true|false>; # Default: false
-  #   ...
-  # }
 
   # map string -> plugin from pkgs.vimPlugins
   mapNameToPlugin = rpipe [
@@ -26,16 +11,24 @@ in rec {
     (x: pkgs.vimPlugins."${x}")
   ];
 
-  mapNamesToPlugins = rpipe [
-    # (filterAttrs (_: v: builtins.isString v))
-    (lib.attrsets.mapAttrsToList (n: _: (mapNameToPlugin n)))
-  ];
-
-  # isPluginGit = v: v ? "git";
-  # mapGitPluginsToBuild = rpipe (with attrsets; [
-  #   (filterAttrs (_: isPluginGit))
-  #   (mapAttrsToList (n: _: (mapNameToPlugin n)))
-  # ]);
+  overwriteRocksToml = {
+    data,
+    src,
+    name ? "nvim",
+    toml-path ? "./rocks.toml",
+  }: let
+    inherit (pkgs.formats.toml {}) generate;
+    rocks-toml = generate "rocks.toml" data;
+  in
+    pkgs.runCommand "${name}-rocks.nvim-overwritten" {
+      inherit src;
+    } ''
+      cp -r "$src"/* .
+      rm "${toml-path}"
+      cp -r "${rocks-toml}" "${toml-path}"
+      mkdir -p "$out"
+      cp -r ./* "$out"
+    '';
 
   readRocksToml = {
     src, # path
@@ -64,25 +57,34 @@ in rec {
     };
   in
     lib.attrsets.recursiveUpdate old new;
+in {
+  inherit mapNameToPlugin overwriteRocksToml readRocksToml;
 
-  overwriteRocksToml = {
-    data,
-    src,
-    name ? "nvim",
-    toml-path ? "./rocks.toml",
-  }: let
-    inherit (pkgs.formats.toml {}) generate;
-    rocks-toml = generate "rocks.toml" data;
-  in
-    pkgs.runCommand "${name}-rocks.nvim-overwritten" {
-      inherit src;
-    } ''
-      cp -r "$src"/* .
-      rm "${toml-path}"
-      cp -r "${rocks-toml}" "${toml-path}"
-      mkdir -p "$out"
-      cp -r ./* "$out"
-    '';
+  # Use this to create a plugin from a flake input
+  mkNvimPlugin = src: pname:
+    pkgs.vimUtils.buildVimPlugin {
+      inherit pname src;
+      version = src.lastModifiedDate;
+    };
+  # A plugin can either be a package or an attrset, such as
+  # { plugin = <plugin>; # the package, e.g. pkgs.vimPlugins.nvim-cmp
+  #   config = <config>; # String; a config that will be loaded with the plugin
+  #   # Boolean; Whether to automatically load the plugin as a 'start' plugin,
+  #   # or as an 'opt' plugin, that can be loaded with `:packadd!`
+  #   optional = <true|false>; # Default: false
+  #   ...
+  # }
+
+  mapNamesToPlugins = rpipe [
+    # (filterAttrs (_: v: builtins.isString v))
+    (lib.attrsets.mapAttrsToList (n: _: (mapNameToPlugin n)))
+  ];
+
+  # isPluginGit = v: v ? "git";
+  # mapGitPluginsToBuild = rpipe (with attrsets; [
+  #   (filterAttrs (_: isPluginGit))
+  #   (mapAttrsToList (n: _: (mapNameToPlugin n)))
+  # ]);
 
   mkWithNewRocksToml = {
     src,

@@ -38,15 +38,21 @@
       mkShell = nvim:
         pkgs.mkShell {
           name = "bartbie-nvim-nix-shell";
-          buildInputs = with pkgs;
-            [
-              stylua
-              luajitPackages.luacheck
-              alejandra
-              nvim
-              nil
-            ]
-            ++ pkgs.bartbie-nvim-extraPackages;
+          buildInputs =
+            [nvim]
+            ++ pkgs.bartbie-nvim-extraPackages
+            ++ builtins.attrValues {
+              inherit
+                (pkgs)
+                stylua
+                alejandra
+                nil
+                ;
+              inherit
+                (pkgs.luajitPackages)
+                luacheck
+                ;
+            };
         };
     in {
       packages = let
