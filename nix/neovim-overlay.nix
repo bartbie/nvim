@@ -78,24 +78,4 @@ in {
 
   devShell-nvim = mkDevShellNvim neovim-unwrapped;
   devShell-nvim-nightly = mkDevShellNvim neovim-nightly-unwrapped;
-
-  # This can be symlinked in the devShell's shellHook
-  nvim-luarc-json = final.mk-luarc-json {
-    inherit plugins;
-  };
-
-  # You can add as many derivations as you like.
-  # Use `ignoreConfigRegexes` to filter out config
-  # files you would not like to include.
-  #
-  # For example:
-  #
-  # nvim-pkg-no-telescope = mkNeovim {
-  #   plugins = [];
-  #   ignoreConfigRegexes = [
-  #     "^plugin/telescope.lua"
-  #     "^ftplugin/.*.lua"
-  #   ];
-  #   inherit extraPackages;
-  # };
 }

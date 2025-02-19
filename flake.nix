@@ -4,7 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    gen-luarc.url = "github:mrcjkb/nix-gen-luarc-json";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
   };
 
@@ -12,7 +11,6 @@
     self,
     nixpkgs,
     flake-utils,
-    gen-luarc,
     neovim-nightly-overlay,
     ...
   }: let
@@ -29,10 +27,6 @@
             neovim-nightly-unwrapped = neovim-nightly-overlay.packages.${system}.default;
           })
           neovim-overlay
-          # This adds a function can be used to generate a .luarc.json
-          # containing the Neovim API all plugins in the workspace directory.
-          # The generated file can be symlinked in the devShell's shellHook.
-          gen-luarc.overlays.default
         ];
       };
       mkShell = nvim:
