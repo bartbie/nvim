@@ -15,52 +15,20 @@
     ...
   }: let
     # This is where the Neovim derivation is built.
-    neovim-overlay = import ./nix/neovim-overlay.nix {inherit inputs;};
+    overlay = import ./nix/overlay.nix {inherit inputs;};
   in
     flake-utils.lib.eachDefaultSystem
     (system: let
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [neovim-overlay];
+        overlays = [overlay];
       };
-      mkShell = nvim:
-        pkgs.mkShell {
-          name = "bartbie-nvim-nix-shell";
-          buildInputs =
-            [nvim]
-            ++ pkgs.bartbie-nvim-extraPackages
-            ++ builtins.attrValues {
-              inherit
-                (pkgs)
-                stylua
-                alejandra
-                nil
-                ;
-              inherit
-                (pkgs.luajitPackages)
-                luacheck
-                ;
-            };
-        };
     in {
-      packages = let
-        nvim = pkgs.bartbie-nvim;
-        nvim-nightly = pkgs.bartbie-nvim-nightly;
-      in {
-        inherit nvim nvim-nightly;
-        inherit (pkgs) bartbie-nvim bartbie-nvim-nightly;
-        default = nvim-nightly;
-      };
-      devShells = let
-        stable = mkShell pkgs.devShell-nvim;
-        nightly = mkShell pkgs.devShell-nvim-nightly;
-      in {
-        inherit stable nightly;
-        default = nightly;
-      };
       formatter = pkgs.alejandra;
+      devShells = import ./nix/shell.nix pkgs;
+      packages = import ./nix/packages.nix pkgs;
     })
     // {
-      overlays.default = neovim-overlay;
+      overlays.default = overlay;
     };
 }
