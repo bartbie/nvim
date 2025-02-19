@@ -2,19 +2,19 @@
 {inputs}: final: prev: let
   pkgs = prev;
 
-  # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
-  # otherwise it could have an incompatible signature when applying this overlay.
-  # pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
-
-  # This is the helper function that builds the Neovim derivation.
-  mkNeovim = pkgs.callPackage ./mkNeovim.nix {
-    /*
-    inherit pkgs-wrapNeovim;
-    */
-  };
-
-  helpers = pkgs.callPackage ./overlay-helpers.nix {};
-  inherit (helpers) mkWithNewRocksToml shim-init-lua;
+  inherit
+    (pkgs.callPackage ./lib {
+      # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
+      # otherwise it could have an incompatible signature when applying this overlay.
+      # pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
+      /*
+      inherit pkgs-wrapNeovim;
+      */
+    })
+    mkNeovim # This is the helper function that builds the Neovim derivation.
+    mkWithNewRocksToml
+    shim-init-lua
+    ;
 
   neovim-nightly-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
   inherit (pkgs) neovim-unwrapped;

@@ -32,7 +32,7 @@
   # if the appName is something different than "nvim"
   viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
   vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
-  src ? ../nvim, # Use this repo as src?
+  src ? ../../nvim, # Use this repo as src?
   withNvimRocks ? true, # Add rocks.nvim config to init.lua?
   hideSystemConfig ? withNvimRocks, # Remove stdpath("config"|"configdirs") from RTP?
   rocksConfigPath ? null,
