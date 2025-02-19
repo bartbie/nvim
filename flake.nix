@@ -25,7 +25,7 @@
         inherit system;
         overlays = [
           # Add the neovim nightly package to the list of packages.
-          (final: prev: {
+          (_: _: {
             neovim-nightly-unwrapped = neovim-nightly-overlay.packages.${system}.default;
           })
           neovim-overlay
@@ -40,7 +40,6 @@
           name = "bartbie-nvim-nix-shell";
           buildInputs = with pkgs;
             [
-              # Tools for Lua and Nix development, useful for editing files in this repo
               stylua
               luajitPackages.luacheck
               alejandra
@@ -48,27 +47,25 @@
               nil
             ]
             ++ pkgs.bartbie-nvim-extraPackages;
-          # shellHook = ''
-          #   # symlink the .luarc.json generated in the overlay
-          #   ln -fs ${pkgs.nvim-luarc-json} .luarc.json
-          # '';
         };
     in {
-      packages =
-        rec {
-          nvim = pkgs.bartbie-nvim;
-          nvim-nightly = pkgs.bartbie-nvim-nightly;
-          default = nvim-nightly;
-        }
-        // {inherit (pkgs) bartbie-nvim bartbie-nvim-nightly;};
-      devShells = rec {
+      packages = let
+        nvim = pkgs.bartbie-nvim;
+        nvim-nightly = pkgs.bartbie-nvim-nightly;
+      in {
+        inherit nvim nvim-nightly;
+        inherit (pkgs) bartbie-nvim bartbie-nvim-nightly;
+        default = nvim-nightly;
+      };
+      devShells = let
         stable = mkShell pkgs.devShell-nvim;
         nightly = mkShell pkgs.devShell-nvim-nightly;
+      in {
+        inherit stable nightly;
         default = nightly;
       };
     })
     // {
-      # You can add this overlay to your NixOS configuration
       overlays.default = neovim-overlay;
     };
 }

@@ -2,9 +2,8 @@
   pkgs,
   lib,
   stdenv,
-}:
-with lib; let
-  rpipe = ps: x: pipe x ps;
+}: let
+  rpipe = ps: x: lib.pipe x ps;
 in rec {
   # Use this to create a plugin from a flake input
   mkNvimPlugin = src: pname:
@@ -27,10 +26,10 @@ in rec {
     (x: pkgs.vimPlugins."${x}")
   ];
 
-  mapNamesToPlugins = rpipe (with attrsets; [
+  mapNamesToPlugins = rpipe [
     # (filterAttrs (_: v: builtins.isString v))
-    (mapAttrsToList (n: _: (mapNameToPlugin n)))
-  ]);
+    (lib.attrsets.mapAttrsToList (n: _: (mapNameToPlugin n)))
+  ];
 
   # isPluginGit = v: v ? "git";
   # mapGitPluginsToBuild = rpipe (with attrsets; [
@@ -42,30 +41,29 @@ in rec {
     src, # path
     exclude ? {}, # {plugins = [""], rocks = [""]}
     override ? {},
-  }:
-    with builtins; let
-      default-exclude = {
-        plugins = [
-          /*
-          "rocks.nvim"
-          */
-        ];
-        rocks = [
-          /*
-          "toml"
-          */
-        ];
-      };
-      filterAttrsByName = keys: set:
-        attrsets.filterAttrs (n: _: !(elem n keys)) set;
-      exc = default-exclude // exclude;
-      old = fromTOML (readFile src);
-      new = {
-        rocks = filterAttrsByName exc.rocks old.rocks;
-        plugins = filterAttrsByName exc.plugins old.plugins;
-      };
-    in
-      attrsets.recursiveUpdate old new;
+  }: let
+    default-exclude = {
+      plugins = [
+        /*
+        "rocks.nvim"
+        */
+      ];
+      rocks = [
+        /*
+        "toml"
+        */
+      ];
+    };
+    filterAttrsByName = keys: set:
+      lib.attrsets.filterAttrs (n: _: !(builtins.elem n keys)) set;
+    exc = default-exclude // exclude;
+    old = builtins.fromTOML (builtins.readFile src);
+    new = {
+      rocks = filterAttrsByName exc.rocks old.rocks;
+      plugins = filterAttrsByName exc.plugins old.plugins;
+    };
+  in
+    lib.attrsets.recursiveUpdate old new;
 
   overwriteRocksToml = {
     data,

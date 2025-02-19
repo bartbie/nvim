@@ -1,6 +1,5 @@
 # This overlay, when applied to nixpkgs, adds the final neovim derivation to nixpkgs.
-{inputs}: final: prev:
-with final.pkgs.lib; let
+{inputs}: final: prev: let
   pkgs = prev;
 
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
@@ -15,7 +14,6 @@ with final.pkgs.lib; let
   };
 
   helpers = pkgs.callPackage ./overlay-helpers.nix {};
-
   inherit (helpers) mkWithNewRocksToml shim-init-lua;
 
   inherit (pkgs) neovim-nightly-unwrapped neovim-unwrapped;
@@ -30,18 +28,24 @@ with final.pkgs.lib; let
     ];
   };
 
-  plugins = with pkgs.vimPlugins; [
-    nvim-treesitter.withAllGrammars
-  ];
+  plugins = builtins.attrValues {
+    inherit
+      (pkgs.vimPlugins.nvim-treesitter)
+      withAllGrammars
+      ;
+  };
 
-  extraPackages = with pkgs; [
-    lua-language-server
-    nil
-    gcc
-    ripgrep
-    fd
-    luarocks
-  ];
+  extraPackages = builtins.attrValues {
+    inherit
+      (pkgs)
+      lua-language-server
+      nil
+      gcc
+      ripgrep
+      fd
+      luarocks
+      ;
+  };
 
   # we define both of them twice
 
