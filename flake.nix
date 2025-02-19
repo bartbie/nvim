@@ -64,6 +64,7 @@
         inherit stable nightly;
         default = nightly;
       };
+      formatter = pkgs.alejandra;
     })
     // {
       overlays.default = neovim-overlay;
