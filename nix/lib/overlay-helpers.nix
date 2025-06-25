@@ -49,7 +49,7 @@
     };
     filterAttrsByName = keys: set:
       lib.attrsets.filterAttrs (n: _: !(builtins.elem n keys)) set;
-    exc = default-exclude // exclude;
+    exc = lib.recursiveUpdate default-exclude exclude;
     old = builtins.fromTOML (builtins.readFile src);
     new = {
       rocks = filterAttrsByName exc.rocks old.rocks;
