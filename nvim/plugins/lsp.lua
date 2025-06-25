@@ -15,7 +15,9 @@ blink.setup(
                 "fallback",
             },
             ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
-            cmdline = {
+        },
+        cmdline = {
+            keymap = {
                 preset = "enter",
                 ["<Tab>"] = {
                     "show",
