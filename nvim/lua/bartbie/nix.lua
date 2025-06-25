@@ -117,12 +117,25 @@ function find.loc_root(source, nix)
     return root.find(source, "flake.nix") or root.find(source, "rocks.toml")
 end
 
+local function get_source(level)
+    local x = debug.getinfo(level + 1, "S")
+    return x and x.source:gsub("^@+", "")
+end
+
 function M.get_roots(source)
-    local src = source or fs.normalize(debug.getinfo(2, "S").source:sub(2))
+    local prev = get_source(2)
+    source = fs.normalize(
+        source
+            or (
+                prev == ":lua" -- we are being called from cmd, check from this file
+                and get_source(1):gsub("/bartbie/nix.lua$", "")
+            )
+            or prev
+    )
     local nix = M.info()
     return {
-        rtp_root = find.rtp_root(src, nix),
-        loc_root = find.loc_root(src, nix),
+        rtp_root = find.rtp_root(source, nix),
+        loc_root = find.loc_root(source, nix),
     }
 end
 
