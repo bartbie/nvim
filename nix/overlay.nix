@@ -1,6 +1,7 @@
 # This overlay, when applied to nixpkgs, adds the final neovim derivation to nixpkgs.
 {inputs}: final: prev: let
   pkgs = prev;
+  inherit (pkgs) lib;
 
   inherit
     (pkgs.callPackage ./lib {
@@ -29,12 +30,41 @@
     ];
   };
 
-  plugins = builtins.attrValues {
-    inherit
-      (pkgs.vimPlugins.nvim-treesitter)
-      withAllGrammars
-      ;
-  };
+  use-rocks = false;
+
+  plugins = builtins.attrValues ({
+      inherit
+        (pkgs.vimPlugins.nvim-treesitter)
+        withAllGrammars
+        ;
+
+      inherit
+        (pkgs.vimPlugins)
+        # rocks-treesitter-nvim
+        # rocks-lazy-nvim
+        kanagawa-nvim
+        vim-fugitive
+        blink-cmp
+        oil-nvim
+        nvim-lspconfig
+        lazydev-nvim
+        conform-nvim
+        fzf-lua
+        mini-nvim
+        which-key-nvim
+        ;
+      # lazy = pkgs.vimUtils.buildVimPlugin {
+      #   pname = "";
+      #   src = ./.;
+      #   version = "";
+      # };
+    }
+    // (lib.optionalAttrs use-rocks {
+      inherit
+        (pkgs.vimPlugins)
+        rocks-config-nvim
+        ;
+    }));
 
   extraPackages = builtins.attrValues {
     inherit
@@ -56,6 +86,7 @@
       ignoreConfigRegexes = [
         "^lua/bartbie/bootstrap/rocks.lua" # we don't need rocks bootstrap
       ];
+      withNvimRocks = use-rocks;
     };
 
   # nvim for devshell that dynamically loads config at runtime
@@ -68,6 +99,7 @@
         lua
         */
         ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, {"flake.nix"}), "nvim")'';
+      withNvimRocks = use-rocks;
     };
 in {
   # pass our extra packages via the overlay

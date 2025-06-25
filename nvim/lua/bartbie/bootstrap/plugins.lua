@@ -36,4 +36,20 @@ function M.bootstrap_plugins_loader()
     set_plugins_loader(rtp)
 end
 
+function M.load_all_plugin_configs()
+    local rtp = assert(nix.get_roots().rtp_root)
+    if fs.basename(rtp) == "lua" then
+        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
+        rtp = fs.joinpath(parent, "nvim")
+    end
+    local files = vim.fn.glob(rtp .. "/plugins/*.lua", false, true)
+    for _, file in ipairs(files) do
+        local name = vim.fn.fnamemodify(file, ":t:r")
+        local try = pcall(require, "plugins." .. name)
+        if not try then
+            vim.notify_once(("Couldn't load %s\npath: %s"):format(name, file), vim.diagnostic.severity.ERROR)
+        end
+    end
+end
+
 return M

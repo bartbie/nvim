@@ -56,7 +56,7 @@
       plugins = filterAttrsByName exc.plugins old.plugins;
     };
   in
-    lib.attrsets.recursiveUpdate old new;
+    lib.attrsets.recursiveUpdate (builtins.removeAttrs old ["rocks" "plugins"]) new;
 in {
   inherit mapNameToPlugin overwriteRocksToml readRocksToml;
 

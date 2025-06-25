@@ -8,3 +8,5 @@ end
 
 -- i really just prefer to store plugins outside lua/ lol
 require("bartbie.bootstrap.plugins").bootstrap_plugins_loader()
+-- HOTFIX
+require("bartbie.bootstrap.plugins").load_all_plugin_configs()
