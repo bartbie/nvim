@@ -14,6 +14,7 @@ local servers = {
     "yamlls",
     "csharp_ls",
     "clojure_lsp",
+    "scheme-langserver",
 }
 
 for _, name in ipairs(servers) do
