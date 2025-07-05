@@ -52,6 +52,7 @@
         fzf-lua
         mini-nvim
         which-key-nvim
+        nvim-parinfer
         ;
       # lazy = pkgs.vimUtils.buildVimPlugin {
       #   pname = "";
