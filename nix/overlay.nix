@@ -53,6 +53,9 @@
         mini-nvim
         which-key-nvim
         nvim-parinfer
+        blink-compat
+        conjure
+        cmp-conjure
         ;
       # lazy = pkgs.vimUtils.buildVimPlugin {
       #   pname = "";

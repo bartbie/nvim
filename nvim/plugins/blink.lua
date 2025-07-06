@@ -72,6 +72,7 @@ blink.setup(
             providers = {
                 lsp = { fallbacks = { "lazydev" } },
                 lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
+                conjure = { name = "Conjure", module = "blink.compat.source" },
             },
         },
     }
