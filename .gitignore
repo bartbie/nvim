@@ -1,6 +1,5 @@
 test.*
 *.org
-*.vim
 result
 .direnv
 .luarc.json
