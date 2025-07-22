@@ -4,6 +4,10 @@ return {
             cargo = {
                 allFeatures = true,
             },
-        },
+            check = {
+                command = "clippy"
+            },
+            checkOnSave = true,
+        }
     },
 }
