@@ -33,9 +33,7 @@
   viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
   vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
   src ? ../../nvim, # Use this repo as src?
-  withNvimRocks ? true, # Add rocks.nvim config to init.lua?
-  hideSystemConfig ? withNvimRocks, # Remove stdpath("config"|"configdirs") from RTP?
-  rocksConfigPath ? null,
+  hideSystemConfig ? true, # Remove stdpath("config"|"configdirs") from RTP?
 }: let
   # This is the structure of a plugin definition.
   # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -53,8 +51,6 @@
 
   # Map all plugins to an attrset { plugin = <plugin>; config = <config>; optional = <tf>; ... }
   normalizedPlugins = let
-    filterRocks = lib.filter (pkg: pkg.pname != "rocks.nvim");
-    addOptionalRocks = x: x ++ (lib.optionals withNvimRocks [pkgs.vimPlugins.rocks-nvim]);
     coerceToPlugin = x:
       defaultPlugin
       // (
@@ -64,8 +60,6 @@
       );
   in
     lib.pipe plugins [
-      filterRocks
-      addOptionalRocks
       (map coerceToPlugin)
     ];
 
@@ -75,47 +69,6 @@
     inherit extraPython3Packages withPython3 withRuby withNodeJs viAlias vimAlias;
     plugins = normalizedPlugins;
   };
-
-  luaInterpreter = neovim-unwrapped.lua;
-
-  luaRocksConfig = let
-    generate = config-gen-args: rest-args:
-      lib.pipe config-gen-args [
-        pkgs.lua.pkgs.luaLib.generateLuarocksConfig
-        (x: lib.recursiveUpdate x rest-args)
-        (lib.generators.toLua {asBindings = false;})
-      ];
-
-    luarocksStore = luaInterpreter.pkgs.luarocks;
-    luacurlPkg = luaInterpreter.pkgs.lua-curl;
-  in
-    generate {externalDeps = [pkgs.curl.dev];} {
-      lua_version = "5.1";
-      rocks_trees = [
-        {
-          name = "rocks.nvim";
-          root = "~/.local/share/nvim/rocks";
-        }
-        {
-          name = "rocks-generated.nvim";
-          root = "${luarocksStore}";
-        }
-        {
-          name = "lua-curl";
-          root = "${luacurlPkg}";
-        }
-        {
-          name = "sqlite.lua";
-          root = "${luaInterpreter.pkgs.sqlite}";
-        }
-      ];
-
-      # to help some package need variables for lib-curl.lua to be installable
-      variables = {
-        # MYSQL_INCDIR = "${libmysqlclient.dev}/include/mysql";
-        # MYSQL_LIBDIR = "${libmysqlclient}/lib/mysql";
-      };
-    };
 
   # This uses the ignoreConfigRegexes list to filter
   # the nvim directory
@@ -190,42 +143,6 @@
           end
       end
     ''
-    # Add nvim-rocks setup to init.lua
-    + lib.optionalString withNvimRocks (with pkgs.luajitPackages; let
-      # ugly hack so we can put arbitrary code if needed (it is.)
-      config_root =
-        if rocksConfigPath == null
-        then ''"${nvimRtp}/nvim"''
-        else rocksConfigPath;
-    in
-      # lua
-      ''
-        local luarocks_config = ${luaRocksConfig}
-        local config_path_root = ${config_root}
-        local rocks_config = {
-            rocks_path = vim.fn.stdpath("data") .. "/rocks",
-            config_path = vim.fs.joinpath(config_path_root, "rocks.toml"),
-            luarocks_binary = "${luaInterpreter.pkgs.luarocks}/bin/luarocks",
-            luarocks_config = luarocks_config,
-            _log_level = vim.log.levels.TRACE,
-        }
-
-        vim.g.rocks_nvim = rocks_config
-
-        local luarocks_path = {
-            vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?.lua"),
-            vim.fs.joinpath(rocks_config.rocks_path, "share", "lua", "5.1", "?", "init.lua"),
-        }
-        package.path = package.path .. ";" .. table.concat(luarocks_path, ";")
-
-        local luarocks_cpath = {
-            vim.fs.joinpath(rocks_config.rocks_path, "lib", "lua", "5.1", "?.so"),
-            vim.fs.joinpath(rocks_config.rocks_path, "lib64", "lua", "5.1", "?.so"),
-        }
-        package.cpath = package.cpath .. ";" .. table.concat(luarocks_cpath, ";")
-
-        vim.opt.runtimepath:append(vim.fs.joinpath("${rocks-nvim}", "rocks.nvim-scm-1-rocks", "rocks.nvim", "*"))
-      '')
     # Wrap init.lua
     + ''
       do

@@ -13,7 +13,6 @@
       */
     })
     mkNeovim # This is the helper function that builds the Neovim derivation.
-    mkWithNewRocksToml
     shim-init-lua
     ;
 
@@ -21,54 +20,32 @@
   inherit (pkgs) neovim-unwrapped;
   ###
 
-  src = mkWithNewRocksToml {
-    src = ../nvim;
-    exclude.plugins = [
-      "rocks.nvim" # mkNeovim will add it
-    ];
-    exclude.rocks = [
-    ];
+  src = ../nvim;
+
+  plugins = builtins.attrValues {
+    inherit
+      (pkgs.vimPlugins.nvim-treesitter)
+      withAllGrammars
+      ;
+
+    inherit
+      (pkgs.vimPlugins)
+      kanagawa-nvim
+      vim-fugitive
+      blink-cmp
+      oil-nvim
+      nvim-lspconfig
+      lazydev-nvim
+      conform-nvim
+      fzf-lua
+      mini-nvim
+      which-key-nvim
+      nvim-parinfer
+      blink-compat
+      conjure
+      cmp-conjure
+      ;
   };
-
-  use-rocks = false;
-
-  plugins = builtins.attrValues ({
-      inherit
-        (pkgs.vimPlugins.nvim-treesitter)
-        withAllGrammars
-        ;
-
-      inherit
-        (pkgs.vimPlugins)
-        # rocks-treesitter-nvim
-        # rocks-lazy-nvim
-        kanagawa-nvim
-        vim-fugitive
-        blink-cmp
-        oil-nvim
-        nvim-lspconfig
-        lazydev-nvim
-        conform-nvim
-        fzf-lua
-        mini-nvim
-        which-key-nvim
-        nvim-parinfer
-        blink-compat
-        conjure
-        cmp-conjure
-        ;
-      # lazy = pkgs.vimUtils.buildVimPlugin {
-      #   pname = "";
-      #   src = ./.;
-      #   version = "";
-      # };
-    }
-    // (lib.optionalAttrs use-rocks {
-      inherit
-        (pkgs.vimPlugins)
-        rocks-config-nvim
-        ;
-    }));
 
   extraPackages = builtins.attrValues {
     inherit
@@ -87,10 +64,6 @@
   mkPkgNvim = neovim-unwrapped:
     mkNeovim {
       inherit src plugins extraPackages neovim-unwrapped;
-      ignoreConfigRegexes = [
-        "^lua/bartbie/bootstrap/rocks.lua" # we don't need rocks bootstrap
-      ];
-      withNvimRocks = use-rocks;
     };
 
   # nvim for devshell that dynamically loads config at runtime
@@ -98,12 +71,6 @@
     mkNeovim {
       inherit plugins extraPackages neovim-unwrapped;
       src = shim-init-lua;
-      rocksConfigPath =
-        /*
-        lua
-        */
-        ''vim.fs.joinpath(vim.fs.root(vim.env.PWD, {"flake.nix"}), "nvim")'';
-      withNvimRocks = use-rocks;
     };
 in {
   # pass our extra packages via the overlay
