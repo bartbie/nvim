@@ -3,8 +3,10 @@
   pkgs = prev;
   inherit (pkgs) lib;
 
+  inherit (import ./lib {inherit lib;}) shim-init-lua;
+
   inherit
-    (pkgs.callPackage ./lib {
+    (pkgs.callPackage ./lib/mkNeovim.nix {
       # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
       # otherwise it could have an incompatible signature when applying this overlay.
       # pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
@@ -13,7 +15,6 @@
       */
     })
     mkNeovim # This is the helper function that builds the Neovim derivation.
-    shim-init-lua
     ;
 
   neovim-nightly-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
@@ -70,7 +71,7 @@
   mkDevShellNvim = neovim-unwrapped:
     mkNeovim {
       inherit plugins extraPackages neovim-unwrapped;
-      src = shim-init-lua;
+      src = shim-init-lua pkgs;
     };
 in {
   # pass our extra packages via the overlay
