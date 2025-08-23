@@ -1,10 +1,10 @@
 {pkgs, ...}: let
   mkShell = nvim:
     pkgs.mkShell {
-      name = "bartbie-nvim-nix-shell";
-      buildInputs =
+      name = "nvim-nix-shell";
+      packages =
         [nvim]
-        ++ pkgs.bartbie-nvim-extraPackages
+        ++ nvim.passthru.extraPackages
         ++ builtins.attrValues {
           inherit
             (pkgs)
@@ -19,8 +19,9 @@
         };
     };
 
-  stable = mkShell pkgs.devShell-nvim;
-  nightly = mkShell pkgs.devShell-nvim-nightly;
+  inherit (pkgs) nvimPackages;
+  stable = mkShell nvimPackages.stable-dev;
+  nightly = mkShell nvimPackages.nightly-dev;
 in {
   inherit stable nightly;
   default = nightly;

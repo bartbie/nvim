@@ -1,25 +1,15 @@
 # This overlay, when applied to nixpkgs, adds the final neovim derivation to nixpkgs.
 {inputs}: final: prev: let
   pkgs = prev;
-  inherit (pkgs) lib;
+  # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
+  # otherwise it could have an incompatible signature when applying this overlay.
+  pkgs-locked = inputs.nixpkgs.legacyPackages.${pkgs.system};
 
-  inherit (import ./lib {inherit lib;}) shim-init-lua;
-
-  inherit
-    (pkgs.callPackage ./lib/mkNeovim.nix {
-      # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
-      # otherwise it could have an incompatible signature when applying this overlay.
-      # pkgs-wrapNeovim = inputs.nixpkgs.legacyPackages.${pkgs.system};
-      /*
-      inherit pkgs-wrapNeovim;
-      */
-    })
-    mkNeovim # This is the helper function that builds the Neovim derivation.
-    ;
-
-  neovim-nightly-unwrapped = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
-  inherit (pkgs) neovim-unwrapped;
-  ###
+  mkNeovim = neovim-unwrapped:
+    pkgs.callPackage ./mkNeovim {
+      inherit (pkgs-locked) wrapNeovimUnstable neovimUtils;
+      inherit neovim-unwrapped;
+    };
 
   src = ../nvim;
 
@@ -60,27 +50,25 @@
       ;
   };
 
-  # we define both of them twice
+  nightly = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+  stable = pkgs.neovim-unwrapped;
 
-  mkPkgNvim = neovim-unwrapped:
-    mkNeovim {
-      inherit src plugins extraPackages neovim-unwrapped;
-    };
-
+  static = {inherit src;};
   # nvim for devshell that dynamically loads config at runtime
-  mkDevShellNvim = neovim-unwrapped:
-    mkNeovim {
-      inherit plugins extraPackages neovim-unwrapped;
-      src = shim-init-lua pkgs;
-    };
+  dynamic = {dynamicConfig = true;};
+
+  shared = {
+    inherit plugins extraPackages;
+    viAlias = false;
+  };
+
+  mk = dyn: nvim: mkNeovim nvim (dyn // shared);
 in {
-  # pass our extra packages via the overlay
-  # maybe a bit ugly but hey it works
-  bartbie-nvim-extraPackages = extraPackages;
-
-  bartbie-nvim = mkPkgNvim neovim-unwrapped;
-  bartbie-nvim-nightly = mkPkgNvim neovim-nightly-unwrapped;
-
-  devShell-nvim = mkDevShellNvim neovim-unwrapped;
-  devShell-nvim-nightly = mkDevShellNvim neovim-nightly-unwrapped;
+  nvim = final.nvimPackages.nightly;
+  nvimPackages = {
+    stable = mk static stable;
+    nightly = mk static nightly;
+    stable-dev = mk dynamic stable;
+    nightly-dev = mk dynamic nightly;
+  };
 }
