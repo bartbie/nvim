@@ -1,7 +1,8 @@
 vim.g.is_nix = vim.g.is_nix or false
 vim.g.is_nix_shim = vim.g.is_nix_shim or false
 
+local bootstrap = require("bartbie.bootstrap")
 -- i really just prefer to store plugins outside lua/ lol
-require("bartbie.bootstrap.plugins").bootstrap_plugins_loader()
+bootstrap.install_plugins_loader()
 -- HOTFIX
-require("bartbie.bootstrap.plugins").load_all_plugin_configs()
+bootstrap.load_all_plugin_configs()

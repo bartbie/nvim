@@ -1,6 +1,15 @@
 local fs = vim.fs
 local nix = require("bartbie.nix")
 
+local function get_rtp_root()
+    local rtp = assert(nix.get_roots().rtp_root)
+    if fs.basename(rtp) == "lua" then
+        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
+        rtp = fs.joinpath(parent, "nvim")
+    end
+    return rtp
+end
+
 local M = {}
 
 local function set_plugins_loader(base_path)
@@ -27,21 +36,13 @@ local function set_plugins_loader(base_path)
     end)
 end
 
-function M.bootstrap_plugins_loader()
-    local rtp = assert(nix.get_roots().rtp_root)
-    if fs.basename(rtp) == "lua" then
-        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
-        rtp = fs.joinpath(parent, "nvim")
-    end
-    set_plugins_loader(rtp)
+
+function M.install_plugins_loader()
+    set_plugins_loader(get_rtp_root())
 end
 
 function M.load_all_plugin_configs()
-    local rtp = assert(nix.get_roots().rtp_root)
-    if fs.basename(rtp) == "lua" then
-        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
-        rtp = fs.joinpath(parent, "nvim")
-    end
+    local rtp = get_rtp_root()
     local files = vim.fn.glob(rtp .. "/plugins/*.lua", false, true)
     for _, file in ipairs(files) do
         local name = vim.fn.fnamemodify(file, ":t:r")
