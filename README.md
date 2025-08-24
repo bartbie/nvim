@@ -19,7 +19,6 @@ nvim
 ├─ flake.lock
 ├─ nvim                # sorted by order of initialization
 │  ├─ init.lua         # entry-point
-│  ├─ rocks.toml
 │  ├─ lua              # lazy-loaded
 │  │  └─ bartbie
 │  │     ├─ health.lua
@@ -49,22 +48,13 @@ Use the provided flake.
 
 You can use the provided devShell to hack on lua without needing to nix rebuild it everytime.
 
-#### Non-Nix
-
-Clone the repo's `nvim` folder
-
-<br/>
-
-`:Rocks sync` to install needed plugins
-
-`:healthcheck` to check config's health
-
 ## Licensing
-
 This repository as a whole is licensed under the GNU General Public License v2.0 (GPL-2.0), the same license as the template it is based on.
 
-However, only files originating from the template's nix configuration are subject to the GPL.
+However, individual files may have different licensing terms:
+- Files originating from the template's nix configuration are subject to the GPL-2.0
+- Files original to this project are dual-licensed under both GPL-2.0 and MIT licenses
+- Third-party files (such as dependencies or included libraries) retain their original licenses as specified in their respective headers or accompanying documentation
 
-All other files in this repository are original to this project and are dual-licensed under the MIT license.
+You may reuse files under the terms of their applicable license(s). For dual-licensed files, you may choose to use them under either the GPL-2.0 or MIT license terms, at your discretion.
 
-You may freely reuse these non-GPL files under the terms of either the GPL or MIT license, at your discretion.
