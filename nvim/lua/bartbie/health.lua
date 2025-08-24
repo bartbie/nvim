@@ -127,36 +127,6 @@ local function nix_check()
     end
 end
 
-local function rocks_check()
-    start("rocks.nvim check")
-    local nix = nix_helpers.info()
-    local is_nix = nix and nix.is_nix or false
-    local function check_path(path, name, check_shim)
-        if path:match("nix/store") then
-            ok(("Rocks.nvim uses `%s` from Nix"):format(name))
-        elseif check_shim and nix and nix.shell.ours then
-            ok(("Rocks.nvim uses `%s` from devShell"):format(name))
-        else
-            local report = is_nix and error or ok
-            local exc = is_nix and "!" or ""
-            report(("Rocks.nvim does not use %s from Nix%s"):format(name, exc))
-        end
-        info(("%s path: `%s`"):format(name, path))
-    end
-    do
-        local stat, rocks = pcall(require, "rocks.api")
-        if not stat then
-            error("Rocks.nvim is not installed!")
-            return
-        end
-        check_path(rocks.get_rocks_toml_path(), "rocks.toml", true)
-    end
-    do
-        local config = vim.g.rocks_nvim
-        check_path(config.luarocks_binary, "luarocks")
-        info(("rocks path: `%s`"):format(config.rocks_path))
-    end
-end
 
 local function stats()
     start("additional info")
@@ -200,7 +170,6 @@ end
 function M.check()
     main_check()
     nix_check()
-    rocks_check()
     stats()
 end
 
