@@ -53,11 +53,12 @@
   nightly = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
   stable = pkgs.neovim-unwrapped;
 
-  static = {inherit src;};
+  static = {};
   # nvim for devshell that dynamically loads config at runtime
   dynamic = {dynamicConfig = true;};
 
   shared = {
+    inherit src;
     inherit plugins extraPackages;
     viAlias = false;
   };

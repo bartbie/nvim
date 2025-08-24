@@ -27,22 +27,28 @@
     ++ (mapFlag "prefix" (process-fix (clean prefix)))
     ++ (mapFlag "suffix" (process-fix (clean suffix)));
 
-  mkNvim = {
-    wrapNeovimUnstable,
-    neovim-unwrapped,
-    luaRc,
-    config,
-    overrideAttrs,
-  }: let
+  _mkNeovim = let
     concatLines = ls: lib.concatLines (builtins.filter (x: x != null && x != "") (lib.flatten ls));
+
+    indent = spaces: text: let
+      prefix = lib.concatStringsSep "" (lib.genList (_: " ") spaces);
+      lines = lib.splitString "\n" text;
+    in
+      lib.concatStringsSep "\n" (map (
+          line:
+            if line == ""
+            then line
+            else prefix + line
+        )
+        lines);
 
     # Wraps the user init.lua, prepends the lua lib directory to the RTP
     # and prepends the nvim and after directory to the RTP
-    mkInitLua = {
-      stdenv,
+    setupLuaRc = {
       src,
       init,
-      hideSystemConfig ? true,
+      dynamicConfig,
+      cleanRuntimePaths,
       beforeInit ? null,
       afterInit ? null,
     }: let
@@ -51,7 +57,7 @@
       # - nvim, containing plugin, ftplugin, ... subdirectories
       # - after, to be sourced last in the startup initialization
       # See also: https://neovim.io/doc/user/starting.html
-      srcSplitByRtp = stdenv.mkDerivation {
+      rtpDrv = stdenv.mkDerivation {
         inherit src;
         name = "nvim-rtp";
         buildPhase = ''
@@ -61,7 +67,9 @@
         '';
 
         installPhase = ''
-          # Copy nvim/after only if it exists
+          set -euxo pipefail
+          # Copy nvim/lua only if it exists
+          # it will create <drv>/lua/lua, since nvim will look for a lua folder, and we add the outer one to rtp
           if [ -d "lua" ]; then
               cp -r lua $out/lua
               rm -r lua
@@ -75,98 +83,124 @@
           if [ ! -z "$(ls -A)" ]; then
               cp -r -- * $out/nvim
           fi
+          set +x
         '';
       };
-      luaRcContent = concatLines [
+
+      # dofile hack
+      # instead of putting the config files into nix store,
+      # we dynamically load them at runtime
+      # obv use it only for devShell running in same dir as repo
+      dynCfgInit =
         # lua
         ''
-          vim.g.is_nix = true
-          vim.loader.enable()
-          -- prepend lua directory
-          vim.opt.rtp:prepend('${srcSplitByRtp}/lua')
-        ''
-        (optionalString hideSystemConfig
+          do
+              -- set global flag to mark our shim config
+              vim.g.is_nix_shim = true
+
+              local join = vim.fs.joinpath
+              local pwd = vim.env.PWD
+
+              -- find our config
+              local conf_path = (function()
+                  local root = vim.fs.root(pwd, {"flake.nix"})
+                  return join(root, "nvim")
+              end)()
+
+              local init_path = join(conf_path, "init.lua")
+
+              if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
+                  vim.opt.packpath:prepend(conf_path)
+                  vim.opt.runtimepath:prepend(conf_path)
+                  vim.opt.runtimepath:append(join(conf_path, "after"))
+
+                  local lua_patterns = {
+                      join(conf_path, "lua", "?.lua"),
+                      join(conf_path, "lua", "?", "init.lua"),
+                  }
+                  package.path = table.concat(lua_patterns, ";") .. ";" .. package.path
+
+                  dofile(init_path)
+              else
+                  vim.notify("shim couldn't find the config to load!")
+              end
+          end
+        '';
+
+      chosen-init =
+        if dynamicConfig
+        then dynCfgInit
+        else init;
+
+      dofile-runtime-lib =
+        # if dynamicConfig
+        # then ''require("bartbie.runtime")''
+        # else
+        ''dofile("${rtpDrv}/lua/lua/bartbie/runtime.lua")'';
+
+      luaRcContent = concatLines [
+        (lib.optionalString cleanRuntimePaths
           # lua
           ''
-            -- hide the system-wide config
             do
-                local stdp = vim.fn.stdpath
-                local rtp = vim.opt.runtimepath
-                local system_confs = {stdp("config"), unpack(stdp("config_dirs"))}
-                for _, path in ipairs(system_confs) do
-                    if not path:match("nix/store") then
-                        rtp:remove(path)
-                        rtp:remove(vim.fs.joinpath(path, "after"))
-                    end
-                end
+                -- clean runtime paths EXCLUDING stdpath("data")
+                local runtime = ${dofile-runtime-lib}
+                runtime.clean_runtime_path()
+                runtime.clean_pack_path()
+                runtime.clean_lua_path()
             end
           '')
+        # lua
+        ''
+          do
+              vim.g.is_nix = true
+              -- use faster loader
+              vim.loader.enable()
+              -- prepend lua directory
+              vim.opt.rtp:prepend('${rtpDrv}/lua')
+          end
+        ''
         beforeInit
         # Wrap init.lua
         # lua
         ''
           do
-          ${init}
+              -- vvvv injected init.lua content
+          ${indent 4 (lib.trim chosen-init)}
           end
         ''
         afterInit
-        # Prepend nvim and after directories to the runtimepath
-        # NOTE: This is done after init.lua,
-        # because of a bug in Neovim that can cause filetype plugins
-        # to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
-        # We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
         # lua
         ''
-          vim.opt.rtp:prepend('${srcSplitByRtp}/nvim')
-          vim.opt.rtp:prepend('${srcSplitByRtp}/after')
+          do
+              -- Prepend nvim and after directories to the runtimepath
+              -- NOTE: This is done after init.lua,
+              -- because of a bug in Neovim that can cause filetype plugins
+              -- to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
+              -- We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
+
+              local runtime = ${dofile-runtime-lib}
+              runtime.pack_path():prepend('${rtpDrv}/after'):prepend('${rtpDrv}/nvim'):save()
+              runtime.runtime_path():prepend('${rtpDrv}/after'):prepend('${rtpDrv}/nvim'):save()
+          end
         ''
       ];
     in {
-      inherit luaRcContent;
-      rtpDrv = srcSplitByRtp;
+      inherit luaRcContent rtpDrv;
     };
-
-    # wrapNeovimUnstable is the nixpkgs utility function for building a Neovim derivation.
-    wrapped = wrapNeovimUnstable neovim-unwrapped (config // {inherit (luaRc) luaRcContent;});
   in
-    (wrapped.overrideAttrs overrideAttrs).overrideAttrs (prev: {passthru = lib.recursiveUpdate prev.passthru luaRc;});
+    {
+      luaRc,
+      config,
+      overrideAttrs,
+    }: let
+      # wrapNeovimUnstable is the nixpkgs utility function for building a Neovim derivation.
+      rc = setupLuaRc luaRc;
+      wrapped = wrapNeovimUnstable neovim-unwrapped (config // {inherit (rc) luaRcContent;});
+    in
+      (wrapped.overrideAttrs overrideAttrs).overrideAttrs (prev: {passthru = lib.recursiveUpdate prev.passthru rc;});
 
-  # dofile hack
-  # instead of putting the config files into nix store,
-  # we dynamically load them at runtime
-  # obv use it only for devShell running in same dir as repo
-  writeDynamicConfig = pkgs:
-    pkgs.writeTextDir "init.lua"
-    # lua
-    ''
-      do
-        -- set global flag to mark our shim config
-        vim.g.is_nix_shim = true
-
-        local join = vim.fs.joinpath
-        local pwd = vim.env.PWD
-
-        -- find our config
-        local conf_path = (function()
-          local root = vim.fs.root(pwd, {"flake.nix"})
-          return join(root, "nvim")
-        end)()
-        local init_path = join(conf_path, "init.lua")
-        if #vim.fs.find(init_path) and vim.fn.filereadable(init_path) then
-          vim.opt.packpath:prepend(conf_path)
-          vim.opt.runtimepath:prepend(conf_path)
-          vim.opt.runtimepath:append(join(conf_path, "after"))
-          local lua_patterns = {
-            join(conf_path, "lua", "?.lua"),
-            join(conf_path, "lua", "?", "init.lua"),
-          }
-          package.path = table.concat(lua_patterns, ";") .. ";" .. package.path
-          dofile(init_path)
-        else
-          vim.notify("shim couldn't find the config to load!")
-        end
-      end
-    '';
+  ###
 
   # This is the structure of a plugin definition.
   # Each plugin in the `plugins` argument list can also be defined as this attrset
@@ -179,29 +213,6 @@
     optional = false;
     runtime = {};
   };
-
-  optionalString = lib.optionalString;
-
-  vimPackPluginsStr = devPlugins: let
-    plugs = lib.generators.toLua {} (
-      builtins.map (p: {
-        inherit (p) name;
-        src = p.url;
-      })
-      devPlugins
-    );
-  in
-    optionalString (devPlugins != [])
-    ''
-      vim.pack.add(${plugs})
-    '';
-
-  when = cond: x:
-    if cond
-    then x
-    else null;
-
-  luapkgs = neovim-unwrapped.lua.pkgs;
 
   # Map all plugins to an attrset { plugin = <plugin>; config = <config>; optional = <tf>; ... }
   normalizePlugins = let
@@ -220,6 +231,28 @@
   in
     lib.all (regex: builtins.match regex relPath == null) regexes;
 
+  vimPackPluginsStr = devPlugins: let
+    plugs = lib.generators.toLua {} (
+      builtins.map (p: {
+        inherit (p) name;
+        src = p.url;
+      })
+      devPlugins
+    );
+  in
+    lib.optionalString (devPlugins != [])
+    # lua
+    ''
+      vim.pack.add(${plugs})
+    '';
+
+  when = cond: x:
+    if cond
+    then x
+    else null;
+
+  luapkgs = neovim-unwrapped.lua.pkgs;
+
   wrapArgs = mkWrapperArgs {
     separators = {
       PATH = ":";
@@ -227,8 +260,6 @@
       LUA_PATH = ";";
     };
   };
-
-  dynConfigSrc = writeDynamicConfig pkgs;
 
   sqliteLibPath = "${sqlite.out}/lib/libsqlite3${stdenv.hostPlatform.extensions.sharedLibrary}";
 
@@ -261,95 +292,89 @@ in
     viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
     vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
     wrapRc ? true,
+    src ? ../../nvim, # Use this repo as src?
     dynamicConfig ? false, # Don't use src, instead use init.lua shim that will try to load real config during startup
-    src ?
-      if dynamicConfig
-      then dynConfigSrc
-      else ../../nvim, # Use this repo as src?
-    hideSystemConfig ? true, # Remove stdpath("config"|"configdirs") from RTP?
-  }:
-    assert dynamicConfig -> (src == dynConfigSrc); let
-      appName' =
-        if (appName == null || appName == "")
-        then "nvim"
-        else appName;
-      isCustomAppName = appName' != "nvim";
+    cleanRuntimePaths ? true, # clean RTP, PP, and package.path from any system files EXCLUDING stdpath("data")
+  }: let
+    appName' =
+      if (appName == null || appName == "")
+      then "nvim"
+      else appName;
+    isCustomAppName = appName' != "nvim";
 
-      extraLuaLibs = extraLuaPackages luapkgs;
-    in
-      mkNvim {
-        inherit wrapNeovimUnstable neovim-unwrapped;
-        # The final init.lua content that we pass to the Neovim wrapper.
-        luaRc = {
-          inherit hideSystemConfig;
-          inherit stdenv;
-          src = lib.cleanSourceWith {
-            inherit src;
-            name = "${appName'}-src-filtered";
-            filter = mkPathFilter src ignoreConfigRegexes;
-          };
-          init = builtins.readFile (src + /init.lua);
-          beforeInit = [];
-          afterInit = [
-            # Bootstrap/load dev plugins
-            (vimPackPluginsStr devPlugins)
-          ];
+    extraLuaLibs = extraLuaPackages luapkgs;
+  in
+    _mkNeovim {
+      # The final init.lua content that we pass to the Neovim wrapper.
+      luaRc = {
+        inherit cleanRuntimePaths dynamicConfig;
+        src = lib.cleanSourceWith {
+          inherit src;
+          name = "${appName'}-src-filtered";
+          filter = mkPathFilter src ignoreConfigRegexes;
         };
-        config = {
-          inherit
-            extraPython3Packages
-            withPython3
-            withRuby
-            withNodeJs
-            viAlias
-            vimAlias
-            wrapRc
-            ;
-          plugins = normalizePlugins plugins;
-          wrapperArgs = builtins.concatStringsSep " " (
-            lib.flatten [
-              # Sqlite
-              (wrapArgs {
-                set = {
-                  LIBSQLITE_CLIB_PATH = when withSqlite sqliteLibPath;
-                  LIBSQLITE = when withSqlite sqliteLibPath;
-                };
-                prefix = {
-                  PATH = mapBins (lib.optional withSqlite sqlite);
-                };
-              })
-              # Lua libs
-              (wrapArgs {
-                suffix = {
-                  # Native Lua libraries
-                  LUA_CPATH = concatLibsPaths luapkgs.getLuaCPath extraLuaLibs;
-                  # Lua libraries
-                  LUA_PATH = concatLibsPaths luapkgs.getLuaPath extraLuaLibs;
-                };
-              })
-              # nvim appname + extra packages
-              (wrapArgs {
-                set = {
-                  NVIM_APPNAME = when isCustomAppName appName';
-                };
-                prefix = {
-                  # Add external packages to the PATH
-                  PATH = mapBins extraPackages;
-                };
-              })
-            ]
-          );
-        };
-        overrideAttrs = prev: {
-          buildPhase =
-            prev.buildPhase
-            + optionalString isCustomAppName ''
-              mv $out/bin/nvim $out/bin/${lib.escapeShellArg appName'}
-            '';
-          passthru = lib.recursiveUpdate prev.passthru {inherit extraPackages;};
-          meta.mainProgram =
-            if isCustomAppName
-            then appName'
-            else prev.meta.mainProgram;
-        };
-      }
+        init = builtins.readFile (src + /init.lua);
+        beforeInit = [];
+        afterInit = [
+          # Bootstrap/load dev plugins
+          (vimPackPluginsStr devPlugins)
+        ];
+      };
+      config = {
+        inherit
+          extraPython3Packages
+          withPython3
+          withRuby
+          withNodeJs
+          viAlias
+          vimAlias
+          wrapRc
+          ;
+        plugins = normalizePlugins plugins;
+        wrapperArgs = builtins.concatStringsSep " " (
+          lib.flatten [
+            # Sqlite
+            (wrapArgs {
+              set = {
+                LIBSQLITE_CLIB_PATH = when withSqlite sqliteLibPath;
+                LIBSQLITE = when withSqlite sqliteLibPath;
+              };
+              prefix = {
+                PATH = mapBins (lib.optional withSqlite sqlite);
+              };
+            })
+            # Lua libs
+            (wrapArgs {
+              suffix = {
+                # Native Lua libraries
+                LUA_CPATH = concatLibsPaths luapkgs.getLuaCPath extraLuaLibs;
+                # Lua libraries
+                LUA_PATH = concatLibsPaths luapkgs.getLuaPath extraLuaLibs;
+              };
+            })
+            # nvim appname + extra packages
+            (wrapArgs {
+              set = {
+                NVIM_APPNAME = when isCustomAppName appName';
+              };
+              prefix = {
+                # Add external packages to the PATH
+                PATH = mapBins extraPackages;
+              };
+            })
+          ]
+        );
+      };
+      overrideAttrs = prev: {
+        buildPhase =
+          prev.buildPhase
+          + lib.optionalString isCustomAppName ''
+            mv $out/bin/nvim $out/bin/${lib.escapeShellArg appName'}
+          '';
+        passthru = lib.recursiveUpdate prev.passthru {inherit extraPackages;};
+        meta.mainProgram =
+          if isCustomAppName
+          then appName'
+          else prev.meta.mainProgram;
+      };
+    }
