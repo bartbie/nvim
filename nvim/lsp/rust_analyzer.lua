@@ -5,9 +5,9 @@ return {
                 allFeatures = true,
             },
             check = {
-                command = "clippy"
+                command = "clippy",
             },
             checkOnSave = true,
-        }
+        },
     },
 }

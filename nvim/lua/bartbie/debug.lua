@@ -32,12 +32,14 @@ function M.show_module_search(module_name, all, filter_list)
         return vim.iter(it):filter(filter_out_list)
     end
 
-    local rtp = iter(vim.opt.runtimepath:get()):map(function(rtp)
-        return {
-            rtp .. "/lua/" .. module_path .. ".lua",
-            rtp .. "/lua/" .. module_path .. "/init.lua",
-        }
-    end):flatten()
+    local rtp = iter(vim.opt.runtimepath:get())
+        :map(function(rtp)
+            return {
+                rtp .. "/lua/" .. module_path .. ".lua",
+                rtp .. "/lua/" .. module_path .. "/init.lua",
+            }
+        end)
+        :flatten()
 
     for path in rtp do
         found = found or try(path)

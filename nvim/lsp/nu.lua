@@ -1,4 +1,4 @@
 return {
-    cmd = { 'nu', '--lsp' },
-    filetypes = { 'nu' },
+    cmd = { "nu", "--lsp" },
+    filetypes = { "nu" },
 }

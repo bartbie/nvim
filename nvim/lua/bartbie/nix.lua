@@ -125,12 +125,8 @@ end
 function M.get_roots(source)
     local prev = get_source(2)
     source = fs.normalize(
-        source
-            or (
-                prev == ":lua" -- we are being called from cmd, check from this file
-                and get_source(1):gsub("/bartbie/nix.lua$", "")
-            )
-            or prev
+        -- if :lua, we are being called from cmd, check from this file
+        source or (prev == ":lua" and get_source(1):gsub("/bartbie/nix.lua$", "")) or prev
     )
     local nix = M.info()
     return {

@@ -127,7 +127,6 @@ local function nix_check()
     end
 end
 
-
 local function stats()
     start("additional info")
     do
