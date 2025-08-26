@@ -37,8 +37,6 @@
       conform-nvim
       # fzf
       fzf-lua
-      # lisp
-      nvim-parinfer
       # vcs
       vim-fugitive
       # repl
@@ -55,6 +53,10 @@
       nvim-hlslens
       fidget-nvim
       alpha-nvim
+      # lisp
+      nvim-parinfer
+      # rust
+      crates-nvim
       ;
   };
 
