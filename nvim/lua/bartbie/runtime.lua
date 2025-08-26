@@ -44,19 +44,21 @@ local exclude_if_all = function (patterns)
 end
 
 ---@class Path
----@field get fun(self): string[])
----@field set fun(self, val: string[]): self
----@field clean_empty fun(self): self
----@field unique fun(self): self
----@field rm_if_any fun(self, pattern: string|string[]): self
----@field rm_if_all fun(self, pattern: string|string[]): self
----@field rm_if_not_all fun(self, pattern: string|string[]): self
----@field rm_if_not_any fun(self, pattern: string|string[]): self
----@field prepend fun(self, val: string): self
----@field append fun(self, val: string): self
----@field save fun(self):self
----@field reset fun(self): self
----@field new fun(self): Path
+---@field get fun(self: self): string[])
+---@field set fun(self: self, val: string[]): self
+---@field clean_empty fun(self: self): self
+---@field unique fun(self: self): self
+---@field rm_if_any fun(self: self, pattern: string|string[]): self
+---@field rm_if_all fun(self: self, pattern: string|string[]): self
+---@field rm_if_not_all fun(self: self, pattern: string|string[]): self
+---@field rm_if_not_any fun(self: self, pattern: string|string[]): self
+---@field prepend fun(self: self, val: string): self
+---@field append fun(self: self, val: string): self
+---@field prepend_before_after fun(self: self, val: string): self
+---@field insert fun(self: self, val: string, idx: number): self
+---@field save fun(self: self):self
+---@field reset fun(self: self): self
+---@field new fun(self: self): Path
 
 ---@class PathArgs
 ---@field getter fun(): string[]
@@ -66,13 +68,29 @@ end
 ---@return Path
 local function createPath(args)
     local data = args:getter()
+    local first_after = nil
+
     local function get()
         return data
     end
     ---@param x string[]
     local function set(x)
+        first_after = nil
         data = x
     end
+
+    ---@param x string
+    ---@param ind number?
+    local function insert(x, ind)
+        first_after = nil
+        if ind == nil then
+            table.insert(data, x)
+        else
+            table.insert(data, ind, x)
+        end
+        return data
+    end
+
 
     ---@type Path
     return {
@@ -133,17 +151,30 @@ local function createPath(args)
             return self
         end,
         prepend = function (self, val)
-            table.insert(get(), 1, val)
+            insert(val, 1)
             return self
         end,
         append = function (self, val)
-            table.insert(get(), val)
+            insert(val)
             return self
         end,
         new = function (self)
             return createPath(args)
+        end,
+        prepend_before_after = function (self, val)
+            if first_after == nil then
+               first_after = vim.iter(ipairs(get())):find(function (_, e)
+                    return e:match("/after$")
+                end) or #get()
+            end
+            insert(val, first_after)
+            first_after = val:match("/after$") and first_after - 1 or first_after
+            return self
+        end,
+        insert = function(self, val, idx)
+            insert(val, idx)
+            return self
         end
-
     }
 end
 
@@ -205,9 +236,7 @@ M.clean_runtime_path = function()
       :clean_empty()
       :rm_if_not_any({"nix/store", stdp("data")})
       :rm_if_any(conf_dirs)
-      :rm_if_any(add_after(conf_dirs))
-      :rm_if_any(data_dirs)
-      :rm_if_any(add_after(data_dirs))
+      :rm_if_any(add_after(conf_dirs)) :rm_if_any(data_dirs) :rm_if_any(add_after(data_dirs))
       :unique()
       :save()
 

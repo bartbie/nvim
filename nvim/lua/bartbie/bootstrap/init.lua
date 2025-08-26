@@ -12,6 +12,11 @@ end
 
 local M = {}
 
+function M.setup_plugins_folder()
+    M.install_plugins_loader()
+    M.install_plugins_autoload()
+end
+
 local function set_plugins_loader(base_path)
     table.insert(package.loaders, 2, function(module_name)
         local module_path = module_name:gsub("%.", "/")
@@ -36,9 +41,32 @@ local function set_plugins_loader(base_path)
     end)
 end
 
-
 function M.install_plugins_loader()
     set_plugins_loader(get_rtp_root())
+end
+
+function M.install_plugins_autoload()
+    local au = require("bartbie.augroup")
+    vim.api.nvim_create_autocmd("SourcePre", {
+        pattern = {
+            fs.joinpath("*", "after", "*.lua"),
+            fs.joinpath("*", "after", "*.vim")
+        },
+        once = true,
+        group = au("source_plugins_folder"),
+        callback = function()
+            M.load_all_plugin_configs()
+        end,
+    })
+end
+
+local err_handler = function (name, file)
+    return function(err)
+        vim.notify_once(("Couldn't load %s\npath: %s"):format(name, file), vim.diagnostic.severity.ERROR)
+        local trace = debug.traceback(err, 2)
+        print(trace)
+        return trace
+    end
 end
 
 function M.load_all_plugin_configs()
@@ -46,10 +74,7 @@ function M.load_all_plugin_configs()
     local files = vim.fn.glob(rtp .. "/plugins/*.lua", false, true)
     for _, file in ipairs(files) do
         local name = vim.fn.fnamemodify(file, ":t:r")
-        local try = pcall(require, "plugins." .. name)
-        if not try then
-            vim.notify_once(("Couldn't load %s\npath: %s"):format(name, file), vim.diagnostic.severity.ERROR)
-        end
+        xpcall(require, err_handler(name, file), "plugins." .. name)
     end
 end
 
