@@ -54,6 +54,7 @@
       satellite-nvim
       nvim-hlslens
       fidget-nvim
+      alpha-nvim
       ;
   };
 
