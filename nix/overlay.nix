@@ -44,6 +44,7 @@
       # repl
       conjure
       # hl
+      rainbow-delimiters-nvim
       nvim-colorizer-lua
       # ui
       which-key-nvim
