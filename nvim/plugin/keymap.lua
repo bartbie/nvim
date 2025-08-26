@@ -27,10 +27,10 @@ map("n", "<C-k>", "<C-w>k", { desc = "Focus upper window" })
 map("n", "<C-l>", "<C-w>l", { desc = "Focus right window" })
 
 -- Resize window using <ctrl> HJKL keys
--- FIXME
-map("n", "<C-H>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
+-- FIXME window management must be SMARTER.
+map("n", "<C-K>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
 map("n", "<C-J>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
-map("n", "<C-K>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
+map("n", "<C-H>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 map("n", "<C-L>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
 -- Move selected text up/down
@@ -136,8 +136,8 @@ do
             map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
             map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })
             map("n", "grk", diag_jmp(-1), { desc = "Jump to Prev Diagnostic" })
-            map("n", "]e", diag_jmp(1, "ERROR"), { desc = "Next Error" })
-            map("n", "[e", diag_jmp(-1, "ERROR"), { desc = "Prev Error" })
+            map("n", "]e", diag_jmp(1, vim.diagnostic.severity.ERROR), { desc = "Next Error" })
+            map("n", "[e", diag_jmp(-1, vim.diagnostic.severity.ERROR), { desc = "Prev Error" })
         end,
     })
 end
