@@ -1,6 +1,7 @@
 test.*
 *.org
 result
+repl-result-out
 .direnv
 .luarc.json
 .envrc
