@@ -43,6 +43,8 @@
       vim-fugitive
       # repl
       conjure
+      # hl
+      nvim-colorizer-lua
       # ui
       which-key-nvim
       ;
