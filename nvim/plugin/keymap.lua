@@ -192,3 +192,8 @@ if has_ts then
         scope_incremental = "gro",
     }
 end
+
+local has_conform, conform = pcall(require, "conform")
+if has_conform then
+    map("n", "<leader>cf", function() conform.format() end, { desc = "Format Code" })
+end
