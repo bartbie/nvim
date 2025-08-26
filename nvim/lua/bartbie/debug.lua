@@ -5,7 +5,7 @@ function M.show_module_search(module_name, all, filter_list)
     all = all or false
     filter_list = filter_list or { "%.local" }
     if type(filter_list) == "string" then
-        filter_list = {filter_list}
+        filter_list = { filter_list }
     end
 
     local module_path = module_name:gsub("%.", "/")
@@ -77,7 +77,7 @@ end
 local function show_path_list(path_list, list_name, filter_list)
     filter_list = filter_list or {}
     if type(filter_list) == "string" then
-        filter_list = {filter_list}
+        filter_list = { filter_list }
     end
 
     print(list_name .. " entries:")
@@ -134,7 +134,6 @@ local function show_path_list(path_list, list_name, filter_list)
     end
 end
 
-
 local rt = require("bartbie.runtime")
 
 function M.show_runtimepath(filter_list)
@@ -144,7 +143,6 @@ end
 function M.show_packpath(filter_list)
     show_path_list(rt.pack_path():get(), "Neovim packpath", filter_list)
 end
-
 
 function M.show_package_path(filter_list)
     show_path_list(rt.lua_path():get(), "Lua package.path", filter_list)
@@ -172,4 +170,3 @@ M.show = {
 }
 
 return M
-

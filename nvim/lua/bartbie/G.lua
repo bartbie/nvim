@@ -2,14 +2,14 @@ local INDEX = "_bartbie"
 
 local mkmetatable = function(storage)
     return {
-        __index = function (_, k)
+        __index = function(_, k)
             local res = rawget(storage, k)
             if res == nil then
                 error("bartbie.G store doesn't have " .. k .. " global!")
             end
             return res
         end,
-        __newindex = function (_, k, v)
+        __newindex = function(_, k, v)
             if type(k) ~= "string" then
                 error("bartbie.G store: key (" .. k .. ") is not a string!")
             end

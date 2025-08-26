@@ -50,7 +50,7 @@ function M.install_plugins_autoload()
     vim.api.nvim_create_autocmd("SourcePre", {
         pattern = {
             fs.joinpath("*", "after", "*.lua"),
-            fs.joinpath("*", "after", "*.vim")
+            fs.joinpath("*", "after", "*.vim"),
         },
         once = true,
         group = au("source_plugins_folder"),
@@ -60,7 +60,7 @@ function M.install_plugins_autoload()
     })
 end
 
-local err_handler = function (name, file)
+local err_handler = function(name, file)
     return function(err)
         vim.notify_once(("Couldn't load %s\npath: %s"):format(name, file), vim.diagnostic.severity.ERROR)
         local trace = debug.traceback(err, 2)

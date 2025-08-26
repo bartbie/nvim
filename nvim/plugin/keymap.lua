@@ -174,13 +174,13 @@ local has_miniai, ai = pcall(require, "mini.ai")
 if has_miniai then
     local treesitter = ai.gen_spec.treesitter
     require("bartbie.G").custom_textobjects = {
-            f = treesitter({ a = '@function.outer', i = '@function.inner' }),
-            c = treesitter({ a = '@class.outer', i = '@class.inner' }),
-            o = treesitter({
-                a = { '@conditional.outer', '@loop.outer' },
-                i = { '@conditional.inner', '@loop.inner' },
-            })
-        }
+        f = treesitter({ a = "@function.outer", i = "@function.inner" }),
+        c = treesitter({ a = "@class.outer", i = "@class.inner" }),
+        o = treesitter({
+            a = { "@conditional.outer", "@loop.outer" },
+            i = { "@conditional.inner", "@loop.inner" },
+        }),
+    }
 end
 
 local has_ts, _ts = pcall(require, "nvim-treesitter.configs")

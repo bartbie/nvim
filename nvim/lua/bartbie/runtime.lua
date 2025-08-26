@@ -4,42 +4,42 @@ local stdp = vim.fn.stdpath
 
 ---@param patterns string[]
 ---@return fun(string): boolean
-local include_if_any = function (patterns)
+local include_if_any = function(patterns)
     ---@return boolean
     return function(path)
-      return vim.iter(patterns):any(function(x)
-         return not not path:match(vim.pesc(x))
-      end)
+        return vim.iter(patterns):any(function(x)
+            return not not path:match(vim.pesc(x))
+        end)
     end
 end
 ---@param patterns string[]
 ---@return fun(string): boolean
-local include_if_all = function (patterns)
+local include_if_all = function(patterns)
     ---@return boolean
     return function(path)
-      return vim.iter(patterns):all(function(x)
-         return not not path:match(vim.pesc(x))
-      end)
+        return vim.iter(patterns):all(function(x)
+            return not not path:match(vim.pesc(x))
+        end)
     end
 end
 ---@param patterns string[]
 ---@return fun(string): boolean
-local exclude_if_any = function (patterns)
+local exclude_if_any = function(patterns)
     ---@return boolean
     return function(path)
-      return not vim.iter(patterns):any(function(x)
-         return not not path:match(vim.pesc(x))
-      end)
+        return not vim.iter(patterns):any(function(x)
+            return not not path:match(vim.pesc(x))
+        end)
     end
 end
 ---@param patterns string[]
 ---@return fun(string): boolean
-local exclude_if_all = function (patterns)
+local exclude_if_all = function(patterns)
     ---@return boolean
     return function(path)
-      return not vim.iter(patterns):all(function(x)
-         return not not path:match(vim.pesc(x))
-      end)
+        return not vim.iter(patterns):all(function(x)
+            return not not path:match(vim.pesc(x))
+        end)
     end
 end
 
@@ -91,7 +91,6 @@ local function createPath(args)
         return data
     end
 
-
     ---@type Path
     return {
         get = function(self)
@@ -101,69 +100,73 @@ local function createPath(args)
             set(value)
             return self
         end,
-        clean_empty = function (self)
-            local new = vim.iter(get()):filter(function (x) return #x > 0 end):totable()
+        clean_empty = function(self)
+            local new = vim.iter(get())
+                :filter(function(x)
+                    return #x > 0
+                end)
+                :totable()
             set(new)
             return self
         end,
-        unique = function (self)
+        unique = function(self)
             vim.list.unique(get())
             return self
         end,
-        rm_if_any = function (self, pattern)
+        rm_if_any = function(self, pattern)
             if type(pattern) == "string" then
-                pattern = {pattern}
+                pattern = { pattern }
             end
             local new = vim.iter(get()):filter(exclude_if_any(pattern)):totable()
             set(new)
             return self
         end,
-        rm_if_all = function (self, pattern)
+        rm_if_all = function(self, pattern)
             if type(pattern) == "string" then
-                pattern = {pattern}
+                pattern = { pattern }
             end
             local new = vim.iter(get()):filter(exclude_if_all(pattern)):totable()
             set(new)
             return self
         end,
-        rm_if_not_all = function (self, pattern)
+        rm_if_not_all = function(self, pattern)
             if type(pattern) == "string" then
-                pattern = {pattern}
+                pattern = { pattern }
             end
             local new = vim.iter(get()):filter(include_if_all(pattern)):totable()
             set(new)
             return self
         end,
-        rm_if_not_any = function (self, pattern)
+        rm_if_not_any = function(self, pattern)
             if type(pattern) == "string" then
-                pattern = {pattern}
+                pattern = { pattern }
             end
             local new = vim.iter(get()):filter(include_if_any(pattern)):totable()
             set(new)
             return self
         end,
-        save = function (self)
+        save = function(self)
             args.setter(get())
             return self
         end,
-        reset = function (self)
+        reset = function(self)
             set(args.getter())
             return self
         end,
-        prepend = function (self, val)
+        prepend = function(self, val)
             insert(val, 1)
             return self
         end,
-        append = function (self, val)
+        append = function(self, val)
             insert(val)
             return self
         end,
-        new = function (self)
+        new = function(self)
             return createPath(args)
         end,
-        prepend_before_after = function (self, val)
+        prepend_before_after = function(self, val)
             if first_after == nil then
-               first_after = vim.iter(ipairs(get())):find(function (_, e)
+                first_after = vim.iter(ipairs(get())):find(function(_, e)
                     return e:match("/after$")
                 end) or #get()
             end
@@ -174,24 +177,24 @@ local function createPath(args)
         insert = function(self, val, idx)
             insert(val, idx)
             return self
-        end
+        end,
     }
 end
 
 local lua_path = createPath({
-    getter = function ()
-        return vim.split(package.path, ";", {trimempty=true})
+    getter = function()
+        return vim.split(package.path, ";", { trimempty = true })
     end,
-    setter = function (new)
+    setter = function(new)
         package.path = table.concat(new, ";")
-    end
+    end,
 })
 
 local rt_path = createPath({
-    getter = function ()
+    getter = function()
         return vim.opt.runtimepath:get()
     end,
-    setter = function (new)
+    setter = function(new)
         local opt = vim.opt.runtimepath
         local all = opt:get()
         for _, p in ipairs(all) do
@@ -200,14 +203,14 @@ local rt_path = createPath({
         for _, p in ipairs(new) do
             opt:append(p)
         end
-    end
+    end,
 })
 
 local pack_path = createPath({
-    getter = function ()
+    getter = function()
         return vim.opt.packpath:get()
     end,
-    setter = function (new)
+    setter = function(new)
         local opt = vim.opt.packpath
         local all = opt:get()
         for _, p in ipairs(all) do
@@ -216,65 +219,64 @@ local pack_path = createPath({
         for _, p in ipairs(new) do
             opt:append(p)
         end
-    end
+    end,
 })
 
 ---@param l string[]
 ---@return string[]
 local function add_after(l)
-    return vim.iter(l):map(function (x)
-        return vim.fs.joinpath(x, "after")
-    end):totable()
+    return vim.iter(l)
+        :map(function(x)
+            return vim.fs.joinpath(x, "after")
+        end)
+        :totable()
 end
 
 M.clean_runtime_path = function()
-      -- hide config folders
-      local conf_dirs = {stdp("config"), unpack(stdp("config_dirs"))}
-      -- hide data folders except main one (stdpath("data"))
-      local data_dirs = stdp("data_dirs")
-      return rt_path
-      :clean_empty()
-      :rm_if_not_any({"nix/store", stdp("data")})
-      :rm_if_any(conf_dirs)
-      :rm_if_any(add_after(conf_dirs)) :rm_if_any(data_dirs) :rm_if_any(add_after(data_dirs))
-      :unique()
-      :save()
-
+    -- hide config folders
+    local conf_dirs = { stdp("config"), unpack(stdp("config_dirs")) }
+    -- hide data folders except main one (stdpath("data"))
+    local data_dirs = stdp("data_dirs")
+    return rt_path
+        :clean_empty()
+        :rm_if_not_any({ "nix/store", stdp("data") })
+        :rm_if_any(conf_dirs)
+        :rm_if_any(add_after(conf_dirs))
+        :rm_if_any(data_dirs)
+        :rm_if_any(add_after(data_dirs))
+        :unique()
+        :save()
 end
 
-M.clean_pack_path = function ()
-      -- hide config folders
-      local conf_dirs = {stdp("config"), unpack(stdp("config_dirs"))}
-      -- hide data folders except main one (stdpath("data"))
-      local data_dirs = stdp("data_dirs")
-      return pack_path
-      :clean_empty()
-      :rm_if_not_any({"nix/store", stdp("data")})
-      :rm_if_any(conf_dirs)
-      :rm_if_any(add_after(conf_dirs))
-      :rm_if_any(data_dirs)
-      :rm_if_any(add_after(data_dirs))
-      :unique()
-      :save()
+M.clean_pack_path = function()
+    -- hide config folders
+    local conf_dirs = { stdp("config"), unpack(stdp("config_dirs")) }
+    -- hide data folders except main one (stdpath("data"))
+    local data_dirs = stdp("data_dirs")
+    return pack_path
+        :clean_empty()
+        :rm_if_not_any({ "nix/store", stdp("data") })
+        :rm_if_any(conf_dirs)
+        :rm_if_any(add_after(conf_dirs))
+        :rm_if_any(data_dirs)
+        :rm_if_any(add_after(data_dirs))
+        :unique()
+        :save()
 end
 
-M.clean_lua_path = function ()
-    return lua_path
-      :clean_empty()
-      :rm_if_not_all("nix/store")
-      :unique()
-      :save()
+M.clean_lua_path = function()
+    return lua_path:clean_empty():rm_if_not_all("nix/store"):unique():save()
 end
 
-M.runtime_path = function ()
+M.runtime_path = function()
     return rt_path:new()
 end
 
-M.pack_path = function ()
+M.pack_path = function()
     return pack_path:new()
 end
 
-M.lua_path = function ()
+M.lua_path = function()
     return lua_path:new()
 end
 
