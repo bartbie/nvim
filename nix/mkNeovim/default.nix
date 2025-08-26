@@ -87,17 +87,10 @@
         '';
       };
 
-      # dofile hack
-      # instead of putting the config files into nix store,
-      # we dynamically load them at runtime
-      # obv use it only for devShell running in same dir as repo
-      dynCfgInit =
-        # lua
+      find-config =
+        #lua
         ''
           do
-              -- set global flag to mark our shim config
-              vim.g.is_nix_shim = true
-
               local join = vim.fs.joinpath
               local pwd = vim.env.PWD
 
@@ -114,6 +107,7 @@
                   vim.opt.runtimepath:prepend(conf_path)
                   vim.opt.runtimepath:append(join(conf_path, "after"))
 
+
                   local lua_patterns = {
                       join(conf_path, "lua", "?.lua"),
                       join(conf_path, "lua", "?", "init.lua"),
@@ -127,24 +121,46 @@
           end
         '';
 
+      # dofile hack
+      # instead of putting the config files into nix store,
+      # we dynamically load them at runtime
+      # obv use it only for devShell running in same dir as repo
+      dynCfgInit =
+        # lua
+        ''
+          -- set global flag to mark our shim config
+          vim.g.is_nix_shim = true
+
+          ${find-config}
+        '';
+
       chosen-init =
         if dynamicConfig
         then dynCfgInit
         else init;
 
-      dofile-runtime-lib =
-        # if dynamicConfig
-        # then ''require("bartbie.runtime")''
-        # else
-        ''dofile("${rtpDrv}/lua/lua/bartbie/runtime.lua")'';
+      # when using dynamic config we will load runtime lib from outside nix/store
+      import-runtime-lib =
+        if dynamicConfig
+        then
+          # lua
+          ''require("bartbie.runtime")''
+        else
+          # lua
+          ''dofile("${rtpDrv}/lua/lua/bartbie/runtime.lua")'';
 
       luaRcContent = concatLines [
+        # lua
+        ''
+          vim.g.is_nix = true
+        ''
         (lib.optionalString cleanRuntimePaths
           # lua
           ''
             do
+	        ${lib.optionalString dynamicConfig find-config}
                 -- clean runtime paths EXCLUDING stdpath("data")
-                local runtime = ${dofile-runtime-lib}
+                local runtime = ${import-runtime-lib}
                 runtime.clean_runtime_path()
                 runtime.clean_pack_path()
                 runtime.clean_lua_path()
@@ -153,7 +169,6 @@
         # lua
         ''
           do
-              vim.g.is_nix = true
               -- use faster loader
               vim.loader.enable()
               -- prepend lua directory
@@ -179,7 +194,7 @@
               -- to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
               -- We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
 
-              local runtime = ${dofile-runtime-lib}
+              local runtime = ${import-runtime-lib}
               runtime.pack_path():prepend('${rtpDrv}/after'):prepend('${rtpDrv}/nvim'):save()
               runtime.runtime_path():prepend('${rtpDrv}/after'):prepend('${rtpDrv}/nvim'):save()
           end
