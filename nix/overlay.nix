@@ -44,6 +44,7 @@
       # misc
       undotree
       which-key-nvim
+      neorg
       # hl
       rainbow-delimiters-nvim
       nvim-colorizer-lua
