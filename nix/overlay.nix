@@ -46,6 +46,7 @@
       # hl
       rainbow-delimiters-nvim
       nvim-colorizer-lua
+      todo-comments-nvim
       # ui
       which-key-nvim
       satellite-nvim
