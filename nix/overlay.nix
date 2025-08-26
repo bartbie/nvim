@@ -47,6 +47,7 @@
       nvim-colorizer-lua
       # ui
       which-key-nvim
+      nvim-hlslens
       ;
   };
 
