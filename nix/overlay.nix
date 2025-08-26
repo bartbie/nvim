@@ -43,12 +43,14 @@
       vim-fugitive
       # repl
       conjure
+      # misc
+      undotree
+      which-key-nvim
       # hl
       rainbow-delimiters-nvim
       nvim-colorizer-lua
       todo-comments-nvim
       # ui
-      which-key-nvim
       satellite-nvim
       nvim-hlslens
       fidget-nvim

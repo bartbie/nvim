@@ -196,4 +196,9 @@ end
 local has_conform, conform = pcall(require, "conform")
 if has_conform then
     map("n", "<leader>cf", function() conform.format() end, { desc = "Format Code" })
+
+if vim.cmd.UndotreeToggle then
+    map("n", "<leader>u", vim.cmd.UndotreeToggle, {
+        desc = "Undo tree",
+    })
 end
