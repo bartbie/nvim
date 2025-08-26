@@ -9,131 +9,6 @@
   wrapNeovimUnstable,
   neovimUtils, # not used for now
 }: let
-  # This is the structure of a plugin definition.
-  # Each plugin in the `plugins` argument list can also be defined as this attrset
-  PLUGIN_DEFAULTS = {
-    plugin = null; # e.g. nvim-lspconfig
-    config = null; # plugin config
-    # If `optional` is set to `false`, the plugin is installed in the 'start' packpath
-    # set to `true`, it is installed in the 'opt' packpath, and can be lazy loaded with
-    # ':packadd! {plugin-name}
-    optional = false;
-    runtime = {};
-  };
-
-  optionalString = lib.optionalString;
-
-  concatLines = ls: lib.concatLines (builtins.filter (x: x != null && x != "") (lib.flatten ls));
-
-  vimPackPluginsStr = devPlugins: let
-    plugs = lib.generators.toLua {} (
-      builtins.map (p: {
-        inherit (p) name;
-        src = p.url;
-      })
-      devPlugins
-    );
-  in
-    optionalString (devPlugins != [])
-    ''
-      vim.pack.add(${plugs})
-    '';
-
-  # Wraps the user init.lua, prepends the lua lib directory to the RTP
-  # and prepends the nvim and after directory to the RTP
-  mkInitLua = {
-    stdenv,
-    src,
-    init,
-    hideSystemConfig ? true,
-    beforeInit ? null,
-    afterInit ? null,
-  }: let
-    # Split runtimepath into 3 directories:
-    # - lua, to be prepended to the rtp at the beginning of init.lua
-    # - nvim, containing plugin, ftplugin, ... subdirectories
-    # - after, to be sourced last in the startup initialization
-    # See also: https://neovim.io/doc/user/starting.html
-    srcSplitByRtp = stdenv.mkDerivation {
-      inherit src;
-      name = "nvim-rtp";
-      buildPhase = ''
-        mkdir -p $out/nvim
-        mkdir -p $out/lua
-        rm init.lua
-      '';
-
-      installPhase = ''
-        # Copy nvim/after only if it exists
-        if [ -d "lua" ]; then
-            cp -r lua $out/lua
-            rm -r lua
-        fi
-        # Copy nvim/after only if it exists
-        if [ -d "after" ]; then
-            cp -r after $out/after
-            rm -r after
-        fi
-        # Copy rest of nvim/ subdirectories only if they exist
-        if [ ! -z "$(ls -A)" ]; then
-            cp -r -- * $out/nvim
-        fi
-      '';
-    };
-    luaRcContent = concatLines [
-      # lua
-      ''
-        vim.g.is_nix = true
-        vim.loader.enable()
-        -- prepend lua directory
-        vim.opt.rtp:prepend('${srcSplitByRtp}/lua')
-      ''
-      (optionalString hideSystemConfig
-        # lua
-        ''
-          -- hide the system-wide config
-          do
-              local stdp = vim.fn.stdpath
-              local rtp = vim.opt.runtimepath
-              local system_confs = {stdp("config"), unpack(stdp("config_dirs"))}
-              for _, path in ipairs(system_confs) do
-                  if not path:match("nix/store") then
-                      rtp:remove(path)
-                      rtp:remove(vim.fs.joinpath(path, "after"))
-                  end
-              end
-          end
-        '')
-      beforeInit
-      # Wrap init.lua
-      # lua
-      ''
-        do
-        ${init}
-        end
-      ''
-      afterInit
-      # Prepend nvim and after directories to the runtimepath
-      # NOTE: This is done after init.lua,
-      # because of a bug in Neovim that can cause filetype plugins
-      # to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
-      # We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
-      # lua
-      ''
-        vim.opt.rtp:prepend('${srcSplitByRtp}/nvim')
-        vim.opt.rtp:prepend('${srcSplitByRtp}/after')
-      ''
-    ];
-  in {
-    inherit luaRcContent;
-    rtpDrv = srcSplitByRtp;
-  };
-
-  when = cond: x:
-    if cond
-    then x
-    else null;
-
   mkWrapperArgs = {
     separators ? {},
     extra ? [],
@@ -159,10 +34,103 @@
     config,
     overrideAttrs,
   }: let
+    concatLines = ls: lib.concatLines (builtins.filter (x: x != null && x != "") (lib.flatten ls));
+
+    # Wraps the user init.lua, prepends the lua lib directory to the RTP
+    # and prepends the nvim and after directory to the RTP
+    mkInitLua = {
+      stdenv,
+      src,
+      init,
+      hideSystemConfig ? true,
+      beforeInit ? null,
+      afterInit ? null,
+    }: let
+      # Split runtimepath into 3 directories:
+      # - lua, to be prepended to the rtp at the beginning of init.lua
+      # - nvim, containing plugin, ftplugin, ... subdirectories
+      # - after, to be sourced last in the startup initialization
+      # See also: https://neovim.io/doc/user/starting.html
+      srcSplitByRtp = stdenv.mkDerivation {
+        inherit src;
+        name = "nvim-rtp";
+        buildPhase = ''
+          mkdir -p $out/nvim
+          mkdir -p $out/lua
+          rm init.lua
+        '';
+
+        installPhase = ''
+          # Copy nvim/after only if it exists
+          if [ -d "lua" ]; then
+              cp -r lua $out/lua
+              rm -r lua
+          fi
+          # Copy nvim/after only if it exists
+          if [ -d "after" ]; then
+              cp -r after $out/after
+              rm -r after
+          fi
+          # Copy rest of nvim/ subdirectories only if they exist
+          if [ ! -z "$(ls -A)" ]; then
+              cp -r -- * $out/nvim
+          fi
+        '';
+      };
+      luaRcContent = concatLines [
+        # lua
+        ''
+          vim.g.is_nix = true
+          vim.loader.enable()
+          -- prepend lua directory
+          vim.opt.rtp:prepend('${srcSplitByRtp}/lua')
+        ''
+        (optionalString hideSystemConfig
+          # lua
+          ''
+            -- hide the system-wide config
+            do
+                local stdp = vim.fn.stdpath
+                local rtp = vim.opt.runtimepath
+                local system_confs = {stdp("config"), unpack(stdp("config_dirs"))}
+                for _, path in ipairs(system_confs) do
+                    if not path:match("nix/store") then
+                        rtp:remove(path)
+                        rtp:remove(vim.fs.joinpath(path, "after"))
+                    end
+                end
+            end
+          '')
+        beforeInit
+        # Wrap init.lua
+        # lua
+        ''
+          do
+          ${init}
+          end
+        ''
+        afterInit
+        # Prepend nvim and after directories to the runtimepath
+        # NOTE: This is done after init.lua,
+        # because of a bug in Neovim that can cause filetype plugins
+        # to be sourced prematurely, see https://github.com/neovim/neovim/issues/19008
+        # We prepend to ensure that user ftplugins are sourced before builtin ftplugins.
+        # lua
+        ''
+          vim.opt.rtp:prepend('${srcSplitByRtp}/nvim')
+          vim.opt.rtp:prepend('${srcSplitByRtp}/after')
+        ''
+      ];
+    in {
+      inherit luaRcContent;
+      rtpDrv = srcSplitByRtp;
+    };
+
     # wrapNeovimUnstable is the nixpkgs utility function for building a Neovim derivation.
     wrapped = wrapNeovimUnstable neovim-unwrapped (config // {inherit (luaRc) luaRcContent;});
   in
     (wrapped.overrideAttrs overrideAttrs).overrideAttrs (prev: {passthru = lib.recursiveUpdate prev.passthru luaRc;});
+
   # dofile hack
   # instead of putting the config files into nix store,
   # we dynamically load them at runtime
@@ -199,6 +167,39 @@
         end
       end
     '';
+
+  # This is the structure of a plugin definition.
+  # Each plugin in the `plugins` argument list can also be defined as this attrset
+  PLUGIN_DEFAULTS = {
+    plugin = null; # e.g. nvim-lspconfig
+    config = null; # plugin config
+    # If `optional` is set to `false`, the plugin is installed in the 'start' packpath
+    # set to `true`, it is installed in the 'opt' packpath, and can be lazy loaded with
+    # ':packadd! {plugin-name}
+    optional = false;
+    runtime = {};
+  };
+
+  optionalString = lib.optionalString;
+
+  vimPackPluginsStr = devPlugins: let
+    plugs = lib.generators.toLua {} (
+      builtins.map (p: {
+        inherit (p) name;
+        src = p.url;
+      })
+      devPlugins
+    );
+  in
+    optionalString (devPlugins != [])
+    ''
+      vim.pack.add(${plugs})
+    '';
+
+  when = cond: x:
+    if cond
+    then x
+    else null;
 
   luapkgs = neovim-unwrapped.lua.pkgs;
 
@@ -278,23 +279,22 @@ in
     in
       mkNvim {
         inherit wrapNeovimUnstable neovim-unwrapped;
-        luaRc =
-          # The final init.lua content that we pass to the Neovim wrapper.
-          mkInitLua {
-            inherit hideSystemConfig;
-            inherit stdenv;
-            src = lib.cleanSourceWith {
-              inherit src;
-              name = "${appName'}-src-filtered";
-              filter = mkPathFilter src ignoreConfigRegexes;
-            };
-            init = builtins.readFile (src + /init.lua);
-            beforeInit = [];
-            afterInit = [
-              # Bootstrap/load dev plugins
-              (vimPackPluginsStr devPlugins)
-            ];
+        # The final init.lua content that we pass to the Neovim wrapper.
+        luaRc = {
+          inherit hideSystemConfig;
+          inherit stdenv;
+          src = lib.cleanSourceWith {
+            inherit src;
+            name = "${appName'}-src-filtered";
+            filter = mkPathFilter src ignoreConfigRegexes;
           };
+          init = builtins.readFile (src + /init.lua);
+          beforeInit = [];
+          afterInit = [
+            # Bootstrap/load dev plugins
+            (vimPackPluginsStr devPlugins)
+          ];
+        };
         config = {
           inherit
             extraPython3Packages
