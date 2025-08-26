@@ -21,20 +21,30 @@
 
     inherit
       (pkgs.vimPlugins)
+      mini-nvim
+      # theme
       kanagawa-nvim
-      vim-fugitive
+      # cmp
       blink-cmp
+      blink-compat
+      cmp-conjure
+      # fs
       oil-nvim
+      # lsp
       nvim-lspconfig
       lazydev-nvim
+      # fmt
       conform-nvim
+      # fzf
       fzf-lua
-      mini-nvim
-      which-key-nvim
+      # lisp
       nvim-parinfer
-      blink-compat
+      # vcs
+      vim-fugitive
+      # repl
       conjure
-      cmp-conjure
+      # ui
+      which-key-nvim
       ;
   };
 
