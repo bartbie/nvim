@@ -1,4 +1,11 @@
 local defaults = { silent = true }
+
+---@alias mode "n" | "v" | "i" | "x" | "s" | "c"
+
+---@param mode mode | mode[]
+---@param lhs string
+---@param rhs string | function
+---@param opts? table
 local function map(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", defaults, opts or {}))
 end
