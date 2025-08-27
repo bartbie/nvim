@@ -56,6 +56,7 @@
       fidget-nvim
       alpha-nvim
       lualine-nvim
+      dropbar-nvim
       # lisp
       nvim-parinfer
       # rust
