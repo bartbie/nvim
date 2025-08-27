@@ -55,6 +55,7 @@
       nvim-hlslens
       fidget-nvim
       alpha-nvim
+      lualine-nvim
       # lisp
       nvim-parinfer
       # rust
