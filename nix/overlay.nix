@@ -39,6 +39,7 @@
       fzf-lua
       # vcs
       vim-fugitive
+      gitsigns-nvim
       # repl
       conjure
       # misc
