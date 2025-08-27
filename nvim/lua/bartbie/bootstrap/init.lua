@@ -78,4 +78,30 @@ function M.load_all_plugin_configs()
     end
 end
 
+-- so cheap they inflict the cost of redraw flash on user
+local IGNORED_FTS = { "markdown", "jjdescription", "man", "checkhealth" }
+function M.quickenter()
+    if vim.v.vim_did_enter == 1 or vim.bo.filetype == "bigfile" then
+        return
+    end
+
+    local buf = vim.api.nvim_get_current_buf()
+
+    -- get ft before it changes
+    local ft = vim.filetype.match({ buf = buf })
+
+    if ft and not vim.list_contains(IGNORED_FTS, ft) then
+        -- try enabling ts syntax or fallback to classic
+        local lang = vim.treesitter.language.get_lang(ft)
+        if not (lang and pcall(vim.treesitter.start, buf, lang)) then
+            vim.bo[buf].syntax = ft
+        end
+
+        -- Trigger early redraw
+        vim.cmd([[redraw]])
+        -- on less common filetypes it can unset the ft afterwards for some reason (e.g. jjdescription)
+        vim.bo[buf].filetype = ft
+    end
+end
+
 return M
