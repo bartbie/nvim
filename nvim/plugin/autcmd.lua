@@ -86,3 +86,40 @@ autocmd("CursorHold", {
         vim.diagnostic.open_float(nil, { focusable = false })
     end,
 })
+
+---@param buf integer
+---@return boolean
+local function is_buf_empty(buf)
+    local line_count = vim.api.nvim_buf_line_count(buf)
+    if line_count > 1 then
+        return false
+    end
+
+    local first_line = vim.api.nvim_buf_get_lines(buf, 0, 1, false)[1]
+    return first_line == ""
+end
+
+-- close scratch buffers if empty and another buffer opens
+autocmd("BufWinLeave", {
+    group = augroup("close_empty_scratch_bufs"),
+    callback = function(ev)
+        local buf = ev.buf
+        if vim.bo[buf].modified and not is_buf_empty(buf) then
+            return
+        end
+
+        local buftype = vim.bo[buf].buftype
+        buftype = buftype == "" and "nofile" or buftype
+
+        local file = ev.file
+        local bufname = vim.api.nvim_buf_get_name(buf)
+
+        if buftype == "nofile" and file == "" and bufname == "" then
+            vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(buf) then
+                    vim.api.nvim_buf_delete(buf, { force = true })
+                end
+            end)
+        end
+    end,
+})
