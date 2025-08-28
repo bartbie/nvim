@@ -34,11 +34,18 @@ map("n", "<C-k>", "<C-w>k", { desc = "Focus upper window" })
 map("n", "<C-l>", "<C-w>l", { desc = "Focus right window" })
 
 -- Resize window using <ctrl> HJKL keys
--- FIXME window management must be SMARTER.
-map("n", "<C-K>", "<cmd>resize +2<cr>", { desc = "Increase window height" })
-map("n", "<C-J>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
-map("n", "<C-H>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
-map("n", "<C-L>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
+local win = require("bartbie.win")
+
+---@param key bartbie.win.Hjkl
+local function resize(key)
+    return function()
+        win.resize(0, win.key_to_dirn[key], 3, { adaptive = true })
+    end
+end
+map("n", "<C-H>", resize("h"), { desc = "Decrease window width" })
+map("n", "<C-J>", resize("j"), { desc = "Decrease window height" })
+map("n", "<C-K>", resize("k"), { desc = "Increase window height" })
+map("n", "<C-L>", resize("l"), { desc = "Increase window width" })
 
 -- Move selected text up/down
 map("x", "K", ":move '<-2<CR>gv=gv")
