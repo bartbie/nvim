@@ -239,7 +239,7 @@ end
 ---@overload fun(win, dirn: bartbie.win.Direction, amount, opts: {adaptive: boolean, ignore_float: boolean, use_dim?: false})
 ---@overload fun(win, dim: bartbie.win.Dimension, amount, opts: {adaptive: boolean, ignore_float: boolean, use_dim: true})
 function M.resize(win, dirn, amount, opts)
-    local adaptive = opts.adaptive == nil and true or false
+    local adaptive = opts.adaptive == nil and true or opts.adaptive
     if opts.use_dim then
         dirn = M.dim_space_to_vec(dirn --[[@as bartbie.win.Dimension]], amount)
     else
