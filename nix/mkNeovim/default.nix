@@ -219,7 +219,7 @@
 
   # This is the structure of a plugin definition.
   # Each plugin in the `plugins` argument list can also be defined as this attrset
-  PLUGIN_DEFAULTS = {
+  PLUGIN-DEFAULTS = {
     plugin = null; # e.g. nvim-lspconfig
     config = null; # plugin config
     # If `optional` is set to `false`, the plugin is installed in the 'start' packpath
@@ -230,9 +230,9 @@
   };
 
   # Map all plugins to an attrset { plugin = <plugin>; config = <config>; optional = <tf>; ... }
-  normalizePlugins = let
+  normalizePlugins = defaults: let
     coerceToPlugin = x:
-      PLUGIN_DEFAULTS
+      defaults
       // (
         if x ? plugin
         then x
@@ -310,12 +310,15 @@ in
     src ? ../../nvim, # Use this repo as src?
     dynamicConfig ? false, # Don't use src, instead use init.lua shim that will try to load real config during startup
     cleanRuntimePaths ? true, # clean RTP, PP, and package.path from any system files EXCLUDING stdpath("data")
+    customPluginDefaults ? {}, # use different plugin defaults?
   }: let
     appName' =
       if (appName == null || appName == "")
       then "nvim"
       else appName;
     isCustomAppName = appName' != "nvim";
+
+    plugin-defaults = PLUGIN-DEFAULTS // customPluginDefaults;
 
     extraLuaLibs = extraLuaPackages luapkgs;
   in
@@ -345,7 +348,7 @@ in
           vimAlias
           wrapRc
           ;
-        plugins = normalizePlugins plugins;
+        plugins = normalizePlugins plugin-defaults plugins;
         wrapperArgs = builtins.concatStringsSep " " (
           lib.flatten [
             # Sqlite

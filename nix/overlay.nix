@@ -86,6 +86,9 @@
   shared = {
     inherit src;
     inherit plugins extraPackages;
+    customPluginDefaults = {
+      optional = false; # foreshadowing future work...
+    };
     viAlias = false;
   };
 
