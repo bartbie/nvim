@@ -134,15 +134,16 @@ function M.setup_ftonce_folders()
         xpcall(dofile, err_handler(name, path), path)
     end
 
-    vim.api.nvim_create_autocmd({ "FileType" }, {
+    vim.api.nvim_create_autocmd("BufReadPre", {
         group = augroup("source_ftonce"),
         callback = function(ev)
-            local name = ev.match
-            if vim.list_contains(SOURCED_FTS, name) then
+            local name = vim.filetype.match({ buf = ev.buf })
+            if not name or vim.list_contains(SOURCED_FTS, name) then
                 return
             end
-            source(rtp, name)
-            source(fs.joinpath(rtp, "after"), name)
+            local s = vim.schedule_wrap(source)
+            s(rtp, name)
+            s(fs.joinpath(rtp, "after"), name)
             table.insert(SOURCED_FTS, name)
         end,
     })
