@@ -40,10 +40,6 @@ vim.g.maplocalleader = " "
 map("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
 map("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
 
--- better indentation
-map("v", "<", "<gv")
-map("v", ">", ">gv")
-
 -- save file
 map({ "i", "v", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 
@@ -69,10 +65,6 @@ map("n", "<C-H>", resize("h"), { desc = "Decrease window width" })
 map("n", "<C-J>", resize("j"), { desc = "Decrease window height" })
 map("n", "<C-K>", resize("k"), { desc = "Increase window height" })
 map("n", "<C-L>", resize("l"), { desc = "Increase window width" })
-
--- Move selected text up/down
-map("x", "K", ":move '<-2<CR>gv=gv")
-map("x", "J", ":move '>+1<CR>gv=gv")
 
 -- windows
 map("n", "<leader>ww", "<C-W>p", { desc = "Other window" })
@@ -239,6 +231,27 @@ if has_fzf then
     -- git
     map("n", "<leader>gc", fzf.git_commits, { desc = "commits" })
     map("n", "<leader>gs", fzf.git_status, { desc = "status" })
+end
+
+local has_minimove, move = pcall(require, "mini.move")
+if has_minimove then
+    map("x", "H", wrap(move.move_selection, "left"), { desc = "Move left" })
+    map("x", "J", wrap(move.move_selection, "down"), { desc = "Move down" })
+    map("x", "K", wrap(move.move_selection, "up"), { desc = "Move up" })
+    map("x", "L", wrap(move.move_selection, "right"), { desc = "Move right" })
+
+    map("x", { ">", "<TAB>" }, wrap(move.move_line, "right"), { desc = "Move line right" })
+    map("x", { "<", "<S-TAB>" }, wrap(move.move_line, "left"), { desc = "Move line left" })
+else -- these are strictly worse but i will leave them here
+    -- better indentation
+    map("v", "<tab>", ">gv")
+    map("v", "<s-tab>", "<gv")
+    map("v", ">", ">gv")
+    map("v", "<", "<gv")
+
+    -- Move selected text up/down
+    map("x", "K", ":move '<-2<CR>gv=gv")
+    map("x", "J", ":move '>+1<CR>gv=gv")
 end
 
 local has_miniai, ai = pcall(require, "mini.ai")

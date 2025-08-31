@@ -8,3 +8,20 @@ require("mini.ai").setup({
     n_lines = 500,
     custom_textobjects = BG.custom_textobjects,
 })
+
+require("mini.move").setup({
+    -- disable all, they are set manually in plugin/keymap.lua
+    mappings = {
+        -- Move visual selection in Visual mode
+        left = "",
+        right = "",
+        down = "",
+        up = "",
+
+        -- Move current line in Normal mode
+        line_left = "",
+        line_right = "",
+        line_down = "",
+        line_up = "",
+    },
+})
