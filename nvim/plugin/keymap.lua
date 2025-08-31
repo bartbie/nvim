@@ -171,18 +171,17 @@ do
             map("n", "<leader>cA", source_code_action, { desc = "Source Action" })
             -- + diagnostics cd
 
-            -- defaults from nvim docs (https://neovim.io/doc/user/lsp.html#lsp-defaults)
-            -- "grn"    - N   - lspb.rename()
-            -- "gO"     - N   - lspb.document_symbol()
-            -- "CTRL-S" - I   - lspb.signature_help()
-            -- "K"      - N   - lspb.hover()
-
             map("n", { "gd", "grd" }, fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
             map("n", "grr", fzf_or(fzf.lsp_references, lspb.references), { desc = "Goto References" })
             map("n", "grt", fzf_or(fzf.lsp_typedefs, lspb.type_definition), { desc = "Goto Type Definition" })
             map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
             map("n", "gri", fzf_or(fzf.lsp_implementations, lspb.implementation), { desc = "Goto implementation" })
             map("n", "gra", fzf_or(fzf.lsp_code_actions, lspb.code_action), { desc = "Goto code actions" })
+            map("i", "C-I", wrap(lspb.signature_help), { desc = "Show Symbol Signature" })
+            -- same as defaults (https://neovim.io/doc/user/lsp.html#lsp-defaults)
+            map("n", "grn", wrap(lspb.rename), { desc = "Rename" })
+            map("n", "gO", wrap(lspb.document_symbol), { desc = "List all buffer symbols in loclist" })
+            map("n", "K", wrap(lspb.hover), { desc = "Show Symbol Hover Info" })
             -- + diagnostics gro grj grk
         end,
     })
