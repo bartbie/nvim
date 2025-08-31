@@ -5,11 +5,32 @@ local BG = require("bartbie.G")
 ---@alias mode "n" | "v" | "i" | "x" | "s" | "c"
 
 ---@param mode mode | mode[]
----@param lhs string
+---@param lhs string | string[]
 ---@param rhs string | function
----@param opts? table
+---@param opts? vim.keymap.set.Opts
 local function map(mode, lhs, rhs, opts)
-    vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", defaults, opts or {}))
+    opts = vim.tbl_extend("force", defaults, opts or {})
+    if type(lhs) == "table" then
+        for _, l in ipairs(lhs) do
+            vim.keymap.set(mode, l, rhs, opts)
+        end
+    else
+        vim.keymap.set(mode, lhs, rhs, opts)
+    end
+end
+
+---@generic T
+---@param fn fun(...: T)
+---@param ... T
+---@return function
+local function wrap(fn, ...)
+    local args = { ... }
+    local n = #args
+    return n > 0 and function()
+        return fn(unpack(args))
+    end or function()
+        return fn()
+    end
 end
 
 vim.g.mapleader = " "
@@ -84,11 +105,7 @@ map("n", "<S-TAB>", "<CMD>bprevious<CR>", { desc = "Prev buffer" })
 
 -- Expand to current buffer's directory in command mode
 map("c", "%%", function()
-    if vim.fn.getcmdtype() == ":" then
-        return vim.fn.expand("%:h") .. "/"
-    else
-        return "%%"
-    end
+    return vim.fn.getcmdtype() == ":" and (vim.fn.expand("%:h") .. "/") or "%%"
 end, { expr = true, desc = "Expand to current buffer's directory" })
 
 -- make macros activation harder to start accidentally
@@ -141,7 +158,7 @@ do
             ---@param vim_fn function
             ---@return function
             local function fzf_or(fzf_fn, vim_fn)
-                return has_fzf and fzf_fn or vim_fn
+                return wrap(has_fzf and fzf_fn or vim_fn)
             end
 
             map("n", "<leader>cl", "<cmd>LspInfo<cr>", { desc = "Lsp Info" })
@@ -153,8 +170,7 @@ do
             -- "CTRL-S" - I   - lspb.signature_help()
             -- "K"      - N   - lspb.hover()
 
-            map("n", "gd", fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
-            map("n", "grd", fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
+            map("n", { "gd", "grd" }, fzf_or(fzf.lsp_definitions, lspb.definition), { desc = "Goto Definition" })
             map("n", "grr", fzf_or(fzf.lsp_references, lspb.references), { desc = "Goto References" })
             map("n", "grt", fzf_or(fzf.lsp_typedefs, lspb.type_definition), { desc = "Goto Type Definition" })
             map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
@@ -181,8 +197,7 @@ local has_fzf, fzf = pcall(require, "fzf-lua")
 if has_fzf then
     map("n", "<leader>:", fzf.command_history, { desc = "Command History" })
     -- find
-    map("n", "<leader>,", fzf.buffers, { desc = "Find Buffers" })
-    map("n", "<leader>fb", fzf.buffers, { desc = "Find Buffers" })
+    map("n", { "<leader>,", "<leader>fb" }, fzf.buffers, { desc = "Find Buffers" })
     map("n", "<leader>ff", fzf.files, { desc = "Find Files" })
     map("n", "<leader>fh", fzf.oldfiles, { desc = "Find Recent Files" })
     -- search
