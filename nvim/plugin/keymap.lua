@@ -62,8 +62,20 @@ map("n", "<leader>-", "<C-W>s", { desc = "Split window below" })
 map("n", "<leader>|", "<C-W>v", { desc = "Split window right" })
 
 -- buffers
+-- TODO: when/if making bartbie.buf, move it there and refactor to take current bufnr
+local function close_other_bufs()
+    local current = vim.api.nvim_get_current_buf()
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if buf ~= current and vim.bo[buf].buflisted and not vim.bo[buf].modified then
+            vim.bo[buf].buflisted = false
+            vim.api.nvim_buf_delete(buf, { unload = true })
+        end
+    end
+end
+
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other buffer" })
 map("n", "<leader>bd", "<CMD>bd<CR>", { desc = "Delete buffer" })
+map("n", "<leader>bo", close_other_bufs, { desc = "Delete all other buffers" })
 map("n", "<leader>bD", "<CMD>%bd<CR>", { desc = "Delete all buffers" })
 map("n", "<TAB>", "<CMD>bnext<CR>", { desc = "Next buffer" })
 map("n", "<S-TAB>", "<CMD>bprevious<CR>", { desc = "Prev buffer" })
