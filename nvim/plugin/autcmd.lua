@@ -83,6 +83,13 @@ autocmd({ "BufWritePre" }, {
 autocmd("CursorHold", {
     group = augroup("diagnostic_float"),
     callback = function()
+        -- disable if virtual_lines(.current_line) is enabled
+        local cfg = vim.diagnostic.config().virtual_lines
+        local typ = type(cfg)
+        if cfg == true or typ == "function" or cfg and cfg.current_line then
+            return
+        end
+
         vim.diagnostic.open_float(nil, { focusable = false })
     end,
 })

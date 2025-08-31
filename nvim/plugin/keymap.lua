@@ -120,10 +120,8 @@ map("n", "<leader>P", '"+P', { desc = "Paste before (OS)" })
 -- files
 map("n", "<leader>fn", "<CMD>enew<CR>", { desc = "New File" })
 
--- LSP
+-- diagnostics
 do
-    local lspb = vim.lsp.buf
-
     ---jump diagnostics
     ---@param count 1 | -1
     ---@param severity? vim.diagnostic.Severity|vim.diagnostic.Severity[]|{ min: vim.diagnostic.Severity, max: vim.diagnostic.Severity }
@@ -135,6 +133,22 @@ do
             })
         end
     end
+
+    local diag = require("bartbie.diag")
+
+    map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
+    map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })
+    map("n", "grk", diag_jmp(-1), { desc = "Jump to Prev Diagnostic" })
+    map("n", "]e", diag_jmp(1, vim.diagnostic.severity.ERROR), { desc = "Next Error" })
+    map("n", "[e", diag_jmp(-1, vim.diagnostic.severity.ERROR), { desc = "Prev Error" })
+
+    map("n", "<leader>cd", wrap(diag.toggle_virt_diag), { desc = "Toggle Lines or Text Diagnostics" })
+    map("n", "<leader>cD", wrap(diag.toggle_virt_diag_err_only), { desc = "Toggle Lines or Text Diagnostics" })
+end
+
+-- LSP
+do
+    local lspb = vim.lsp.buf
 
     local function source_code_action()
         lspb.code_action({ context = { only = { "source" }, diagnostics = {} } })
@@ -155,6 +169,7 @@ do
 
             map("n", "<leader>cl", "<cmd>LspInfo<cr>", { desc = "Lsp Info" })
             map("n", "<leader>cA", source_code_action, { desc = "Source Action" })
+            -- + diagnostics cd
 
             -- defaults from nvim docs (https://neovim.io/doc/user/lsp.html#lsp-defaults)
             -- "grn"    - N   - lspb.rename()
@@ -168,12 +183,7 @@ do
             map("n", "grD", fzf_or(fzf.lsp_declarations, lspb.declaration), { desc = "Goto Declaration" })
             map("n", "gri", fzf_or(fzf.lsp_implementations, lspb.implementation), { desc = "Goto implementation" })
             map("n", "gra", fzf_or(fzf.lsp_code_actions, lspb.code_action), { desc = "Goto code actions" })
-            --
-            map("n", "gro", vim.diagnostic.open_float, { desc = "Show Line Diagnostics" })
-            map("n", "grj", diag_jmp(1), { desc = "Jump to Next Diagnostic" })
-            map("n", "grk", diag_jmp(-1), { desc = "Jump to Prev Diagnostic" })
-            map("n", "]e", diag_jmp(1, vim.diagnostic.severity.ERROR), { desc = "Next Error" })
-            map("n", "[e", diag_jmp(-1, vim.diagnostic.severity.ERROR), { desc = "Prev Error" })
+            -- + diagnostics gro grj grk
         end,
     })
 end

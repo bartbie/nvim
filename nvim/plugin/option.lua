@@ -61,24 +61,4 @@ o.lazyredraw = true
 
 -- diagnostics ui
 
-local symbols = require("bartbie.symbols")
-
-local symbols_table = {
-    [vim.diagnostic.severity.ERROR] = symbols.diagnostics.error,
-    [vim.diagnostic.severity.WARN] = symbols.diagnostics.warn,
-    [vim.diagnostic.severity.INFO] = symbols.diagnostics.info,
-    [vim.diagnostic.severity.HINT] = symbols.diagnostics.hint,
-}
-
-vim.diagnostic.config({
-    signs = {
-        text = symbols_table,
-    },
-    virtual_text = {
-        prefix = "",
-        format = function(d)
-            return ("%s %s"):format(symbols_table[d.severity], d.message)
-        end,
-    },
-    severity_sort = true,
-})
+vim.diagnostic.config(require("bartbie.diag").defaults)
