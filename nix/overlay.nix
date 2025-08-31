@@ -68,6 +68,7 @@
     inherit
       (pkgs)
       lua-language-server
+      vscode-json-languageserver
       nil
       gcc
       ripgrep
