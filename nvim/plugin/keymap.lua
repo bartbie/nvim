@@ -186,6 +186,34 @@ do
     })
 end
 
+-- blink.cmp
+-- 'default' for mappings similar to built-in completion
+-- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
+-- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
+BG.blink = {
+    keymap = {
+        preset = "enter",
+        ["<Tab>"] = {
+            "snippet_forward",
+            "select_next",
+            "fallback",
+        },
+        ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+    },
+    cmdline = {
+        keymap = {
+            preset = "enter",
+            ["<Tab>"] = {
+                "show",
+                "snippet_forward",
+                "select_next",
+                "fallback",
+            },
+            ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+        },
+    },
+}
+
 -- Oil
 local has_oil, oil = pcall(require, "oil")
 if has_oil then

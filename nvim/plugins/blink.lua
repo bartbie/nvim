@@ -1,33 +1,11 @@
 local blink = require("blink.cmp")
+local from_keymap = require("bartbie.G").blink
 blink.setup(
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     {
-        -- 'default' for mappings similar to built-in completion
-        -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-        -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-        -- See the full "keymap" documentation for information on defining your own keymap.
-        keymap = {
-            preset = "enter",
-            ["<Tab>"] = {
-                "snippet_forward",
-                "select_next",
-                "fallback",
-            },
-            ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
-        },
-        cmdline = {
-            keymap = {
-                preset = "enter",
-                ["<Tab>"] = {
-                    "show",
-                    "snippet_forward",
-                    "select_next",
-                    "fallback",
-                },
-                ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
-            },
-        },
+        keymap = from_keymap.keymap,
+        cmdline = from_keymap.cmdline,
         completion = {
             list = {
                 selection = {
