@@ -1,5 +1,7 @@
 local defaults = { silent = true }
 
+local BG = require("bartbie.G")
+
 ---@alias mode "n" | "v" | "i" | "x" | "s" | "c"
 
 ---@param mode mode | mode[]
@@ -199,7 +201,7 @@ end
 local has_miniai, ai = pcall(require, "mini.ai")
 if has_miniai then
     local treesitter = ai.gen_spec.treesitter
-    require("bartbie.G").custom_textobjects = {
+    BG.custom_textobjects = {
         f = treesitter({ a = "@function.outer", i = "@function.inner" }),
         c = treesitter({ a = "@class.outer", i = "@class.inner" }),
         o = treesitter({
@@ -211,7 +213,7 @@ end
 
 local has_ts, _ts = pcall(require, "nvim-treesitter.configs")
 if has_ts then
-    require("bartbie.G").incremental_selection = {
+    BG.incremental_selection = {
         init_selection = "gnn",
         node_incremental = "grn",
         node_decremental = "grl",
