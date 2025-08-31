@@ -13,56 +13,63 @@
 
   src = ../nvim;
 
-  plugins = builtins.attrValues {
-    inherit
-      (pkgs.vimPlugins.nvim-treesitter)
-      withAllGrammars
-      ;
+  plugins = let
+    start = builtins.attrValues {
+      inherit (pkgs.vimPlugins) nvim-nio;
+    };
+    opt = builtins.attrValues {
+      inherit
+        (pkgs.vimPlugins.nvim-treesitter)
+        withAllGrammars
+        ;
 
-    inherit
-      (pkgs.vimPlugins)
-      mini-nvim
-      # theme
-      kanagawa-nvim
-      # cmp
-      blink-cmp
-      blink-compat
-      cmp-conjure
-      # fs
-      oil-nvim
-      # lsp
-      nvim-lspconfig
-      lazydev-nvim
-      # fmt
-      conform-nvim
-      # fzf
-      fzf-lua
-      # vcs
-      vim-fugitive
-      gitsigns-nvim
-      # repl
-      conjure
-      # misc
-      undotree
-      which-key-nvim
-      neorg
-      # hl
-      rainbow-delimiters-nvim
-      nvim-colorizer-lua
-      todo-comments-nvim
-      # ui
-      satellite-nvim
-      nvim-hlslens
-      fidget-nvim
-      alpha-nvim
-      lualine-nvim
-      dropbar-nvim
-      # lisp
-      nvim-parinfer
-      # rust
-      crates-nvim
-      ;
-  };
+      inherit
+        (pkgs.vimPlugins)
+        mini-nvim
+        # theme
+        kanagawa-nvim
+        # cmp
+        blink-cmp
+        blink-compat
+        cmp-conjure
+        # fs
+        oil-nvim
+        # lsp
+        nvim-lspconfig
+        lazydev-nvim
+        # fmt
+        conform-nvim
+        # fzf
+        fzf-lua
+        # vcs
+        vim-fugitive
+        gitsigns-nvim
+        # repl
+        conjure
+        # misc
+        undotree
+        which-key-nvim
+        neorg
+        # hl
+        rainbow-delimiters-nvim
+        nvim-colorizer-lua
+        todo-comments-nvim
+        # ui
+        satellite-nvim
+        nvim-hlslens
+        fidget-nvim
+        alpha-nvim
+        lualine-nvim
+        dropbar-nvim
+        # lisp
+        nvim-parinfer
+        # rust
+        crates-nvim
+        ;
+    };
+  in
+    # TODO: add lazy-loading in future
+    start ++ opt;
 
   extraPackages = builtins.attrValues {
     inherit
