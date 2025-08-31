@@ -104,4 +104,48 @@ function M.quickenter()
     end
 end
 
+-- TODO:
+-- all those functions do similar thing: they find files and load them.
+-- it should all be abstracted away, probably to a new lib
+
+local SOURCED_FTS = {}
+require("bartbie.G").sourced_fts = SOURCED_FTS
+function M.setup_ftonce_folders()
+    local augroup = require("bartbie.augroup")
+    local rtp = get_rtp_root()
+
+    ---@param root string
+    ---@param name string
+    ---@return string?
+    local function get_path(root, name)
+        root = fs.joinpath(root, "ftonce")
+        -- WARN: this doesn't strip .lua because im lazy
+        local res = fs.find(name .. ".lua", { limit = 1, type = "file", path = root })
+        return res and res[1] or nil
+    end
+
+    ---@param root string
+    ---@param name string
+    local function source(root, name)
+        local path = get_path(root, name)
+        if not path then
+            return
+        end
+        xpcall(dofile, err_handler(name, path), path)
+    end
+
+    vim.api.nvim_create_autocmd({ "FileType" }, {
+        group = augroup("source_ftonce"),
+        callback = function(ev)
+            local name = ev.match
+            if vim.list_contains(SOURCED_FTS, name) then
+                return
+            end
+            source(rtp, name)
+            source(fs.joinpath(rtp, "after"), name)
+            table.insert(SOURCED_FTS, name)
+        end,
+    })
+end
+
 return M

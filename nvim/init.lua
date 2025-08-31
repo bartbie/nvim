@@ -5,5 +5,5 @@ local bootstrap = require("bartbie.bootstrap")
 
 bootstrap.quickenter()
 
--- i really just prefer to store plugins outside lua/ lol
 bootstrap.setup_plugins_folder()
+bootstrap.setup_ftonce_folders()
