@@ -1,22 +1,4 @@
-local augroup = require("bartbie.augroup")
 local ftadd = vim.filetype.add
-
-local autocmd = vim.api.nvim_create_autocmd
-
----@param ft string
----@param group_name string
----@param callback fun(event: vim.api.keyset.create_autocmd.callback_args)
-local ftautocmd = function(ft, group_name, callback)
-    autocmd({ "FileType" }, {
-        group = augroup(group_name),
-        pattern = ft,
-        callback = function(ev)
-            vim.api.nvim_buf_call(ev.buf, function()
-                callback(ev)
-            end)
-        end,
-    })
-end
 
 ---@param ft string
 ---@param fn fun(path: string, buf: integer): boolean
@@ -55,18 +37,4 @@ do
             },
         },
     })
-
-    ftautocmd("bigfile", "handle_big_files", function(ev)
-        vim.notify("big file detected")
-        -- disable paren matching
-        if vim.fn.exists(":NoMatchParen") ~= 0 then
-            vim.cmd([[NoMatchParen]])
-        end
-        -- re-enable original non-ts syntax hl
-        vim.schedule(function()
-            if vim.api.nvim_buf_is_valid(ev.buf) then
-                vim.bo[ev.buf].syntax = vim.filetype.match({ buf = ev.buf }) or ""
-            end
-        end)
-    end)
 end
