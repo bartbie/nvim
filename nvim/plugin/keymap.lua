@@ -33,6 +33,15 @@ local function wrap(fn, ...)
     end
 end
 
+BG.keymap_groups = {
+    { "<leader>f", group = "file" },
+    { "<leader>s", group = "search" },
+    { "<leader>g", group = "git" },
+    { "<leader>c", group = "code" },
+    { "<leader>w", group = "windows" },
+    { "<leader>b", group = "buffers" },
+}
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
