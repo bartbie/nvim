@@ -1,10 +1,16 @@
 {
   description = "bartbie Neovim config";
-
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     systems.url = "github:nix-systems/default";
+    neorocks = {
+      url = "github:nvim-neorocks/neorocks";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        neovim-nightly.follows = "neovim-nightly-overlay";
+      };
+    };
   };
 
   outputs = inputs @ {
@@ -12,6 +18,7 @@
     nixpkgs,
     neovim-nightly-overlay,
     systems,
+    neorocks,
     ...
   }: let
     # shortened and dumbened down from github:bartbie/nixos
@@ -31,9 +38,19 @@
         inherit system;
         overlays = [overlay];
       };
+
+      devPkgs = import nixpkgs {
+        inherit system;
+        overlays = [
+          overlay
+          (_: prev: {neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${prev.system}.default;})
+          inputs.neorocks.overlays.default
+        ];
+      };
     in {
       formatter = pkgs.alejandra;
-      devShells = import ./nix/shell.nix pkgs;
       packages = import ./nix/packages.nix pkgs;
+      devShells = import ./nix/shell.nix devPkgs;
+      checks = import ./nix/checks.nix devPkgs;
     }));
 }

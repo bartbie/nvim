@@ -103,7 +103,13 @@
   mk = dyn: nvim: mkNeovim nvim (dyn // shared);
 in {
   nvim = final.nvimPackages.nightly;
+  neovim-nightly = nightly;
   nvimPackages = {
+    _clean = mkNeovim nightly {
+      src = pkgs.writeTextDir "init.lua" "";
+      dynamicConfig = true;
+      cleanRuntimePaths = false;
+    };
     stable = mk static stable;
     nightly = mk static nightly;
     stable-dev = mk dynamic stable;

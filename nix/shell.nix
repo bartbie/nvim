@@ -11,6 +11,8 @@
             stylua
             alejandra
             nil
+            luarocks
+            busted-nlua
             ;
           inherit
             (pkgs.luajitPackages)

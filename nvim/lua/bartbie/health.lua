@@ -168,6 +168,17 @@ local function stats()
     end
 end
 
+local function run_busted()
+    if not nix.is_nix_shim then
+        return
+    end
+    start("busted tests results")
+    ---PERF: idk if nvim's health mechanism will handle this being async so just wait
+    ---besides, atl in our case tests are instant
+    local res = vim.system({ "busted" }, { cwd = runtime.config_root("nvim"), text = true }):wait(1000)
+    info(res.stdout)
+end
+
 local M = {}
 
 function M.check()
@@ -176,6 +187,7 @@ function M.check()
         nix_check()
         path_purity()
         stats()
+        run_busted()
     else
         error("Other checks will not run unless main requirements are satisfied: version, jit")
     end
