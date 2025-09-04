@@ -2,70 +2,151 @@ local M = {}
 
 local stdp = vim.fn.stdpath
 
----@param patterns string[]
----@return fun(string): boolean
-local include_if_any = function(patterns)
-    ---@return boolean
+---@alias bartbie.runtime.FilterGate "and" | "or" | "xor" | "nand" | "nor" | "xnor"
+---@alias bartbie.runtime.Pattern vim.lpeg.Pattern
+---@alias bartbie.runtime.Glob string
+
+local wo_neg = {
+    ["and"] = "and",
+    ["or"] = "or",
+    xor = "xor",
+    nand = "and",
+    nor = "or",
+    xnor = "xor",
+}
+
+local has_neg = {
+    ["and"] = false,
+    ["or"] = false,
+    xor = false,
+    nand = true,
+    nor = true,
+    xnor = true,
+}
+
+---@param patterns bartbie.runtime.Pattern[]
+local f_and = function(patterns)
     return function(path)
-        return vim.iter(patterns):any(function(x)
-            return not not path:match(vim.pesc(x))
-        end)
-    end
-end
----@param patterns string[]
----@return fun(string): boolean
-local include_if_all = function(patterns)
-    ---@return boolean
-    return function(path)
-        return vim.iter(patterns):all(function(x)
-            return not not path:match(vim.pesc(x))
-        end)
-    end
-end
----@param patterns string[]
----@return fun(string): boolean
-local exclude_if_any = function(patterns)
-    ---@return boolean
-    return function(path)
-        return not vim.iter(patterns):any(function(x)
-            return not not path:match(vim.pesc(x))
-        end)
-    end
-end
----@param patterns string[]
----@return fun(string): boolean
-local exclude_if_all = function(patterns)
-    ---@return boolean
-    return function(path)
-        return not vim.iter(patterns):all(function(x)
-            return not not path:match(vim.pesc(x))
-        end)
+        return #patterns ~= 0
+            and vim.iter(patterns):all(function(pat)
+                return pat:match(path) ~= nil
+            end)
     end
 end
 
----@class Path
----@field get fun(self: self): string[])
+---@param patterns bartbie.runtime.Pattern[]
+local f_or = function(patterns)
+    return function(path)
+        return #patterns ~= 0
+            and vim.iter(patterns):any(function(pat)
+                return pat:match(path) ~= nil
+            end)
+    end
+end
+
+---@param patterns bartbie.runtime.Pattern[]
+local f_xor = function(patterns)
+    return function(path)
+        local found = false
+        for _, pat in ipairs(patterns) do
+            if pat:match(path) then
+                if found then
+                    return false
+                end
+                found = true
+            end
+        end
+        return found
+    end
+end
+
+---@param patterns bartbie.runtime.Glob[]
+---@return bartbie.runtime.Pattern[]
+local function convert_patterns(patterns)
+    return vim.iter(patterns):map(vim.glob.to_lpeg):totable()
+end
+
+--NOTE: include has to negate has_neg and exclude not
+-- idk why, i thought the inverse should be true
+-- i spent too much time, it's probably the fault of inverse fn
+
+---@param gate bartbie.runtime.FilterGate
+---@param patterns bartbie.runtime.Glob[]
+---@return fun(path: string): boolean
+local include = function(gate, patterns)
+    local invert = has_neg[gate]
+
+    gate = wo_neg[gate]
+    patterns = convert_patterns(patterns)
+
+    local fun
+    if gate == "and" then
+        fun = f_and(patterns)
+    elseif gate == "or" then
+        fun = f_or(patterns)
+    else
+        fun = f_xor(patterns)
+    end
+
+    return function(path)
+        local res
+        if invert then
+            res = not fun(path)
+        else
+            res = fun(path)
+        end
+        return res
+    end
+end
+
+---@param gate bartbie.runtime.FilterGate
+---@param patterns bartbie.runtime.Glob[]
+---@return fun(path: string): boolean
+local exclude = function(gate, patterns)
+    local inc = include(gate, patterns)
+    return function(path)
+        return not inc(path)
+    end
+end
+
+M.include = include
+M.exclude = exclude
+
+local nix_store_glob = "{,**/}nix/store{,/**}"
+local after_glob = "{,**/}after{,/**}"
+local after_glob_pat = vim.glob.to_lpeg(after_glob)
+
+---@class bartbie.runtime.Path
 ---@field set fun(self: self, val: string[]): self
----@field clean_empty fun(self: self): self
+---@field get fun(self: self): string[]
+---@field toiter fun(self: self): Iter
+---@field filtered fun(self: self, method: bartbie.runtime.FilterGate, pattern: bartbie.runtime.Glob|bartbie.runtime.Glob[]): string[]
+---@field match fun(self: self, method: bartbie.runtime.FilterGate, pattern: bartbie.runtime.Glob|bartbie.runtime.Glob[]): boolean
+---@field only fun(self: self, method: bartbie.runtime.FilterGate, pattern: bartbie.runtime.Glob|bartbie.runtime.Glob[]): self
+---@field drop fun(self: self, method: bartbie.runtime.FilterGate, pattern: bartbie.runtime.Glob|bartbie.runtime.Glob[]): self
 ---@field unique fun(self: self): self
----@field rm_if_any fun(self: self, pattern: string|string[]): self
----@field rm_if_all fun(self: self, pattern: string|string[]): self
----@field rm_if_not_all fun(self: self, pattern: string|string[]): self
----@field rm_if_not_any fun(self: self, pattern: string|string[]): self
+---@field clean_empty fun(self: self): self
+---@field clean_impure fun(self: self, strict: boolean?): self
+---@field clean fun(self: self, strict: boolean?): self
 ---@field prepend fun(self: self, val: string): self
 ---@field append fun(self: self, val: string): self
 ---@field prepend_before_after fun(self: self, val: string): self
 ---@field insert fun(self: self, val: string, idx: number): self
 ---@field save fun(self: self):self
 ---@field reset fun(self: self): self
----@field new fun(self: self): Path
+---@field is_pure fun(self: self, strict: boolean?): boolean
+---@field get_pure fun(self: self, strict: boolean?): string[]
+---@field get_impure fun(self: self, strict: boolean?): string[]
+---@field new fun(self: self): bartbie.runtime.Path
+---@field count fun(self: self): integer
+---@field print fun(self: self): nil
 
 ---@class PathArgs
 ---@field getter fun(): string[]
 ---@field setter fun(val: string[])
 
 ---@param args PathArgs
----@return Path
+---@return bartbie.runtime.Path
 local function createPath(args)
     local data = args:getter()
     local first_after = nil
@@ -91,11 +172,27 @@ local function createPath(args)
         return data
     end
 
-    ---@type Path
+    vim.fn.stdpath("data")
+    ---@param strict boolean|nil
+    local function handle_strict(strict)
+        return strict and { nix_store_glob } or { nix_store_glob, stdp("data") .. "/site{,/**}" }
+    end
+
+    ---@type bartbie.runtime.Path
     return {
         get = function(self)
             return get()
         end,
+        toiter = function(self)
+            return vim.iter(get())
+        end,
+        filtered = function(self, gate, pattern)
+            if type(pattern) == "string" then
+                pattern = { pattern }
+            end
+            return self:toiter():filter(include(gate, pattern)):totable()
+        end,
+
         set = function(self, value)
             set(value)
             return self
@@ -113,36 +210,24 @@ local function createPath(args)
             vim.list.unique(get())
             return self
         end,
-        rm_if_any = function(self, pattern)
+        match = function(self, method, pattern)
             if type(pattern) == "string" then
                 pattern = { pattern }
             end
-            local new = vim.iter(get()):filter(exclude_if_any(pattern)):totable()
-            set(new)
+            return self:toiter():all(include(method, pattern))
+        end,
+        only = function(self, method, pattern)
+            if type(pattern) == "string" then
+                pattern = { pattern }
+            end
+            set(self:toiter():filter(include(method, pattern)):totable())
             return self
         end,
-        rm_if_all = function(self, pattern)
+        drop = function(self, method, pattern)
             if type(pattern) == "string" then
                 pattern = { pattern }
             end
-            local new = vim.iter(get()):filter(exclude_if_all(pattern)):totable()
-            set(new)
-            return self
-        end,
-        rm_if_not_all = function(self, pattern)
-            if type(pattern) == "string" then
-                pattern = { pattern }
-            end
-            local new = vim.iter(get()):filter(include_if_all(pattern)):totable()
-            set(new)
-            return self
-        end,
-        rm_if_not_any = function(self, pattern)
-            if type(pattern) == "string" then
-                pattern = { pattern }
-            end
-            local new = vim.iter(get()):filter(include_if_any(pattern)):totable()
-            set(new)
+            set(self:toiter():filter(exclude(method, pattern)):totable())
             return self
         end,
         save = function(self)
@@ -167,19 +252,66 @@ local function createPath(args)
         prepend_before_after = function(self, val)
             if first_after == nil then
                 first_after = vim.iter(ipairs(get())):find(function(_, e)
-                    return e:match("/after$")
+                    return after_glob_pat:match(e) ~= nil
                 end) or #get()
             end
             insert(val, first_after)
-            first_after = val:match("/after$") and first_after - 1 or first_after
+            first_after = after_glob_pat:match(val) and first_after - 1 or first_after
             return self
         end,
         insert = function(self, val, idx)
             insert(val, idx)
             return self
         end,
+        is_pure = function(self, strict)
+            return self:match("or", handle_strict(strict))
+        end,
+        get_impure = function(self, strict)
+            return self:filtered("nor", handle_strict(strict))
+        end,
+        get_pure = function(self, strict)
+            return self:filtered("or", handle_strict(strict))
+        end,
+        clean_impure = function(self, strict)
+            local function map_to_glob(l)
+                return vim.iter(l)
+                    :map(function(s)
+                        return s .. "{,/**}"
+                    end)
+                    :totable()
+            end
+            -- hide config folders
+            local conf_dirs = map_to_glob({ stdp("config"), unpack(stdp("config_dirs")) })
+            -- hide data folders except main one (stdpath("data"))
+            local data_dirs = map_to_glob(stdp("data_dirs"))
+
+            return self
+                :only("or", handle_strict(strict))
+                :drop("or", conf_dirs)
+                :drop("or", data_dirs)
+                -- hide any stuff that's not in data_dirs and still loiters
+                :drop(
+                    "xor",
+                    { stdp("data") .. "/site{,/**}", "**/share/nvim/site{,/**}" }
+                )
+        end,
+        clean = function(self, strict)
+            return self:clean_impure(strict):clean_empty():unique()
+        end,
+        count = function(_self)
+            return #get()
+        end,
+        print = function(_self)
+            print("entries:")
+            for index, path in ipairs(get()) do
+                print(string.format("  [%d] %s", index, path))
+            end
+            print(string.format("\nTotal: %d entries", #get()))
+        end,
     }
 end
+
+M.createPath = createPath
 
 local lua_path = createPath({
     getter = function()
@@ -222,50 +354,16 @@ local pack_path = createPath({
     end,
 })
 
----@param l string[]
----@return string[]
-local function add_after(l)
-    return vim.iter(l)
-        :map(function(x)
-            return vim.fs.joinpath(x, "after")
-        end)
-        :totable()
-end
-
 M.clean_runtime_path = function()
-    -- hide config folders
-    local conf_dirs = { stdp("config"), unpack(stdp("config_dirs")) }
-    -- hide data folders except main one (stdpath("data"))
-    local data_dirs = stdp("data_dirs")
-    return rt_path
-        :clean_empty()
-        :rm_if_not_any({ "nix/store", stdp("data") })
-        :rm_if_any(conf_dirs)
-        :rm_if_any(add_after(conf_dirs))
-        :rm_if_any(data_dirs)
-        :rm_if_any(add_after(data_dirs))
-        :unique()
-        :save()
+    return rt_path:clean(false):save()
 end
 
 M.clean_pack_path = function()
-    -- hide config folders
-    local conf_dirs = { stdp("config"), unpack(stdp("config_dirs")) }
-    -- hide data folders except main one (stdpath("data"))
-    local data_dirs = stdp("data_dirs")
-    return pack_path
-        :clean_empty()
-        :rm_if_not_any({ "nix/store", stdp("data") })
-        :rm_if_any(conf_dirs)
-        :rm_if_any(add_after(conf_dirs))
-        :rm_if_any(data_dirs)
-        :rm_if_any(add_after(data_dirs))
-        :unique()
-        :save()
+    return pack_path:clean(false):save()
 end
 
 M.clean_lua_path = function()
-    return lua_path:clean_empty():rm_if_not_all("nix/store"):unique():save()
+    return lua_path:clean(true):save()
 end
 
 M.runtime_path = function()
@@ -295,7 +393,8 @@ do
         local G = require("bartbie.G")
         local source = get_source(2)
         local function assert_glob(str, pat)
-            return assert((vim.glob.to_lpeg(pat):match(str)), str .. " doesn't match: " .. pat)
+            assert((vim.glob.to_lpeg(pat):match(str)), str .. " doesn't match: " .. pat)
+            return str
         end
 
         source = fs.normalize(
@@ -315,7 +414,7 @@ do
             -- nix - jump through parents
             -- nix/store/hash-rtp/lua/bartbie
             --           ^ we want this
-            return assert(vim.iter(fs.parents(source)):nth(3))
+            return assert_glob(assert(vim.iter(fs.parents(source)):nth(4)), "{,**/}nix/store/**/*nvim-rtp{,/}")
         else
             -- no nix at all - try to find our root files or ask nvim
             return fs.root(source, {
