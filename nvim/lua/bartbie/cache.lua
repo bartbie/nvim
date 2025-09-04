@@ -1,9 +1,12 @@
 local M = {}
 
 local function concat(list)
-    return table.concat(list, "\0")
+    return table.concat(vim.iter(list):flatten(math.huge), "\0")
 end
 
+---@generic T : function
+---@param fn T
+---@return T
 function M.memoized(fn)
     ---@type table<string, any>
     local cache = {}
