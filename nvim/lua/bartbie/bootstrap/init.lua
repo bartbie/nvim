@@ -1,14 +1,6 @@
 local fs = vim.fs
-local nix = require("bartbie.nix")
-
-local function get_rtp_root()
-    local rtp = assert(nix.get_roots().rtp_root)
-    if fs.basename(rtp) == "lua" then
-        local parent = vim.iter(fs.parents(rtp)):skip(1):next()
-        rtp = fs.joinpath(parent, "nvim")
-    end
-    return rtp
-end
+local config_root =
+    require("bartbie.runtime").config_root
 
 local M = {}
 
@@ -42,7 +34,7 @@ local function set_plugins_loader(base_path)
 end
 
 function M.install_plugins_loader()
-    set_plugins_loader(get_rtp_root())
+    set_plugins_loader(config_root("nvim"))
 end
 
 function M.install_plugins_autoload()
@@ -70,8 +62,7 @@ local err_handler = function(name, file)
 end
 
 function M.load_all_plugin_configs()
-    local rtp = get_rtp_root()
-    local files = vim.fn.glob(rtp .. "/plugins/*.lua", false, true)
+    local files = vim.fn.glob(config_root("nvim") .. "/plugins/*.lua", false, true)
     for _, file in ipairs(files) do
         local name = vim.fn.fnamemodify(file, ":t:r")
         xpcall(require, err_handler(name, file), "plugins." .. name)
@@ -112,7 +103,6 @@ local SOURCED_FTS = {}
 require("bartbie.G").sourced_fts = SOURCED_FTS
 function M.setup_ftonce_folders()
     local augroup = require("bartbie.augroup")
-    local rtp = get_rtp_root()
 
     ---@param root string
     ---@param name string
@@ -142,8 +132,8 @@ function M.setup_ftonce_folders()
                 return
             end
             local s = vim.schedule_wrap(source)
-            s(rtp, name)
-            s(fs.joinpath(rtp, "after"), name)
+            s(config_root("nvim"), name)
+            s(config_root( "after"), name)
             table.insert(SOURCED_FTS, name)
         end,
     })

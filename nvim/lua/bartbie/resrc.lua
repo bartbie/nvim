@@ -5,9 +5,7 @@ local M = {}
 ---@param name string
 function M.read(name)
     local nio = require("nio")
-    local root = require("bartbie.nix").get_roots().rtp_root
-    assert(root)
-    local path = vim.fs.joinpath(root, "resources", name)
+    local path = require("bartbie.runtime").config_root("nvim", "resources", name)
     local f, err = nio.file.open(path)
     assert(err == nil) ---@cast f -nil
     local data, e = f.read()

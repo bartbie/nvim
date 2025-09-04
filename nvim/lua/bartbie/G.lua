@@ -27,11 +27,13 @@ end
 if _G[INDEX] == nil then
     ---@type table<string, any>
     local g = {}
+    g.is_nix = vim.g.is_nix or false
+    g.is_nix_shim = g.is_nix and vim.g.is_nix_shim or false
+
     setmetatable(g, mkmetatable(g))
 
     _G[INDEX] = g
 end
-
 ---@type table<string, any>
 local G = _G[INDEX]
 
@@ -39,6 +41,8 @@ local G = _G[INDEX]
 ---@field get fun(k: string): any
 ---@field get fun(): table<string, any>
 ---@field set fun(k: string, v: any)
+---@field is_nix boolean
+---@field is_nix_shim boolean
 ---@field [string] any
 local M = {}
 

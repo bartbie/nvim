@@ -280,4 +280,73 @@ M.lua_path = function()
     return lua_path:new()
 end
 
+do
+    local fs = vim.fs
+
+    ---@param level integer
+    ---@return string
+    local function get_source(level)
+        local x = debug.getinfo(level + 1, "S")
+        return x and x.source:gsub("^@+", "")
+    end
+
+    ---@return string
+    local function find_config()
+        local G = require("bartbie.G")
+        local source = get_source(2)
+        local function assert_glob(str, pat)
+            return assert((vim.glob.to_lpeg(pat):match(str)), str .. " doesn't match: " .. pat)
+        end
+
+        source = fs.normalize(
+            -- if :lua, we are being called from cmd, check from this file
+            (source == ":lua" and get_source(1):gsub("/bartbie/runtime.lua$", "")) or source
+        )
+
+        if G.is_nix_shim then
+            -- our dev shell - find our flake.nix
+            -- INVARIANT: we *must* be at nvim/lua/bartbie/
+            assert_glob(source, "{,**/}nvim/lua/bartbie/**")
+            return fs.joinpath(fs.root(source, "flake.nix"), "nvim")
+        elseif G.is_nix then
+            -- INVARIANT: we *must* be at nix/store
+            assert_glob(source, "{,**/}nix/store/**/*nvim-rtp{,/**}")
+
+            -- nix - jump through parents
+            -- nix/store/hash-rtp/lua/bartbie
+            --           ^ we want this
+            return assert(vim.iter(fs.parents(source)):nth(3))
+        else
+            -- no nix at all - try to find our root files or ask nvim
+            return fs.root(source, {
+                ".luacheckrc",
+                ".luarc.json",
+                ".stylua.toml",
+                "rocks.toml",
+            }) or stdp("config")
+        end
+    end
+
+    ---@type string?
+    local config
+
+    ---@param folder
+    ---| "lua" nvim/lua
+    ---| "nvim" nvim/
+    ---| "after" nvim/after
+    ---@param ... string
+    ---@return string
+    M.config_root = function(folder, ...)
+        assert(type(folder) == "string")
+        local G = require("bartbie.G")
+        if not config then
+            config = find_config()
+        end
+        if G.is_nix_shim or not G.is_nix then
+            folder = folder == "nvim" and "" or folder --[[@as string]]
+        end
+        return vim.fs.joinpath(config, folder, ...)
+    end
+end
+
 return M

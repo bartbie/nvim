@@ -59,6 +59,7 @@
       # See also: https://neovim.io/doc/user/starting.html
       rtpDrv = stdenv.mkDerivation {
         inherit src;
+        # CORRECTNESS: don't change this name from *nvim-rtp*, we glob-match on it
         name = "nvim-rtp";
         buildPhase = ''
           mkdir -p $out/nvim
@@ -153,18 +154,19 @@
         # lua
         ''
           vim.g.is_nix = true
+          ${lib.optionalString dynamicConfig "vim.g.is_nix_shim = true"}
         ''
         (lib.optionalString cleanRuntimePaths
           # lua
           ''
-            do
-	        ${lib.optionalString dynamicConfig find-config}
-                -- clean runtime paths EXCLUDING stdpath("data")
-                local runtime = ${import-runtime-lib}
-                runtime.clean_runtime_path()
-                runtime.clean_pack_path()
-                runtime.clean_lua_path()
-            end
+               do
+            ${lib.optionalString dynamicConfig find-config}
+                   -- clean runtime paths EXCLUDING stdpath("data")
+                   local runtime = ${import-runtime-lib}
+                   runtime.clean_runtime_path()
+                   runtime.clean_pack_path()
+                   runtime.clean_lua_path()
+               end
           '')
         # lua
         ''
