@@ -1,26 +1,6 @@
+local bcache = require("bartbie.cache")
 local fs = vim.fs
 local M = {}
-
-local root = {
-    cache = {},
-}
-
-function root.find(src, ...)
-    local args = vim.iter({ ... }):flatten(math.huge):totable()
-    table.sort(args)
-    local hashed = table.concat(args, "")
-    local nested = root.cache[src]
-    if nested and nested[hashed] then
-        return nested[hashed]
-    end
-    local res = fs.root(src, args)
-    if nested then
-        nested[hashed] = res or false
-    else
-        root.cache[src] = { [hashed] = res or false }
-    end
-    return res or nil
-end
 
 local nix_error_state = {
     is_nix = {
@@ -99,22 +79,22 @@ function find.rtp_root(source, nix)
         return vim.iter(fs.parents(source)):skip(2):next()
     elseif nix and nix.shell.ours then
         -- if we are using our dev shell just find our flake.nix
-        return fs.joinpath(root.find(source, "flake.nix"), "nvim")
+        return fs.joinpath(fs.root(source, "flake.nix"), "nvim")
     end
-    return root.find(source, "rocks.toml") or root.find(source, "init.lua")
+    return fs.root(source, "rocks.toml") or fs.root(source, "init.lua")
 end
 
 function find.loc_root(source, nix)
     if nix and nix.is_nix then
         if nix.shell.ours then
-            return root.find(source, "flake.nix")
+            return fs.root(source, "flake.nix")
         elseif nix.shell.exists and nix.shell.name:match("bartbie%-nvim%-nix%-shell") then
-            return root.find(vim.env.PWD, "flake.nix")
+            return fs.root(vim.env.PWD, "flake.nix")
         else
             return vim.NIL -- using this sentinel value is pretty ugly but eh
         end
     end
-    return root.find(source, "flake.nix") or root.find(source, "rocks.toml")
+    return fs.root(source, "flake.nix") or fs.root(source, "rocks.toml")
 end
 
 local function get_source(level)
@@ -136,9 +116,6 @@ function M.get_roots(source)
         loc_root = find.loc_root(source, nix),
     }
 end
-
-function M._get_cache()
-    return root.cache
-end
+M.get_roots = bcache.memoized(M.get_roots)
 
 return M
