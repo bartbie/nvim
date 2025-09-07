@@ -1,0 +1,48 @@
+name: "Nix build"
+on:
+  pull_request:
+  push:
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    name: Nix formats
+    steps:
+    - uses: actions/checkout@v5
+    - uses: cachix/install-nix-action@v31
+
+    - name: format Lua
+      run: "nix develop --command stylua -- ."
+
+    - name: format Nix
+      run: "nix fmt ."
+
+  checks:
+    runs-on: ubuntu-latest
+    name: Nix checks
+    steps:
+    - uses: actions/checkout@v5
+    - uses: cachix/install-nix-action@v31
+    # - uses: cachix/cachix-action@v16
+    #   with:
+    #     name: 
+    #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix flake check -L
+
+  build:
+    name: ${{ matrix.attribute }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        attribute:
+          - .#nightly
+    steps:
+    - uses: actions/checkout@v5
+    - uses: cachix/install-nix-action@v31
+    # - uses: cachix/cachix-action@v16
+    #   with:
+    #     name: 
+    #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix build --accept-flake-config "${{matrix.attribute}}" -L
