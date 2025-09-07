@@ -9,10 +9,13 @@
 </div>
 
 ## What's this about?
+
 My spin on [PDE](https://youtu.be/QMVIJhC9Veg).
 
+Nix infra based on [kickstart-nix.nvim](https://github.com/nix-community/kickstart-nix.nvim).
+
 ## File Structure and Architecture
- 
+
 ```sh
 nvim
 ├─ flake.nix
@@ -28,7 +31,7 @@ nvim
 │  ├─ plugin
 │  │  └─ *             # general non-plugin-specific configs
 │  ├─ plugins
-│  │  └─ *             # 3rd-party-plugins configs 
+│  │  └─ *             # 3rd-party-plugins configs
 │  └─ after
 │     └─ *             # configs (lazy-)loaded after everything else
 └─ nix
@@ -42,19 +45,22 @@ with an added twist of plugins configs loaded after `plugin` (but before `after`
 
 ## Installation
 
-#### Nix
+### Nix
 
 Use the provided flake.
 
 You can use the provided devShell to hack on lua without needing to nix rebuild it everytime.
 
 ## Licensing
-This repository as a whole is licensed under the GNU General Public License v2.0 (GPL-2.0), the same license as the template it is based on.
+
+This repository as a whole is licensed under the GNU General Public License v2.0 (GPL-2.0), the same license as the template it is based on (kickstart-nix.nvim).
 
 However, individual files may have different licensing terms:
+
 - Files originating from the template's nix configuration are subject to the GPL-2.0
+
 - Files original to this project are dual-licensed under both GPL-2.0 and MIT licenses
+
 - Third-party files (such as dependencies or included libraries) retain their original licenses as specified in their respective headers or accompanying documentation
 
 You may reuse files under the terms of their applicable license(s). For dual-licensed files, you may choose to use them under either the GPL-2.0 or MIT license terms, at your discretion.
-
