@@ -1,6 +1,5 @@
 local fs = vim.fs
-local config_root =
-    require("bartbie.runtime").config_root
+local config_root = require("bartbie.runtime").config_root
 
 local M = {}
 
@@ -133,7 +132,7 @@ function M.setup_ftonce_folders()
             end
             local s = vim.schedule_wrap(source)
             s(config_root("nvim"), name)
-            s(config_root( "after"), name)
+            s(config_root("after"), name)
             table.insert(SOURCED_FTS, name)
         end,
     })
