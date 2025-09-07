@@ -217,7 +217,6 @@ describe("bartbie.runtime.exclude", function()
     local exclude = require("bartbie.runtime").exclude
 
     it("checks exclude correctly", function()
-        local exclude = require("bartbie.runtime").exclude
         local patterns = { "*.lua", "test*" }
         local test_path = "test.lua"
         local gates = {
@@ -483,7 +482,6 @@ describe("bartbie.runtime.Path", function()
     local runtime = require("bartbie.runtime")
 
     local data_folder = vim.fn.stdpath("data")
-    local home = vim.env.HOME
 
     local datas = vim.iter({ "site", "site/after", "site/pack/*/start/*" })
         :map(function(x)
@@ -510,7 +508,7 @@ describe("bartbie.runtime.Path", function()
             "/Users/test/.local/share/nvim/site/after",
             "/Users/test/.local/share/nvim/site/pack/*/start/*",
         }
-        function match(x)
+        local function match(x)
             return vim.glob.to_lpeg("/Users/test/.local/share/nvim/site{,/**}"):match(x)
         end
 

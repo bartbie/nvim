@@ -146,10 +146,6 @@ function M.show_package_path(filter_list)
     show_path_list(rt.lua_path():get(), "Lua package.path", filter_list)
 end
 
-function M.show_fennel_path(filter_list)
-    show_path_list(vim.split(fennel.path, ";"), "Fennel fennel.path", filter_list)
-end
-
 function M.show_data_dirs(filter_list)
     show_path_list(vim.fn.stdpath("data_dirs"), "Neovim data_dirs", filter_list)
 end

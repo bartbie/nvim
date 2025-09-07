@@ -38,9 +38,9 @@ local function create_extention(filetypes, text, rest)
     }
 end
 
-local function get_short_cwd()
-    return vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
-end
+-- local function get_short_cwd()
+--     return vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
+-- end
 
 require("lualine").setup({
     options = {

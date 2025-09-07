@@ -180,10 +180,10 @@ local function createPath(args)
 
     ---@type bartbie.runtime.Path
     return {
-        get = function(self)
+        get = function(_self)
             return get()
         end,
-        toiter = function(self)
+        toiter = function(_self)
             return vim.iter(get())
         end,
         filtered = function(self, gate, pattern)
@@ -246,7 +246,7 @@ local function createPath(args)
             insert(val)
             return self
         end,
-        new = function(self)
+        new = function(_self)
             return createPath(args)
         end,
         prepend_before_after = function(self, val)

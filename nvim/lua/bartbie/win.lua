@@ -242,7 +242,6 @@ function M.resize(win, dirn, amount, opts)
     local adaptive = opts.adaptive == nil and true or opts.adaptive
     if opts.use_dim then
         dirn = M.dim_space_to_vec(dirn --[[@as bartbie.win.Dimension]], amount)
-    else
         ---@cast dirn -bartbie.win.Dimension
     end
     if M.is_floating(win) then

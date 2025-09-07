@@ -103,7 +103,7 @@ local function create_config(prefix)
     return r
 end
 
-M = {
+local M = {
     create_config = create_config,
 }
 
