@@ -155,6 +155,8 @@ local function stats()
         for _, name in ipairs(paths) do
             info(("stdpath(`%s`): `%s`"):format(name, vim.fn.stdpath(name)))
         end
+
+        info(("vim.env.VIMRUNTIME: `%s`"):format(vim.env.VIMRUNTIME))
     end
     do
         if nix.is_nix and not nix.is_nix_shim then

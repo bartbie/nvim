@@ -494,8 +494,8 @@ describe("bartbie.runtime.Path", function()
     local runtimes = {
         vim.fs.normalize(vim.fs.joinpath(vim.env.VIMRUNTIME, "../../../lib/nvim")),
         vim.env.VIMRUNTIME,
-        (vim.fs.joinpath(vim.env.VIMRUNTIME, "/pack/dist/opt/matchit")),
-        (vim.fs.joinpath(vim.env.VIMRUNTIME, "/pack/dist/opt/netrw")),
+        vim.fs.joinpath(vim.env.VIMRUNTIME, "/pack/dist/opt/matchit"),
+        vim.fs.joinpath(vim.env.VIMRUNTIME, "/pack/dist/opt/netrw"),
     }
 
     local function flat_sort(l)
@@ -526,6 +526,59 @@ describe("bartbie.runtime.Path", function()
         local patterns = { data_folder .. "/site{,/**}", "**/share/nvim/site{,/**}" }
 
         assert.are.same(data, vim.iter(data):filter(runtime.exclude("xor", patterns)):totable())
+    end)
+
+    it("doesn't incorrectly match vim.env.VIMRUNTIME with a general pattern", function()
+        assert.Nil(vim.glob.to_lpeg("**/share/nvim/site{,/**}"):match(vim.env.VIMRUNTIME))
+    end)
+
+    it("doesn't incorrectly match vim.env.VIMRUNTIME with vim.fn.stdpath('data') pattern", function()
+        assert.Nil(vim.glob.to_lpeg(vim.fn.stdpath("data") .. "/site{,/**}"):match(vim.env.VIMRUNTIME))
+    end)
+
+    local function map_to_glob(l)
+        return vim.iter(l)
+            :map(function(s)
+                return s .. "{,/**}"
+            end)
+            :totable()
+    end
+
+    local function filter_out(paths, gate, patterns)
+        local x = vim.iter(paths):filter(runtime.exclude(gate, patterns)):totable()
+        table.sort(x)
+        return x
+    end
+
+    it("doesn't incorrectly match vim.env.VIMRUNTIME with vim.fn.stdpath('data_dirs') pattern", function()
+        local data = { vim.env.VIMRUNTIME }
+        local VRT = vim.env.VIMRUNTIME .. "{,/**}"
+        assert.are.same(data, filter_out(data, "xor", { VRT, VRT, unpack(map_to_glob(vim.fn.stdpath("data_dirs"))) }))
+    end)
+
+    it("doesn't incorrectly match vim.env.VIMRUNTIME with vim.fn.stdpath('data_dirs') pattern", function()
+        local data = { vim.env.VIMRUNTIME }
+        assert.are.same(
+            data,
+            filter_out(data, "or", map_to_glob({ vim.fn.stdpath("config"), unpack(vim.fn.stdpath("config_dirs")) }))
+        )
+    end)
+
+    it("filters vim.env.VIMRUNTIME through", function()
+        local function createList(l)
+            local rtp = vim.deepcopy(l)
+            return runtime.createPath({
+                getter = function()
+                    return rtp
+                end,
+                setter = function(x)
+                    rtp = x
+                end,
+            })
+        end
+
+        local p = createList({ vim.env.VIMRUNTIME }):clean():get()
+        assert.are.same(flat_sort({ vim.env.VIMRUNTIME }), flat_sort(p))
     end)
 
     describe("RTP", function()

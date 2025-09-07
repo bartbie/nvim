@@ -23,4 +23,8 @@ describe("Test env", function()
     it("can access module in lua/bartbie", function()
         assert(require("bartbie.symbols"), "Could not access main module")
     end)
+
+    it("vim.env.VIMRUNTIME exists", function()
+        assert.no.Nil(vim.env.VIMRUNTIME)
+    end)
 end)

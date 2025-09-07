@@ -284,11 +284,16 @@ local function createPath(args)
             local conf_dirs = map_to_glob({ stdp("config"), unpack(stdp("config_dirs")) })
             -- hide data folders except main one (stdpath("data"))
             local data_dirs = map_to_glob(stdp("data_dirs"))
+            local VRT = vim.env.VIMRUNTIME .. "{,/**}"
 
             return self
                 :only("or", handle_strict(strict))
                 :drop("or", conf_dirs)
-                :drop("or", data_dirs)
+                -- HACK: force keeping vim.env.VIMRUNTIME/** by xoring on itself
+                :drop(
+                    "xor",
+                    { VRT, VRT, unpack(data_dirs) }
+                )
                 -- hide any stuff that's not in data_dirs and still loiters
                 :drop(
                     "xor",
