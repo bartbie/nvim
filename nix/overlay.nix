@@ -5,11 +5,8 @@
   # otherwise it could have an incompatible signature when applying this overlay.
   pkgs-locked = inputs.nixpkgs.legacyPackages.${pkgs.system};
 
-  mkNeovim = neovim-unwrapped:
-    pkgs.callPackage ./mkNeovim {
-      inherit (pkgs-locked) wrapNeovimUnstable neovimUtils;
-      inherit neovim-unwrapped;
-    };
+  _mkNeovim = pkgs.callPackage ./mkNeovim {inherit (pkgs-locked) wrapNeovimUnstable neovimUtils;};
+  mkNeovim = neovim-unwrapped: args: _mkNeovim.override ({inherit neovim-unwrapped;} // args);
 
   src = ../nvim;
 
@@ -105,6 +102,7 @@ in {
   nvim = final.nvimPackages.nightly;
   neovim-nightly = nightly;
   nvimPackages = {
+    mkNeovim = _mkNeovim.override;
     _clean = mkNeovim nightly {
       src = pkgs.writeTextDir "init.lua" "";
       dynamicConfig = true;

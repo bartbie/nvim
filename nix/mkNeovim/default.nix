@@ -1,6 +1,5 @@
 # Function for creating a Neovim derivation
 {
-  pkgs,
   lib,
   stdenv,
   sqlite,
@@ -8,6 +7,36 @@
   # Set by the overlay to ensure we use a compatible version of `wrapNeovimUnstable`
   wrapNeovimUnstable,
   neovimUtils, # not used for now
+  /**/
+  # NVIM_APPNAME - Defaults to 'nvim' if not set.
+  # If set to something else, this will also rename the binary.
+  appName ? "nvim",
+  plugins ? [], # List of plugins
+  # List of dev plugins (will be bootstrapped) - useful for plugin developers
+  # { name = <plugin-name>; url = <git-url>; }
+  devPlugins ? [],
+  # Regexes for config files to ignore, relative to the nvim directory.
+  # e.g. [ "^plugin/neogit.lua" "^ftplugin/.*.lua" ]
+  ignoreConfigRegexes ? [],
+  extraPackages ? [], # Extra runtime dependencies (e.g. ripgrep, ...)
+  # The below arguments can typically be left as their defaults
+  # Additional lua packages (not plugins), e.g. from luarocks.org.
+  # e.g. p: [p.jsregexp]
+  extraLuaPackages ? p: [],
+  extraPython3Packages ? p: [], # Additional python 3 packages
+  withPython3 ? true, # Build Neovim with Python 3 support?
+  withRuby ? false, # Build Neovim with Ruby support?
+  withNodeJs ? false, # Build Neovim with NodeJS support?
+  withSqlite ? true, # Add sqlite? This is a dependency for some plugins
+  # You probably don't want to create vi or vim aliases
+  # if the appName is something different than "nvim"
+  viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
+  vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
+  wrapRc ? true,
+  src ? ../../nvim, # Use this repo as src?
+  dynamicConfig ? false, # Don't use src, instead use init.lua shim that will try to load real config during startup
+  cleanRuntimePaths ? true, # clean RTP, PP, and package.path from any system files EXCLUDING stdpath("data")
+  customPluginDefaults ? {}, # use different plugin defaults?
 }: let
   mkWrapperArgs = {
     separators ? {},
@@ -282,119 +311,88 @@
 
   concatLibsPaths = fn: libs: when (libs != []) (lib.concatMapStringsSep ";" fn libs);
   mapBins = packages: when (packages != []) (lib.makeBinPath packages);
+
+  appName' =
+    if (appName == null || appName == "")
+    then "nvim"
+    else appName;
+  isCustomAppName = appName' != "nvim";
+
+  plugin-defaults = PLUGIN-DEFAULTS // customPluginDefaults;
+
+  extraLuaLibs = extraLuaPackages luapkgs;
 in
-  {
-    # NVIM_APPNAME - Defaults to 'nvim' if not set.
-    # If set to something else, this will also rename the binary.
-    appName ? "nvim",
-    plugins ? [], # List of plugins
-    # List of dev plugins (will be bootstrapped) - useful for plugin developers
-    # { name = <plugin-name>; url = <git-url>; }
-    devPlugins ? [],
-    # Regexes for config files to ignore, relative to the nvim directory.
-    # e.g. [ "^plugin/neogit.lua" "^ftplugin/.*.lua" ]
-    ignoreConfigRegexes ? [],
-    extraPackages ? [], # Extra runtime dependencies (e.g. ripgrep, ...)
-    # The below arguments can typically be left as their defaults
-    # Additional lua packages (not plugins), e.g. from luarocks.org.
-    # e.g. p: [p.jsregexp]
-    extraLuaPackages ? p: [],
-    extraPython3Packages ? p: [], # Additional python 3 packages
-    withPython3 ? true, # Build Neovim with Python 3 support?
-    withRuby ? false, # Build Neovim with Ruby support?
-    withNodeJs ? false, # Build Neovim with NodeJS support?
-    withSqlite ? true, # Add sqlite? This is a dependency for some plugins
-    # You probably don't want to create vi or vim aliases
-    # if the appName is something different than "nvim"
-    viAlias ? appName == "nvim", # Add a "vi" binary to the build output as an alias?
-    vimAlias ? appName == "nvim", # Add a "vim" binary to the build output as an alias?
-    wrapRc ? true,
-    src ? ../../nvim, # Use this repo as src?
-    dynamicConfig ? false, # Don't use src, instead use init.lua shim that will try to load real config during startup
-    cleanRuntimePaths ? true, # clean RTP, PP, and package.path from any system files EXCLUDING stdpath("data")
-    customPluginDefaults ? {}, # use different plugin defaults?
-  }: let
-    appName' =
-      if (appName == null || appName == "")
-      then "nvim"
-      else appName;
-    isCustomAppName = appName' != "nvim";
-
-    plugin-defaults = PLUGIN-DEFAULTS // customPluginDefaults;
-
-    extraLuaLibs = extraLuaPackages luapkgs;
-  in
-    _mkNeovim {
-      # The final init.lua content that we pass to the Neovim wrapper.
-      luaRc = {
-        inherit cleanRuntimePaths dynamicConfig;
-        src = lib.cleanSourceWith {
-          inherit src;
-          name = "${appName'}-src-filtered";
-          filter = mkPathFilter src ignoreConfigRegexes;
-        };
-        init = builtins.readFile (src + /init.lua);
-        beforeInit = [];
-        afterInit = [
-          # Bootstrap/load dev plugins
-          (vimPackPluginsStr devPlugins)
-        ];
+  _mkNeovim {
+    # The final init.lua content that we pass to the Neovim wrapper.
+    luaRc = {
+      inherit cleanRuntimePaths dynamicConfig;
+      src = lib.cleanSourceWith {
+        inherit src;
+        name = "${appName'}-src-filtered";
+        filter = mkPathFilter src ignoreConfigRegexes;
       };
-      config = {
-        inherit
-          extraPython3Packages
-          withPython3
-          withRuby
-          withNodeJs
-          viAlias
-          vimAlias
-          wrapRc
-          ;
-        plugins = normalizePlugins plugin-defaults plugins;
-        wrapperArgs = builtins.concatStringsSep " " (
-          lib.flatten [
-            # Sqlite
-            (wrapArgs {
-              set = {
-                LIBSQLITE_CLIB_PATH = when withSqlite sqliteLibPath;
-                LIBSQLITE = when withSqlite sqliteLibPath;
-              };
-              prefix = {
-                PATH = mapBins (lib.optional withSqlite sqlite);
-              };
-            })
-            # Lua libs
-            (wrapArgs {
-              suffix = {
-                # Native Lua libraries
-                LUA_CPATH = concatLibsPaths luapkgs.getLuaCPath extraLuaLibs;
-                # Lua libraries
-                LUA_PATH = concatLibsPaths luapkgs.getLuaPath extraLuaLibs;
-              };
-            })
-            # nvim appname + extra packages
-            (wrapArgs {
-              set = {
-                NVIM_APPNAME = when isCustomAppName appName';
-              };
-              prefix = {
-                # Add external packages to the PATH
-                PATH = mapBins extraPackages;
-              };
-            })
-          ]
-        );
-      };
-      overrideAttrs = prev: {
-        buildPhase =
-          prev.buildPhase
-          + lib.optionalString isCustomAppName ''
-            mv $out/bin/nvim $out/bin/${lib.escapeShellArg appName'}
-          '';
-        passthru = lib.recursiveUpdate prev.passthru {inherit extraPackages;};
-        meta.mainProgram =
-          if isCustomAppName
-          then appName'
-          else prev.meta.mainProgram;
-      };
-    }
+      init = builtins.readFile (src + /init.lua);
+      beforeInit = [];
+      afterInit = [
+        # Bootstrap/load dev plugins
+        (vimPackPluginsStr devPlugins)
+      ];
+    };
+    config = {
+      inherit
+        extraPython3Packages
+        withPython3
+        withRuby
+        withNodeJs
+        viAlias
+        vimAlias
+        wrapRc
+        ;
+      plugins = normalizePlugins plugin-defaults plugins;
+      wrapperArgs = builtins.concatStringsSep " " (
+        lib.flatten [
+          # Sqlite
+          (wrapArgs {
+            set = {
+              LIBSQLITE_CLIB_PATH = when withSqlite sqliteLibPath;
+              LIBSQLITE = when withSqlite sqliteLibPath;
+            };
+            prefix = {
+              PATH = mapBins (lib.optional withSqlite sqlite);
+            };
+          })
+          # Lua libs
+          (wrapArgs {
+            suffix = {
+              # Native Lua libraries
+              LUA_CPATH = concatLibsPaths luapkgs.getLuaCPath extraLuaLibs;
+              # Lua libraries
+              LUA_PATH = concatLibsPaths luapkgs.getLuaPath extraLuaLibs;
+            };
+          })
+          # nvim appname + extra packages
+          (wrapArgs {
+            set = {
+              NVIM_APPNAME = when isCustomAppName appName';
+            };
+            prefix = {
+              # Add external packages to the PATH
+              PATH = mapBins extraPackages;
+            };
+          })
+        ]
+      );
+    };
+    overrideAttrs = prev: {
+      buildPhase =
+        prev.buildPhase
+        + lib.optionalString isCustomAppName ''
+          mv $out/bin/nvim $out/bin/${lib.escapeShellArg appName'}
+        '';
+      passthru = lib.recursiveUpdate prev.passthru {inherit extraPackages;};
+      meta.mainProgram =
+        if isCustomAppName
+        then appName'
+        else prev.meta.mainProgram;
+    };
+  }
