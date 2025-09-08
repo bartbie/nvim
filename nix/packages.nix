@@ -1,5 +1,5 @@
 {pkgs, ...}:
-pkgs.nvimPackages
+(builtins.removeAttrs pkgs.nvimPackages ["mkNeovim"])
 // {
   default = pkgs.nvim;
   nvim = pkgs.nvim;
