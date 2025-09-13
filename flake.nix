@@ -50,11 +50,12 @@
         overlays = [
           overlay
           (_: prev: {neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${prev.system}.default;})
+          (_: prev: {fmt = prev.callPackage ./nix/fmt.nix {};})
           inputs.neorocks.overlays.default
         ];
       };
     in {
-      formatter = pkgs.alejandra;
+      formatter = devPkgs.fmt;
       packages = import ./nix/packages.nix pkgs;
       devShells = import ./nix/shell.nix devPkgs;
       checks = import ./nix/checks.nix (devPkgs // {inherit git-hooks;});

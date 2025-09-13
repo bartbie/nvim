@@ -1,15 +1,18 @@
 {pkgs, ...}: let
+  fmt = pkgs.fmt;
   mkShell = nvim:
     pkgs.mkShell {
       name = "nvim-nix-shell";
       packages =
-        [nvim]
+        [
+          nvim
+          fmt
+        ]
         ++ nvim.passthru.extraPackages
+        ++ fmt.passthru.runtimeInputs
         ++ builtins.attrValues {
           inherit
             (pkgs)
-            stylua
-            alejandra
             nil
             luarocks
             busted-nlua

@@ -18,8 +18,8 @@
   pre-commit-check = git-hooks.lib.${pkgs.system}.run {
     src = ../.;
     hooks = {
-      alejandra.enable = true;
-      stylua.enable = true;
+      treefmt.enable = true;
+      treefmt.packageOverrides.treefmt = pkgs.fmt;
       luacheck.enable = true;
       editorconfig-checker.enable = true;
       markdownlint.enable = true;
