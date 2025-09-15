@@ -1,15 +1,19 @@
-{lib}: let
+{ lib }:
+let
   # map string -> plugin from pkgs.vimPlugins
-  mapNameToPlugin = pkgs: s:
+  mapNameToPlugin =
+    pkgs: s:
     lib.pipe s [
-      (builtins.replaceStrings ["."] ["-"])
+      (builtins.replaceStrings [ "." ] [ "-" ])
       (x: pkgs.vimPlugins."${x}")
     ];
-in {
+in
+{
   inherit mapNameToPlugin;
 
   # Use this to create a plugin from a flake input
-  mkNvimPlugin = pkgs: src: pname:
+  mkNvimPlugin =
+    pkgs: src: pname:
     pkgs.vimUtils.buildVimPlugin {
       inherit pname src;
       version = src.lastModifiedDate;
@@ -23,7 +27,8 @@ in {
   #   ...
   # }
 
-  mapNamesToPlugins = attrs:
+  mapNamesToPlugins =
+    attrs:
     lib.pipe attrs [
       # (filterAttrs (_: v: builtins.isString v))
       (lib.attrsets.mapAttrsToList (n: _: (mapNameToPlugin n)))

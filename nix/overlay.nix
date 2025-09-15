@@ -1,76 +1,76 @@
 # This overlay, when applied to nixpkgs, adds the final neovim derivation to nixpkgs.
-{inputs}: final: prev: let
+{ inputs }:
+final: prev:
+let
   pkgs = prev;
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
   pkgs-locked = inputs.nixpkgs.legacyPackages.${pkgs.system};
 
-  _mkNeovim = pkgs.callPackage ./mkNeovim {inherit (pkgs-locked) wrapNeovimUnstable neovimUtils;};
-  mkNeovim = neovim-unwrapped: args: _mkNeovim.override ({inherit neovim-unwrapped;} // args);
+  _mkNeovim = pkgs.callPackage ./mkNeovim { inherit (pkgs-locked) wrapNeovimUnstable neovimUtils; };
+  mkNeovim = neovim-unwrapped: args: _mkNeovim.override ({ inherit neovim-unwrapped; } // args);
 
   src = ../nvim;
 
-  plugins = let
-    start = builtins.attrValues {
-      inherit (pkgs.vimPlugins) nvim-nio;
-    };
-    opt = builtins.attrValues {
-      inherit
-        (pkgs.vimPlugins.nvim-treesitter)
-        withAllGrammars
-        ;
+  plugins =
+    let
+      start = builtins.attrValues {
+        inherit (pkgs.vimPlugins) nvim-nio;
+      };
+      opt = builtins.attrValues {
+        inherit (pkgs.vimPlugins.nvim-treesitter)
+          withAllGrammars
+          ;
 
-      inherit
-        (pkgs.vimPlugins)
-        mini-nvim
-        # theme
-        kanagawa-nvim
-        # cmp
-        blink-cmp
-        blink-compat
-        cmp-conjure
-        # fs
-        oil-nvim
-        # lsp
-        nvim-lspconfig
-        lazydev-nvim
-        # fmt
-        conform-nvim
-        # fzf
-        fzf-lua
-        # vcs
-        vim-fugitive
-        gitsigns-nvim
-        # repl
-        conjure
-        # misc
-        undotree
-        which-key-nvim
-        neorg
-        # hl
-        rainbow-delimiters-nvim
-        nvim-colorizer-lua
-        todo-comments-nvim
-        # ui
-        satellite-nvim
-        nvim-hlslens
-        fidget-nvim
-        alpha-nvim
-        lualine-nvim
-        dropbar-nvim
-        # lisp
-        nvim-parinfer
-        # rust
-        crates-nvim
-        ;
-    };
-  in
+        inherit (pkgs.vimPlugins)
+          mini-nvim
+          # theme
+          kanagawa-nvim
+          # cmp
+          blink-cmp
+          blink-compat
+          cmp-conjure
+          # fs
+          oil-nvim
+          # lsp
+          nvim-lspconfig
+          lazydev-nvim
+          # fmt
+          conform-nvim
+          # fzf
+          fzf-lua
+          # vcs
+          vim-fugitive
+          gitsigns-nvim
+          # repl
+          conjure
+          # misc
+          undotree
+          which-key-nvim
+          neorg
+          # hl
+          rainbow-delimiters-nvim
+          nvim-colorizer-lua
+          todo-comments-nvim
+          # ui
+          satellite-nvim
+          nvim-hlslens
+          fidget-nvim
+          alpha-nvim
+          lualine-nvim
+          dropbar-nvim
+          # lisp
+          nvim-parinfer
+          # rust
+          crates-nvim
+          ;
+      };
+    in
     # TODO: add lazy-loading in future
     start ++ opt;
 
   extraPackages = builtins.attrValues {
-    inherit
-      (pkgs)
+    inherit (pkgs)
       lua-language-server
       vscode-json-languageserver
       nil
@@ -84,9 +84,11 @@
   nightly = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
   stable = pkgs.neovim-unwrapped;
 
-  static = {};
+  static = { };
   # nvim for devshell that dynamically loads config at runtime
-  dynamic = {dynamicConfig = true;};
+  dynamic = {
+    dynamicConfig = true;
+  };
 
   shared = {
     inherit src;
@@ -98,7 +100,8 @@
   };
 
   mk = dyn: nvim: mkNeovim nvim (dyn // shared);
-in {
+in
+{
   nvim = final.nvimPackages.nightly;
   neovim-nightly = nightly;
   nvimPackages = {

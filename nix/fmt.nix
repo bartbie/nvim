@@ -7,7 +7,8 @@
   nixfmt,
   stylua,
   prettier,
-}: let
+}:
+let
   name = "treefmt";
   runtimeInputs = [
     nixfmt
@@ -15,12 +16,12 @@
     prettier
   ];
 in
-  runCommand name
+runCommand name
   {
-    nativeBuildInputs = [makeBinaryWrapper];
+    nativeBuildInputs = [ makeBinaryWrapper ];
     treefmtExe = lib.getExe treefmt;
     binPath = lib.makeBinPath runtimeInputs;
-    passthru = {inherit runtimeInputs;};
+    passthru = { inherit runtimeInputs; };
     inherit (treefmt) meta version;
   }
   ''
