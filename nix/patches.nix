@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   perSystem =
-    { inputs', ... }:
+    { inputs', pkgs, ... }:
     {
       nixpkgsOverlays = [
         inputs.neorocks.overlays.default
@@ -23,6 +23,23 @@
             };
           }
         )
+        (_: prev: {
+          vimPlugins = prev.vimPlugins // {
+            codecompanion-nvim = prev.vimPlugins.codecompanion-nvim.overrideAttrs {
+              src = inputs.codecompanion-nvim;
+            };
+            org-super-agenda-nvim = pkgs.vimUtils.buildVimPlugin {
+              pname = "org-super-agenda.nvim";
+              version = "unstable"; # idk
+              src = inputs.org-super-agenda-nvim;
+            };
+            org-modern-nvim = pkgs.vimUtils.buildVimPlugin {
+              pname = "org-modern.nvim";
+              version = "unstable";
+              src = inputs.org-modern-nvim;
+            };
+          };
+        })
       ];
     };
 }

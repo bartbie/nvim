@@ -40,6 +40,7 @@ BG.keymap_groups = {
     { "<leader>c", group = "code" },
     { "<leader>w", group = "windows" },
     { "<leader>b", group = "buffers" },
+    { "<leader>o", group = "orgmode" },
 }
 
 vim.g.mapleader = " "
@@ -339,4 +340,24 @@ if vim.cmd.UndotreeToggle then
     map("n", "<leader>u", vim.cmd.UndotreeToggle, {
         desc = "Undo tree",
     })
+end
+
+-- notes
+do
+    local joinpath = vim.fs.joinpath
+
+    local function exists(...)
+        local parts = { ... }
+        local path = vim.fn.expand(vim.fs.joinpath(unpack(parts)))
+        return vim.fn.isdirectory(path) == 1 and path or nil
+    end
+
+    local folder = (exists("~/Eternal", "notes") or exists("~/", "notes"))
+    map("n", "<leader>n", ("<CMD>e %s<CR>"):format(folder), { desc = "Open notes" })
+    local has_conform, conform = pcall(require, "conform")
+    if has_conform then
+        map("n", "<leader>cf", function()
+            conform.format()
+        end, { desc = "Format Code" })
+    end
 end

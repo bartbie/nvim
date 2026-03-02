@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   perSystem =
     { pkgs, ... }:
@@ -26,14 +27,17 @@
               lazydev-nvim
               lualine-nvim
               mini-nvim
-              neorg
               nvim-colorizer-lua
               nvim-hlslens
               nvim-lspconfig
               nvim-parinfer
               nvim-treesitter-textobjects
               oil-nvim
+              org-modern-nvim
+              org-super-agenda-nvim
+              orgmode
               rainbow-delimiters-nvim
+              render-markdown-nvim
               satellite-nvim
               todo-comments-nvim
               undotree

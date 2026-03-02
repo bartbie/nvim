@@ -359,6 +359,38 @@
         "type": "github"
       }
     },
+    "org-modern-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1683841146,
+        "narHash": "sha256-TYs3g5CZDVXCFXuYaj3IriJ4qlIOxQgArVOzT7pqkqs=",
+        "owner": "danilshvalov",
+        "repo": "org-modern.nvim",
+        "rev": "c024900b7ee78a0274036025569b47001ef3e6aa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "danilshvalov",
+        "repo": "org-modern.nvim",
+        "type": "github"
+      }
+    },
+    "org-super-agenda-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1772038867,
+        "narHash": "sha256-BuI5kO4OyZ/OTB32WR9O89lW+xPI6v/L2o7UliUfJWk=",
+        "owner": "hamidi-dev",
+        "repo": "org-super-agenda.nvim",
+        "rev": "f25f4079a0aae1773cbd2cca9cc17da9ea705434",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hamidi-dev",
+        "repo": "org-super-agenda.nvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -367,6 +399,8 @@
         "neorocks": "neorocks",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_4",
+        "org-modern-nvim": "org-modern-nvim",
+        "org-super-agenda-nvim": "org-super-agenda-nvim",
         "systems": "systems"
       }
     },

@@ -19,5 +19,14 @@
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
     };
+    org-super-agenda-nvim = {
+      url = "github:hamidi-dev/org-super-agenda.nvim";
+      flake = false;
+    };
+
+    org-modern-nvim = {
+      url = "github:danilshvalov/org-modern.nvim";
+      flake = false;
+    };
   };
 }

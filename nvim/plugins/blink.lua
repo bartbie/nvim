@@ -50,7 +50,12 @@ blink.setup(
             providers = {
                 lsp = { fallbacks = { "lazydev" } },
                 lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
-                conjure = { name = "Conjure", module = "blink.compat.source" },
+                conjure = { name = "Conjure", module = "blink.compat.source", fallbacks = { "buffer" } },
+                orgmode = {
+                    name = "Orgmode",
+                    module = "orgmode.org.autocompletion.blink",
+                    fallbacks = { "buffer" },
+                },
             },
         },
     }
