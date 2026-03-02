@@ -109,10 +109,10 @@ map("c", "%%", function()
     return vim.fn.getcmdtype() == ":" and (vim.fn.expand("%:h") .. "/") or "%%"
 end, { expr = true, desc = "Expand to current buffer's directory" })
 
--- make macros activation harder to start accidentally
-local q_modes = { "n", "x" }
-map(q_modes, "qq", "q", { desc = "Start/Stop recording macro" })
-map(q_modes, "q", "reg_recording() != '' ? 'q' : '<Nop>'", { expr = true, desc = "Stop recording macro" })
+-- -- make macros activation harder to start accidentally
+-- local q_modes = { "n", "x" }
+-- map(q_modes, "qq", "q", { desc = "Start/Stop recording macro" })
+-- map(q_modes, "q", "reg_recording() != '' ? 'q' : '<Nop>'", { expr = true, desc = "Stop recording macro" })
 
 -- yank into system clipboard
 map({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank motion (OS)" })
