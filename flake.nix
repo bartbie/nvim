@@ -41,6 +41,23 @@
 
       # This is where the Neovim derivation is built.
       overlay = import ./nix/overlay.nix { inherit inputs; };
+
+      conjure-patch =
+        _: prev:
+        let
+          conjure-patched = prev.vimPlugins.conjure.overrideAttrs (p: {
+            nvimSkipModules = (p.nvimSkipModules or [ ]) ++ [ "conjure-spec.process_spec" ];
+          });
+        in
+        {
+          vimPlugins = prev.vimPlugins // {
+            conjure = conjure-patched;
+            cmp-conjure = prev.vimPlugins.cmp-conjure.overrideAttrs (p: {
+              nvimSkipModules = (p.nvimSkipModules or [ ]) ++ [ "cmp_conjure" ];
+              dependencies = [ ];
+            });
+          };
+        };
     in
     {
       overlays.default = overlay;
@@ -50,34 +67,25 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ overlay ];
+          overlays = [
+            conjure-patch
+            overlay
+          ];
         };
 
         devPkgs = import nixpkgs {
           inherit system;
           overlays = [
+            overlay
             (_: prev: { neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${prev.system}.default; })
             (_: prev: { devFmt = prev.callPackage ./nix/fmt.nix { }; })
             inputs.neorocks.overlays.default
-            (_: prev: {
-              vimPlugins = prev.vimPlugins // {
-                conjure = prev.vimPlugins.conjure.overrideAttrs (p: {
-                  doCheck = false;
-                  nvimSkipModules = p.nvimSkipModules ++ [
-                    "conjure-spec.process_spec"
-                  ];
-                });
-                # cmp-conjure = prev.vimPlugins.cmp-conjure.overrideAttrs (_: {
-                #   doCheck = false;
-                # });
-              };
-            })
-            overlay
+            conjure-patch
           ];
         };
       in
       {
-        formatter = devPkgs.fmt;
+        formatter = devPkgs.devFmt;
         packages = import ./nix/packages.nix pkgs;
         devShells = import ./nix/shell.nix devPkgs;
         checks = import ./nix/checks.nix (devPkgs // { inherit git-hooks; });

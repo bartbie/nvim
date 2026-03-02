@@ -3,7 +3,7 @@
 final: prev:
 let
   inherit (pkgs) lib;
-  pkgs = prev;
+  pkgs = final;
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
   pkgs-locked = inputs.nixpkgs.legacyPackages.${pkgs.system};
@@ -43,8 +43,8 @@ let
           # vcs
           vim-fugitive
           gitsigns-nvim
-          # # repl
-          # conjure
+          # repl
+          conjure
           # misc
           undotree
           which-key-nvim
