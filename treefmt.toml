@@ -58,6 +58,7 @@ includes = [ "*.nix" ]
 
 [formatter.lua]
 command = "stylua"
+options = ["--config-path", ".stylua.toml", "-"]
 includes = [ "*.lua" ]
 
 [formatter.json]
