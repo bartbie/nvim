@@ -4,9 +4,12 @@ require("mini.pairs").setup()
 require("mini.comment").setup()
 require("mini.surround").setup()
 require("mini.cursorword").setup()
+
 require("mini.ai").setup({
-    n_lines = 500,
+    silent = true,
+    n_lines = 1000,
     custom_textobjects = BG.custom_textobjects,
+    search_method = "cover_or_next",
 })
 
 require("mini.move").setup({

@@ -274,14 +274,36 @@ end
 
 local has_miniai, ai = pcall(require, "mini.ai")
 if has_miniai then
-    local treesitter = ai.gen_spec.treesitter
+    local ts = ai.gen_spec.treesitter
+    local ts_ai = function(node)
+        return ts({ a = ("@%s.outer"):format(node), i = ("@%s.inner"):format(node) })
+    end
     BG.custom_textobjects = {
-        f = treesitter({ a = "@function.outer", i = "@function.inner" }),
-        c = treesitter({ a = "@class.outer", i = "@class.inner" }),
-        o = treesitter({
-            a = { "@conditional.outer", "@loop.outer" },
-            i = { "@conditional.inner", "@loop.inner" },
+        f = ts_ai("function"),
+        m = ts_ai("call"),
+        c = ts_ai("class"),
+        l = ts_ai("loop"),
+        i = ts_ai("conditional"),
+        a = ts_ai("parameter"),
+        r = ts_ai("return"),
+        o = ts_ai("block"),
+        C = ts_ai("comment"),
+        ["="] = ts_ai("assignment"),
+        O = ts({
+            a = { "@table.outer", "@dict.outer", "@object.outer", "@array.outer" },
+            i = { "@table.inner", "@dict.inner", "@object.inner", "@array.inner" },
         }),
+        -- whole buffer
+        g = function()
+            local from = { line = 1, col = 1 }
+            local to = {
+                line = vim.fn.line("$"),
+                col = math.max(vim.fn.getline("$"):len(), 1),
+            }
+            return { from = from, to = to }
+        end,
+        -- make b only match ()
+        b = ai.gen_spec.pair("(", ")", { type = "balanced" }),
     }
 end
 

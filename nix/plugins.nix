@@ -30,6 +30,7 @@
               nvim-hlslens
               nvim-lspconfig
               nvim-parinfer
+              nvim-treesitter-textobjects
               oil-nvim
               rainbow-delimiters-nvim
               satellite-nvim
