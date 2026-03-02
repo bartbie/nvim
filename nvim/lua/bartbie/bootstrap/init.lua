@@ -70,6 +70,7 @@ end
 
 -- so cheap they inflict the cost of redraw flash on user
 local IGNORED_FTS = { "markdown", "jjdescription", "man", "checkhealth" }
+
 function M.quickenter()
     if vim.v.vim_did_enter == 1 or vim.bo.filetype == "bigfile" then
         return
@@ -78,9 +79,10 @@ function M.quickenter()
     local buf = vim.api.nvim_get_current_buf()
 
     -- get ft before it changes
-    local ft = vim.filetype.match({ buf = buf })
+    -- local name = vim.api.nvim_buf_get_name(buf)
+    local ok, ft = pcall(vim.filetype.match, { buf = buf })
 
-    if ft and not vim.list_contains(IGNORED_FTS, ft) then
+    if ok and ft and not vim.list_contains(IGNORED_FTS, ft) then
         -- try enabling ts syntax or fallback to classic
         local lang = vim.treesitter.language.get_lang(ft)
         if not (lang and pcall(vim.treesitter.start, buf, lang)) then
