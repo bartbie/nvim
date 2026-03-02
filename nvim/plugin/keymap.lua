@@ -285,8 +285,8 @@ if has_miniai then
     }
 end
 
-local has_ts, _ts = pcall(require, "nvim-treesitter.configs")
-if has_ts then
+local has_wf, _wf = pcall(require, "wildfire")
+if has_wf then
     BG.incremental_selection = {
         init_selection = "gnn",
         node_incremental = "grn",
