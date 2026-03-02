@@ -13,6 +13,7 @@
               alpha-nvim
               blink-cmp
               blink-compat
+              blink-indent
               cmp-conjure
               conform-nvim
               conjure

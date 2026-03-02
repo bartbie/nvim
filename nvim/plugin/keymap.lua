@@ -307,6 +307,17 @@ if has_miniai then
     }
 end
 
+BG.indent_mappings = {
+    -- which lines around the scope are included for 'ai': 'top', 'bottom', 'both', or 'none'
+    border = "both",
+    -- set to '' to disable
+    object_scope = "is",
+    object_scope_with_border = "as",
+    -- motions
+    goto_top = "[i",
+    goto_bottom = "]i",
+}
+
 local has_wf, _wf = pcall(require, "wildfire")
 if has_wf then
     BG.incremental_selection = {
