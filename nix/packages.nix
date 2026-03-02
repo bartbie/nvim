@@ -3,4 +3,5 @@
 // {
   default = pkgs.nvim;
   nvim = pkgs.nvim;
+  fmt = pkgs.fmt;
 }

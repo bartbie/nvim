@@ -1,16 +1,16 @@
 { pkgs, ... }:
 let
-  fmt = pkgs.fmt;
+  devFmt = pkgs.devFmt;
   mkShell =
     nvim:
     pkgs.mkShell {
       name = "nvim-nix-shell";
       packages = [
         nvim
-        fmt
+        devFmt
       ]
       ++ nvim.passthru.extraPackages
-      ++ fmt.passthru.runtimeInputs
+      ++ devFmt.passthru.runtimeInputs
       ++ builtins.attrValues {
         inherit (pkgs)
           nil

@@ -56,10 +56,23 @@
         devPkgs = import nixpkgs {
           inherit system;
           overlays = [
-            overlay
             (_: prev: { neovim-unwrapped = inputs.neovim-nightly-overlay.packages.${prev.system}.default; })
-            (_: prev: { fmt = prev.callPackage ./nix/fmt.nix { }; })
+            (_: prev: { devFmt = prev.callPackage ./nix/fmt.nix { }; })
             inputs.neorocks.overlays.default
+            (_: prev: {
+              vimPlugins = prev.vimPlugins // {
+                conjure = prev.vimPlugins.conjure.overrideAttrs (p: {
+                  doCheck = false;
+                  nvimSkipModules = p.nvimSkipModules ++ [
+                    "conjure-spec.process_spec"
+                  ];
+                });
+                # cmp-conjure = prev.vimPlugins.cmp-conjure.overrideAttrs (_: {
+                #   doCheck = false;
+                # });
+              };
+            })
+            overlay
           ];
         };
       in

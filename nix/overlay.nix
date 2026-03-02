@@ -2,6 +2,7 @@
 { inputs }:
 final: prev:
 let
+  inherit (pkgs) lib;
   pkgs = prev;
   # Make sure we use the pinned nixpkgs instance for wrapNeovimUnstable,
   # otherwise it could have an incompatible signature when applying this overlay.
@@ -42,12 +43,15 @@ let
           # vcs
           vim-fugitive
           gitsigns-nvim
-          # repl
-          conjure
+          # # repl
+          # conjure
           # misc
           undotree
           which-key-nvim
           neorg
+          # treesitter
+          nvim-treesitter-textobjects
+          wildfire-nvim
           # hl
           rainbow-delimiters-nvim
           nvim-colorizer-lua
