@@ -49,7 +49,7 @@ o.signcolumn = "yes"
 o.cmdheight = 0
 o.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 o.list = true
-opt.listchars:append("eol:󱞤")
+opt.listchars:append("eol:↴")
 
 -- search-ui
 o.showmatch = true
