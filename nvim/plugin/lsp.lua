@@ -17,6 +17,7 @@ local servers = {
     "clojure_lsp",
     "scheme_langserver",
     "nu",
+    "qmlls",
 }
 
 for _, name in ipairs(servers) do
