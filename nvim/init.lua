@@ -9,6 +9,6 @@ end
 local bootstrap = require("bartbie.bootstrap")
 
 bootstrap.setup_plugins_folder()
-bootstrap.setup_ftonce_folders()
+-- bootstrap.setup_ftonce_folders()
 
 bootstrap.quickenter()

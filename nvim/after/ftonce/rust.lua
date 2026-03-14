@@ -1,1 +1,0 @@
-require("crates-nvim").setup()

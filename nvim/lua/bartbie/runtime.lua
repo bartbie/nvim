@@ -383,15 +383,17 @@ M.lua_path = function()
     return lua_path:new()
 end
 
+---@param level integer
+---@return string
+local function get_source(level)
+    local x = debug.getinfo(level + 1, "S")
+    return x and x.source:gsub("^@+", "")
+end
+
+M.get_source = get_source
+
 do
     local fs = vim.fs
-
-    ---@param level integer
-    ---@return string
-    local function get_source(level)
-        local x = debug.getinfo(level + 1, "S")
-        return x and x.source:gsub("^@+", "")
-    end
 
     ---@return string
     local function find_config()
@@ -450,6 +452,20 @@ do
             folder = folder == "nvim" and "" or folder --[[@as string]]
         end
         return vim.fs.joinpath(config, folder, ...)
+    end
+end
+
+function M.run_once(fn)
+    local this = get_source(2)
+    local G = require("bartbie.G")
+    local has, val = pcall(G.get, this)
+    if has and val then
+        return
+    end
+    G.set(this, true)
+    local res = fn(this)
+    if res == false then
+        G.set(this, res)
     end
 end
 
