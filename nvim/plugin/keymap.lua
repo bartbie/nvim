@@ -342,22 +342,177 @@ if vim.cmd.UndotreeToggle then
     })
 end
 
--- notes
+-- org / notes
 do
-    local joinpath = vim.fs.joinpath
+    BG.agenda_keymaps = {
+        ["TODO"] = { keymap = "ot", shortcut = "t" },
+        ["PROGRESS"] = { keymap = "op", shortcut = "p" },
+        ["WAITING"] = { keymap = "ow", shortcut = "w" },
+        ["DONE"] = { keymap = "od", shortcut = "d" },
+        ["CANCELLED"] = { keymap = "ox", shortcut = "x" },
+    }
 
-    local function exists(...)
-        local parts = { ... }
-        local path = vim.fn.expand(vim.fs.joinpath(unpack(parts)))
-        return vim.fn.isdirectory(path) == 1 and path or nil
+    BG.org_mappings = {
+        org_agenda = false,
+
+        org_capture = "<leader>oc",
+
+        org_agenda_later = "f",
+        org_agenda_earlier = "b",
+        org_agenda_goto_today = ".",
+        org_agenda_day_view = "vd",
+        org_agenda_week_view = "vw",
+        org_agenda_month_view = "vm",
+        org_agenda_year_view = "vy",
+        org_agenda_quit = "q",
+        org_agenda_switch_to = "<CR>",
+        org_agenda_goto = "<TAB>",
+        org_agenda_goto_date = "J",
+        org_agenda_redo = "r",
+        org_agenda_todo = "t",
+        org_agenda_clock_in = "I",
+        org_agenda_clock_out = "O",
+        org_agenda_clock_cancel = "X",
+        org_agenda_priority = "<Leader>o,",
+        org_agenda_priority_up = "+",
+        org_agenda_priority_down = "-",
+        org_agenda_archive = "<Leader>o$",
+        org_agenda_set_tags = "<Leader>ot",
+        org_agenda_deadline = "<Leader>oid",
+        org_agenda_schedule = "<Leader>ois",
+        org_agenda_refile = "<Leader>or",
+        org_agenda_filter = "/",
+        org_agenda_preview = "K",
+        org_agenda_show_help = "g?",
+
+        org_capture_finalize = "<C-c>",
+        org_capture_refile = "<Leader>or",
+        org_capture_kill = "<Leader>ok",
+        org_capture_show_help = "g?",
+
+        org_note_finalize = "<C-c>",
+        org_note_kill = "<Leader>ok",
+
+        org_refile = "<Leader>or",
+        org_timestamp_up = "<C-a>",
+        org_timestamp_down = "<C-x>",
+        org_timestamp_up_day = "<S-UP>",
+        org_timestamp_down_day = "<S-DOWN>",
+        org_change_date = "cid",
+        org_priority = "<Leader>o,",
+        org_priority_up = "ciR",
+        org_priority_down = "cir",
+        org_todo = "cit",
+        org_todo_prev = "ciT",
+        org_toggle_checkbox = "<C-Space>",
+        org_toggle_heading = "<Leader>o*",
+        org_insert_link = "<Leader>oli",
+        org_store_link = "<Leader>ols",
+        org_open_at_point = "<Leader>oo",
+        org_edit_special = "<Leader>o'",
+        org_add_note = "<Leader>ona",
+        org_cycle = "<TAB>",
+        org_global_cycle = "<S-TAB>",
+        org_archive_subtree = "<Leader>o$",
+        org_set_tags_command = "<Leader>ot",
+        org_do_promote = "<<",
+        org_do_demote = ">>",
+        org_promote_subtree = "<s",
+        org_demote_subtree = ">s",
+        org_meta_return = "<Leader><CR>",
+        org_insert_heading_respect_content = "<Leader>oih",
+        org_insert_todo_heading = "<Leader>oiT",
+        org_insert_todo_heading_respect_content = "<Leader>oit",
+        org_move_subtree_up = "<Leader>oK",
+        org_move_subtree_down = "<Leader>oJ",
+        org_export = "<Leader>oe",
+        org_next_visible_heading = "}",
+        org_previous_visible_heading = "{",
+        org_forward_heading_same_level = "]]",
+        org_backward_heading_same_level = "[[",
+        outline_up_heading = "g{",
+        org_deadline = "<Leader>oid",
+        org_schedule = "<Leader>ois",
+        org_time_stamp = "<Leader>oi.",
+        org_time_stamp_inactive = "<Leader>oi!",
+        org_clock_in = "<Leader>oxi",
+        org_clock_out = "<Leader>oxo",
+        org_clock_cancel = "<Leader>oxq",
+        org_clock_goto = "<Leader>oxj",
+        org_set_effort = "<Leader>oxe",
+        org_babel_tangle = "<Leader>obt",
+        org_show_help = "g?",
+
+        org_edit_src_abort = "<Leader>ok",
+        org_edit_src_save = "<Leader>ow",
+        org_edit_src_save_exit = "<Leader>'",
+        org_edit_src_show_help = "g?",
+
+        inner_heading = "ih",
+        around_heading = "ah",
+        inner_subtree = "ir",
+        around_subtree = "ar",
+        inner_heading_from_root = "Oh",
+        around_heading_from_root = "OH",
+        inner_subtree_from_root = "Or",
+        around_subtree_from_root = "OR",
+    }
+
+    BG.org_super_agenda_mappings = {
+        filter_reset = "oa", -- reset all filters
+        toggle_other = "oo", -- toggle catch-all "Other" section
+        filter = "of", -- live filter (exact text)
+        filter_fuzzy = "oz", -- live filter (fuzzy)
+        filter_query = "oq", -- advanced query input
+        undo = "u", -- undo last change
+        reschedule = "cs", -- set/change SCHEDULED
+        set_deadline = "cd", -- set/change DEADLINE
+        cycle_todo = "t", -- cycle TODO state
+        set_state = "s", -- set state directly (st, sd, etc.) or show menu
+        reload = "r", -- refresh agenda
+        refile = "R", -- refile via Telescope/org-telescope
+        hide_item = "x", -- hide current item
+        preview = "K", -- preview headline content
+        clock_in = "I", -- clock in on current headline
+        clock_out = "O", -- clock out active clock
+        clock_cancel = "X", -- cancel active clock
+        clock_goto = "gI", -- jump to active/recent clocked task
+        reset_hidden = "gX", -- clear hidden list
+        fold_all = "zM", -- collapse all groups
+        unfold_all = "zR", -- expand all groups
+        toggle_duplicates = "D", -- duplicate items may appear in multiple groups
+        cycle_view = "ov", -- switch view (classic/compact)
+        bulk_mark = "m", -- toggle mark on current item (● indicator)
+        bulk_unmark_all = "M", -- clear all marks
+        bulk_reselect = "gv", -- reselect last marks
+        bulk_action = "B", -- run action on all marked items
+        open_view = "V", -- open custom view picker
+    }
+
+    local notes = require("bartbie.notes")
+    local md_folder = notes.notes_folder or notes.org_folder
+    local org_folder = notes.org_folder
+
+    if md_folder then
+        map("n", "<leader>om", ("<CMD>e %s<CR>"):format(md_folder), { desc = "Open markdown notes" })
+    end
+    if org_folder then
+        map("n", "<leader>oo", ("<CMD>e %s<CR>"):format(org_folder), { desc = "Open org notes" })
     end
 
-    local folder = (exists("~/Eternal", "notes") or exists("~/", "notes"))
-    map("n", "<leader>n", ("<CMD>e %s<CR>"):format(folder), { desc = "Open notes" })
-    local has_conform, conform = pcall(require, "conform")
-    if has_conform then
-        map("n", "<leader>cf", function()
-            conform.format()
-        end, { desc = "Format Code" })
+    local has_org = pcall(require, "orgmode")
+    local has_super = pcall(require, "org-super-agenda")
+
+    if has_super then
+        map("n", "<leader>ov", "<CMD>OrgSuperAgenda!<CR>", { desc = "Agenda" })
     end
+end
+
+-- folds
+do
+    local fold = require("bartbie.fold")
+    map("n", "zC", fold.close_all_folds, { desc = "Close all folds" })
+    map("n", "zO", fold.open_all_folds, { desc = "Open all folds" })
+    map("n", "zm", fold.close_more_folds, { desc = "Close more folds" })
+    map("n", "zl", fold.open_more_folds, { desc = "Open more folds" })
 end
