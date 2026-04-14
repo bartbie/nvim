@@ -31,6 +31,12 @@ o.updatetime = 100
 
 -- fold
 o.foldenable = true
+o.foldlevel = 99
+o.foldminlines = 2
+o.foldnestmax = 3
+o.foldtext = ""
+-- o.foldcolumn = "0"
+-- o.foldclose = ""
 
 -- window-split
 o.splitright = true

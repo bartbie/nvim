@@ -19,6 +19,8 @@ kanagawa.setup({
             FloatBorder = { bg = "none" },
             FloatTitle = { bg = "none" },
 
+            Folded = { bg = palette.dragonBlack3 },
+
             -- Save an hlgroup with dark background and dimmed foreground
             -- so that you can use it where your still want darker windows.
             -- E.g.: autocmd TermOpen * setlocal winhighlight=Normal:NormalDark
