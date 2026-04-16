@@ -210,6 +210,7 @@ BG.blink = {
             "fallback",
         },
         ["<S-Tab>"] = { "snippet_backward", "select_prev", "fallback" },
+        ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
     },
     cmdline = {
         keymap = {
