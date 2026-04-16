@@ -9,11 +9,11 @@ local _index_map = {}
 ---@param buf integer
 ---@param changed_ranges Range4[]?
 local function rebuild_index(buf, changed_ranges)
-    if changed_ranges and #changed_ranges ~= 0 then
-        _index_map[buf]:rebuild(buf, changed_ranges)
-    else
+    if not _index_map[buf] or not changed_ranges or #changed_ranges == 0 then
         _index_map[buf] = Index.build(buf)
+        return
     end
+    _index_map[buf]:rebuild(buf, changed_ranges)
 end
 
 --- Wire up fold index for a buffer. Registers on_bytes (shift) and
