@@ -40,6 +40,7 @@
               render-markdown-nvim
               satellite-nvim
               todo-comments-nvim
+              typst-preview-nvim
               undotree
               vim-fugitive
               which-key-nvim
@@ -58,6 +59,7 @@
           ripgrep
           fd
           luarocks
+          websocat
           ;
       };
     };
