@@ -18,6 +18,7 @@ local servers = {
     "scheme_langserver",
     "nu",
     "qmlls",
+    "tinymist",
 }
 
 for _, name in ipairs(servers) do
