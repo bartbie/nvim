@@ -20,6 +20,7 @@ conform.setup({
     formatters_by_ft = {
         -- Use the "*" filetype to run formatters on all filetypes.
         lua = w_treefmt({ "stylua" }),
+        fennel = w_treefmt({ "fnlfmt" }),
         -- Conform will run multiple formatters sequentially
         python = w_treefmt({ "isort", "black" }),
         -- You can customize some of the format options for the filetype (:help conform.format)

@@ -359,6 +359,23 @@ local pack_path = createPath({
     end,
 })
 
+local fnl_path = createPath({
+    getter = function()
+        local has, fnl = pcall(require, "fennel")
+        if not has then
+            return {}
+        end
+        return vim.split(fnl.path, ";", { trimempty = true })
+    end,
+    setter = function(new)
+        local has, fnl = pcall(require, "fennel")
+        if not has then
+            return
+        end
+        fnl.path = table.concat(new, ";")
+    end,
+})
+
 M.clean_runtime_path = function()
     return rt_path:clean(false):save()
 end
@@ -381,6 +398,10 @@ end
 
 M.lua_path = function()
     return lua_path:new()
+end
+
+M.fnl_path = function()
+    return fnl_path:new()
 end
 
 ---@param level integer
@@ -438,6 +459,7 @@ do
 
     ---@param folder
     ---| "lua" nvim/lua
+    ---| "fnl" nvim/fnl
     ---| "nvim" nvim/
     ---| "after" nvim/after
     ---@param ... string

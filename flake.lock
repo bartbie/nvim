@@ -1,5 +1,17 @@
 {
   "nodes": {
+    "fennel-ls-nvim-docsets": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-Tfz35LOG42z1foEqQei6PVmpV7/4K/Z4FFLnZ0ji83Y=",
+        "type": "file",
+        "url": "https://git.sr.ht/~micampe/fennel-ls-nvim-docs/blob/main/nvim.lua"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://git.sr.ht/~micampe/fennel-ls-nvim-docs/blob/main/nvim.lua"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -393,6 +405,7 @@
     },
     "root": {
       "inputs": {
+        "fennel-ls-nvim-docsets": "fennel-ls-nvim-docsets",
         "flake-parts": "flake-parts",
         "git-hooks": "git-hooks",
         "import-tree": "import-tree",

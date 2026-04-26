@@ -61,6 +61,11 @@ command = "stylua"
 options = ["--config-path", ".stylua.toml", "-"]
 includes = [ "*.lua" ]
 
+[formatter.fennel]
+command = "fnlfmt"
+options = ["--fix"]
+includes = [ "*.fnl" ]
+
 [formatter.json]
 command = "prettier"
 includes = [ "*.json" ]

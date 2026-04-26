@@ -12,6 +12,7 @@
           nixfmt,
           stylua,
           prettier,
+          fnlfmt,
         }:
         let
           name = "treefmt";
@@ -19,6 +20,7 @@
             nixfmt
             stylua
             prettier
+            fnlfmt
           ];
         in
         runCommand name

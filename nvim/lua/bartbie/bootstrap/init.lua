@@ -8,7 +8,8 @@ function M.setup_plugins_folder()
     M.install_plugins_autoload()
 end
 
-local function set_plugins_loader(base_path)
+local function set_plugins_loader(base_path, patterns)
+    patterns = patterns or { ".lua", "/init.lua" }
     table.insert(package.loaders, 2, function(module_name)
         local module_path = module_name:gsub("%.", "/")
         -- only run on require("plugins.*")
@@ -17,7 +18,7 @@ local function set_plugins_loader(base_path)
         end
 
         local parent = fs.joinpath(base_path, module_path)
-        for _, ending in ipairs({ ".lua", "/init.lua" }) do
+        for _, ending in ipairs(patterns) do
             local path = fs.normalize(parent .. ending)
             if vim.uv.fs_stat(path) then
                 local chunk, error_msg = loadfile(path)
@@ -32,8 +33,34 @@ local function set_plugins_loader(base_path)
     end)
 end
 
+function M.install_fennel(opts)
+    opts = opts or {}
+    _G.fennel = require("fennel")
+    fennel.install()
+    vim.g.has_fennel = true
+    local rt = require("bartbie.runtime")
+    local path = rt.fnl_path()
+    if opts.pure then
+        path:clean()
+    end
+    path --
+        :append(rt.config_root("fnl", "/?.fnl"))
+        :append(rt.config_root("fnl", "/?/init.fnl"))
+    if opts.lua_folder_loader then
+        -- used by checkhealth
+        vim.g.fennel_uses_lua_folder_loader = true
+        path --
+            :append(rt.config_root("lua", "/?.fnl"))
+            :append(rt.config_root("lua", "/?/init.fnl"))
+    end
+    path:save()
+end
+
 function M.install_plugins_loader()
-    set_plugins_loader(config_root("nvim"))
+    if vim.has_fennel then
+        set_plugins_loader(config_root("nvim"), { ".fnl", "/init.fnl" })
+    end
+    set_plugins_loader(config_root("nvim"), { ".lua", "/init.lua" })
 end
 
 function M.install_plugins_autoload()

@@ -28,5 +28,10 @@
       url = "github:danilshvalov/org-modern.nvim";
       flake = false;
     };
+
+    fennel-ls-nvim-docsets = {
+      url = "https://git.sr.ht/~micampe/fennel-ls-nvim-docs/blob/main/nvim.lua";
+      flake = false;
+    };
   };
 }

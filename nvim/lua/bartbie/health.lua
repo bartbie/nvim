@@ -103,13 +103,7 @@ local function nix_check()
     end
 end
 
-local function path_purity()
-    start("runtime paths purity")
-    local paths = {
-        ["`runtimepath`"] = runtime.runtime_path,
-        ["`packpath`"] = runtime.pack_path,
-        ["`package.path/luapath`"] = runtime.lua_path,
-    }
+local function check_path_purity(paths)
     local i = 0
     for name, path in pairs(paths) do
         i = i + 1
@@ -141,6 +135,37 @@ local function path_purity()
         end
         ::continue::
     end
+end
+
+local function path_purity()
+    start("runtime paths purity")
+    local paths = {
+        ["`runtimepath`"] = runtime.runtime_path,
+        ["`packpath`"] = runtime.pack_path,
+        ["`package.path/luapath`"] = runtime.lua_path,
+    }
+    check_path_purity(paths)
+end
+
+local function fennel_check()
+    start("all fennel checks")
+    if fennel then
+        ok("Using Fennel")
+    else
+        error("Not using Fennel!")
+        return
+    end
+    local should_use_ll = vim.g.fennel_uses_lua_folder_loader and true or false
+    local matches = runtime.fnl_path():filtered("and", "**/lua/**")
+    if #matches > 0 then
+        local fn = should_use_ll and ok or warn
+        fn("`fennel.path/fnlpath` contains lua config paths")
+    elseif should_use_ll then
+        error("Marked as using lua folder loader but no lua config paths in fnlpath!")
+    end
+    check_path_purity({
+        ["`fennel.path/fnlpath`"] = runtime.fnl_path,
+    })
 end
 
 local function stats()
@@ -188,6 +213,7 @@ function M.check()
         deps_check()
         nix_check()
         path_purity()
+        fennel_check()
         stats()
         run_busted()
     else

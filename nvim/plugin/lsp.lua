@@ -19,6 +19,7 @@ local servers = {
     "nu",
     "qmlls",
     "tinymist",
+    "fennel_ls",
 }
 
 for _, name in ipairs(servers) do
