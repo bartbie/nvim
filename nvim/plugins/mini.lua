@@ -1,6 +1,5 @@
 local BG = require("bartbie.G")
 require("mini.bracketed").setup()
-require("mini.pairs").setup()
 require("mini.comment").setup()
 require("mini.surround").setup()
 require("mini.cursorword").setup()
@@ -27,4 +26,13 @@ require("mini.move").setup({
         line_down = "",
         line_up = "",
     },
+})
+
+require("mini.pairs").setup()
+vim.api.nvim_create_autocmd("FileType", {
+    group = require("bartbie.augroup")("mini_pairs_disable_in_lisps)"),
+    pattern = { "fennel", "clojure", "scheme", "lisp", "racket", "janet" },
+    callback = function(ev)
+        vim.b[ev.buf].minipairs_disable = true
+    end,
 })

@@ -30,7 +30,7 @@
               nvim-colorizer-lua
               nvim-hlslens
               nvim-lspconfig
-              nvim-parinfer
+              parinfer-rust
               nvim-treesitter-textobjects
               oil-nvim
               org-modern-nvim
