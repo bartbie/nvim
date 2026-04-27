@@ -1,4 +1,5 @@
 local lvl_cfg = require("bartbie.fold.config")
+local tslib = require("bartbie.treesitter")
 local M = {}
 
 --- Fold level for a node type, 0 if not foldable.
@@ -16,76 +17,6 @@ function M.node_base_lvl(node)
         end
     end
     return 0
-end
-
---- DFS iterator over all descendants of node.
----@param node TSNode
----@return fun(): TSNode?
-local function walk_children_dfs(node)
-    return coroutine.wrap(function()
-        local function recur(n)
-            for child in n:iter_children() do
-                coroutine.yield(child)
-                recur(child)
-            end
-        end
-        recur(node)
-    end)
-end
-
---- Walk ancestor chain (excludes node itself).
----@param node TSNode
----@return fun(): TSNode?
-local function walk_parents(node)
-    return coroutine.wrap(function()
-        local cur = node:parent()
-        while cur do
-            coroutine.yield(cur)
-            cur = cur:parent()
-        end
-    end)
-end
-
---- First ancestor without pending changes - safe subtree root for recalc.
----@param node TSNode
----@return TSNode?
-local function find_clean_parent(node)
-    for parent in walk_parents(node) do
-        if not parent:has_changes() then
-            return parent
-        end
-    end
-end
-
---- Containment test - returns side (0=a, 1=b) of the bigger span.
---- nil when no containment relationship exists.
----@param a TSNode?
----@param b TSNode?
----@return 0|1, TSNode
----@overload fun(a: TSNode?, b: TSNode?): nil, nil
-local function get_containing_node(a, b)
-    if not a and not b then
-        return nil
-    end
-    if not a then
-        return 1, b
-    end
-    if not b then
-        return 0, a
-    end
-
-    local a_start, a_end = a:start(), a:end_()
-    local b_start, b_end = b:start(), b:end_()
-    local contained = (b_start >= a_start and b_end <= a_end) or (a_start >= b_start and a_end <= b_end)
-    if not contained then
-        return nil
-    end
-
-    if (a_end - a_start) > (b_end - b_start) then
-        return 0, a
-    else
-        return 1, b
-    end
 end
 
 ---------------------------------------------------------------------------
@@ -227,7 +158,7 @@ end
 ---@param treeid string
 ---@param root TSNode
 function Index:_append_indices_for_node(treeid, root)
-    for child in walk_children_dfs(root) do
+    for child in tslib.walk_children_dfs(root) do
         local lvl = M.node_base_lvl(child)
         if lvl == 0 then
             goto continue
@@ -282,29 +213,13 @@ local function find_changed_subtrees(ltree, changed_ranges)
     for _, range in ipairs(changed_ranges) do
         local node = ltree:node_for_range(range --[[@as Range4]])
         if node then
-            local clean = (not node:has_changes()) and node or find_clean_parent(node)
+            local clean = (not node:has_changes()) and node or tslib.find_clean_parent(node)
             if clean then
                 subtrees[#subtrees + 1] = clean
             end
         end
     end
     return subtrees
-end
-
---- Deduplicate by node id, sort by start position.
----@param nodes TSNode[]
----@return TSNode[]
-local function sorted_node_set(nodes)
-    local set = vim.iter(nodes)
-        :unique(function(node)
-            ---@cast node TSNode
-            return node:id()
-        end)
-        :totable()
-    table.sort(set, function(a, b)
-        return a:start() < b:start()
-    end)
-    return set
 end
 
 --- Collapse overlapping subtrees into minimal set of covering roots.
@@ -334,7 +249,7 @@ local function find_roots_of_subtrees(subtrees)
         ---             --d
         --- ```
         --- A -> A -> D
-        local side, _ = get_containing_node(biggest_yet, node)
+        local side, _ = tslib.get_containing_node(biggest_yet, node)
         if not side or side == 1 then
             roots[#roots + 1] = node
             biggest_yet = node
@@ -385,7 +300,7 @@ function Index:rebuild(buf, changed_ranges)
         if #changed == 0 then
             return
         end
-        local old_subtrees = sorted_node_set(changed)
+        local old_subtrees = tslib.sorted_node_set(changed)
         local roots = find_roots_of_subtrees(old_subtrees)
         for _, node in ipairs(old_subtrees) do
             self:_cleanup_at_node(id, node)
