@@ -320,16 +320,6 @@ BG.indent_mappings = {
     goto_bottom = "]i",
 }
 
-local has_wf, _wf = pcall(require, "wildfire")
-if has_wf then
-    BG.incremental_selection = {
-        init_selection = "gnn",
-        node_incremental = "grn",
-        node_decremental = "grl",
-        scope_incremental = "gro",
-    }
-end
-
 local has_conform, conform = pcall(require, "conform")
 if has_conform then
     map("n", "<leader>cf", function()

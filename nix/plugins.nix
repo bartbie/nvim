@@ -44,7 +44,6 @@
               undotree
               vim-fugitive
               which-key-nvim
-              wildfire-nvim
               ;
           };
         in
