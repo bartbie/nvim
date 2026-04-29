@@ -2,7 +2,7 @@ local defaults = { silent = true }
 
 local BG = require("bartbie.G")
 
----@alias mode "n" | "v" | "i" | "x" | "s" | "c"
+---@alias mode "n" | "v" | "i" | "x" | "s" | "c" | "o"
 
 ---@param mode mode | mode[]
 ---@param lhs string | string[]
@@ -16,6 +16,21 @@ local function map(mode, lhs, rhs, opts)
         end
     else
         vim.keymap.set(mode, lhs, rhs, opts)
+    end
+end
+
+local del = vim.keymap.del
+
+---@param mode mode | mode[]
+---@param initial string
+---@param lhs string
+---@param desc string
+local function hydra(mode, initial, lhs, desc)
+    local has_wk, wk = pcall(require, "which-key")
+    if has_wk then
+        map(mode, initial, function()
+            wk.show({ keys = lhs, loop = true })
+        end, { desc = desc })
     end
 end
 
@@ -506,4 +521,39 @@ do
     map("n", "zO", fold.open_all_folds, { desc = "Open all folds" })
     map("n", "zm", fold.close_more_folds, { desc = "Close more folds" })
     map("n", "zl", fold.open_more_folds, { desc = "Open more folds" })
+end
+
+-- structural and textobject editing
+do
+    local strc = require("bartbie.structural")
+
+    -- readd old gn
+    map({ "n", "x", "o" }, "gn", "<Nop>")
+    map({ "n", "x", "o" }, "gN", "<Nop>")
+    map({ "n", "x", "o" }, "gnv", "<cmd>normal! gn<cr>", { desc = "Select search match" })
+    map({ "n", "x", "o" }, "gNv", "<cmd>normal! gN<cr>", { desc = "Select search match" })
+
+    -- movement (normal)
+    -- TODO
+    -- map("n", "<m-h>", strc.move_prev, { desc = "Prev sibling node" })
+    -- map("n", "<m-l>", strc.move_next, { desc = "Next sibling node" })
+
+    -- selection
+    map("n", "gnn", strc.select_current, { desc = "Select node" })
+    map("x", "gnn", strc.select_parent_vcount1, { desc = "Expand to parent" })
+    map("x", "gnN", strc.select_child_vcount1, { desc = "Shrink to child" })
+    map("x", "gnj", strc.select_next_vcount1, { desc = "Select next node" })
+    map("x", "gnk", strc.select_prev_vcount1, { desc = "Select prev node" })
+    -- paredit
+    map({ "n", "x" }, "gnr", strc.raise, { desc = "Raise node" })
+    map({ "n", "x" }, "gnd", strc.delete_node, { desc = "Delete node" })
+    map("n", "gns", strc.splice, { desc = "Splice form" })
+    map("n", ">)", strc.slurp_right, { desc = "Slurp right" })
+    map("n", "<(", strc.slurp_left, { desc = "Slurp left" })
+    map("n", ">(", strc.barf_left, { desc = "Barf left" })
+    map("n", "<)", strc.barf_right, { desc = "Barf right" })
+    map("n", "gn<", strc.swap_siblings_prev, { desc = "Swap with prev sibling" })
+    map("n", "gn>", strc.swap_siblings_next, { desc = "Swap with next sibling" })
+
+    map("n", "gn<space>", strc.node_mode, { desc = "Node mode" })
 end
