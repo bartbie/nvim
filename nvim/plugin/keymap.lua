@@ -289,52 +289,6 @@ else -- these are strictly worse but i will leave them here
     map("x", "J", ":move '>+1<CR>gv=gv")
 end
 
-local has_miniai, ai = pcall(require, "mini.ai")
-if has_miniai then
-    local ts = ai.gen_spec.treesitter
-    local ts_ai = function(node)
-        return ts({ a = ("@%s.outer"):format(node), i = ("@%s.inner"):format(node) })
-    end
-    BG.custom_textobjects = {
-        f = ts_ai("function"),
-        m = ts_ai("call"),
-        c = ts_ai("class"),
-        l = ts_ai("loop"),
-        i = ts_ai("conditional"),
-        a = ts_ai("parameter"),
-        r = ts_ai("return"),
-        o = ts_ai("block"),
-        C = ts_ai("comment"),
-        ["="] = ts_ai("assignment"),
-        O = ts({
-            a = { "@table.outer", "@dict.outer", "@object.outer", "@array.outer" },
-            i = { "@table.inner", "@dict.inner", "@object.inner", "@array.inner" },
-        }),
-        -- whole buffer
-        g = function()
-            local from = { line = 1, col = 1 }
-            local to = {
-                line = vim.fn.line("$"),
-                col = math.max(vim.fn.getline("$"):len(), 1),
-            }
-            return { from = from, to = to }
-        end,
-        -- make b only match ()
-        b = ai.gen_spec.pair("(", ")", { type = "balanced" }),
-    }
-end
-
-BG.indent_mappings = {
-    -- which lines around the scope are included for 'ai': 'top', 'bottom', 'both', or 'none'
-    border = "both",
-    -- set to '' to disable
-    object_scope = "is",
-    object_scope_with_border = "as",
-    -- motions
-    goto_top = "[i",
-    goto_bottom = "]i",
-}
-
 local has_conform, conform = pcall(require, "conform")
 if has_conform then
     map("n", "<leader>cf", function()
@@ -527,6 +481,39 @@ end
 do
     local strc = require("bartbie.structural")
 
+    local has_miniai, ai = pcall(require, "mini.ai")
+    if has_miniai then
+        local gen_ts = ai.gen_spec.treesitter
+        local ts_ai = function(node)
+            return gen_ts({ a = ("@%s.outer"):format(node), i = ("@%s.inner"):format(node) })
+        end
+        BG.custom_textobjects = {
+            -- s from blink.indent
+            -- make b only match ()
+            b = ai.gen_spec.pair("(", ")", { type = "balanced" }),
+            f = ts_ai("function"),
+            m = ts_ai("call"),
+            c = ts_ai("class"),
+            l = ts_ai("loop"),
+            i = ts_ai("conditional"),
+            a = ts_ai("parameter"),
+            r = ts_ai("return"),
+            o = ts_ai("block"),
+            C = ts_ai("comment"),
+            ["="] = ts_ai("assignment"),
+            O = gen_ts({
+                a = { "@table.outer", "@dict.outer", "@object.outer", "@array.outer" },
+                i = { "@table.inner", "@dict.inner", "@object.inner", "@array.inner" },
+            }),
+            g = strc.buffer_textobject,
+            n = strc.node_textobject,
+        }
+        BG.miniai_mappings = {
+            around_next = "aN",
+            inside_next = "iN",
+        }
+    end
+
     -- readd old gn
     map({ "n", "x", "o" }, "gn", "<Nop>")
     map({ "n", "x", "o" }, "gN", "<Nop>")
@@ -557,3 +544,14 @@ do
 
     map("n", "gn<space>", strc.node_mode, { desc = "Node mode" })
 end
+
+BG.indent_mappings = {
+    -- which lines around the scope are included for 'ai': 'top', 'bottom', 'both', or 'none'
+    border = "both",
+    -- set to '' to disable
+    object_scope = "is",
+    object_scope_with_border = "as",
+    -- motions
+    goto_top = "[i",
+    goto_bottom = "]i",
+}

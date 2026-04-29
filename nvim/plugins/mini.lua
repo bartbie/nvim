@@ -9,6 +9,7 @@ require("mini.ai").setup({
     n_lines = 1000,
     custom_textobjects = BG.custom_textobjects,
     search_method = "cover_or_next",
+    mappings = BG.miniai_mappings,
 })
 
 require("mini.move").setup({
