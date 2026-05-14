@@ -62,5 +62,12 @@
           websocat
           ;
       };
+
+      nvim.test = {
+        plugins = builtins.attrValues {
+          inherit (pkgs.vimPlugins.nvim-treesitter) withAllGrammars;
+          inherit (pkgs.vimPlugins) nvim-nio;
+        };
+      };
     };
 }

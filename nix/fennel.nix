@@ -32,6 +32,7 @@
     {
       nvim.plugins = [ fennel-nvim ];
       nvim.extraPackages = [ fennel-ls ];
+      nvim.test.plugins = [ fennel-nvim ];
       packages = {
         inherit fennel-nvim fennel-ls;
         inherit (pkgs) fnlfmt;

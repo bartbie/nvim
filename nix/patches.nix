@@ -4,7 +4,6 @@
     { inputs', pkgs, ... }:
     {
       nixpkgsOverlays = [
-        inputs.neorocks.overlays.default
         (
           # conjure build fail patch
           _: prev:

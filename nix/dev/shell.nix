@@ -20,11 +20,11 @@
               ]
               ++ nvim.passthru.extraPackages
               ++ fmt.passthru.runtimeInputs
+              ++ (builtins.attrValues config.testPackages)
               ++ builtins.attrValues {
                 inherit (pkgs)
                   nil
                   luarocks
-                  busted-nlua
                   ;
                 inherit (pkgs.luajitPackages)
                   luacheck

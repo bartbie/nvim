@@ -9,13 +9,6 @@
     systems.url = "github:nix-systems/default";
     flake-parts.url = "github:hercules-ci/flake-parts";
     import-tree.url = "github:vic/import-tree";
-    neorocks = {
-      url = "github:nvim-neorocks/neorocks";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        neovim-nightly.follows = "neovim-nightly-overlay";
-      };
-    };
     git-hooks = {
       url = "github:cachix/git-hooks.nix";
     };

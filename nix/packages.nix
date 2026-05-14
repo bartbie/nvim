@@ -1,5 +1,4 @@
 {
-  inputs,
   self,
   ...
 }:
@@ -11,14 +10,10 @@
       inputs',
       config,
       lib,
-      mkNeovim,
+      buildNeovim,
       ...
     }:
     let
-      # Pin wrapNeovimUnstable to avoid signature mismatches when overlay is applied externally
-      pkgs-locked = inputs.nixpkgs.legacyPackages.${system};
-      buildNeovim = (mkNeovim { inherit (pkgs-locked) wrapNeovimUnstable neovimUtils; }).override;
-
       shared = {
         src = self.lib.nvimPath;
         inherit (config.nvim) plugins extraPackages;

@@ -393,10 +393,4 @@ let
       };
     };
 in
-{
-  perSystem =
-    { pkgs, ... }:
-    {
-      _module.args.mkNeovim = pkgs.callPackage fn;
-    };
-}
+fn
