@@ -6,6 +6,7 @@
 ---@field pending string | table<string, string>?
 ---@field should_fail boolean?
 ---@field fail_msg string?
+---@field opts RunOpOpts?
 
 local h = require("spec.helpers")
 local structural = require("bartbie.structural")
@@ -129,6 +130,29 @@ local data_tests = {
             "(do (<C>foo\n  bar))",
             name = "across a newline",
         },
+        -- `(local []\n foo bar)` would be the natural shape but fennel's parser glues
+        -- `[]\n foo bar` into one malformed sequence_binding under `local`'s binding-form
+        -- requirement, hiding the empty `[]` from nearest_form. `do` accepts arbitrary
+        -- forms, so `[]` stays a free-standing sequence_table.
+        {
+            "(do <C>[]\n foo bar)",
+            "(do <C>[\n foo] bar)",
+            langs = "fennel",
+            name = "empty across a newline",
+        },
+        {
+            [[
+            (fn M.install <C>[]
+              (set vim.o.statusline ""))
+            ]],
+            [[
+            (fn M.install <C>[
+              (set vim.o.statusline "")])
+            ]],
+            opts = {
+                allow_parse_errors = true,
+            },
+        },
     },
     slurp_left = {
         { "(foo x (<C>+ y))", "(foo (x + y))" },
@@ -159,32 +183,26 @@ local data_tests = {
 }
 
 describe("structural fault injection #lisp", function()
-    -- Catches the parinfer_enabled global leak at structural.lua:235-248: if
-    -- a slurp op errors mid-flight between `parinfer_enabled = false` and the
-    -- restoration at line 248, the global stays false for the rest of the session.
-    it("slurp does not leak vim.g.parinfer_enabled on error", function()
-        local prev = vim.g.parinfer_enabled
-        vim.g.parinfer_enabled = true
-        local tslib = require("bartbie.treesitter")
-        local real = tslib.set_after_node
-        tslib.set_after_node = function()
+    -- Without post-error sync, parinfer's prev_text drifts and corrupts the
+    -- next edit's diff.
+    it("lockout_parinfer syncs parinfer snapshot and re-raises on error", function()
+        local buf = vim.api.nvim_create_buf(false, true)
+        vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "(foo)" })
+        -- Sync is gated on non-nil; pre-seed so the update is observable.
+        vim.b[buf].parinfer_last_changedtick = -1
+        vim.b[buf].parinfer_previous_text = "stale"
+        local ok, err = pcall(require("bartbie.text").lockout_parinfer, buf, function()
+            vim.api.nvim_buf_set_lines(buf, 0, -1, false, { "(foo bar)" })
             error("simulated")
-        end
-        local ok = pcall(function()
-            h.run_op("(let (<C>+ x) y)", "fennel", function()
-                structural.slurp("right")
-            end)
         end)
-        tslib.set_after_node = real
-        local leaked = (vim.g.parinfer_enabled == false)
-        vim.g.parinfer_enabled = prev
-        -- The test passes today only if `slurp` wraps its body in pcall/finally.
-        -- Currently it doesn't - this test is expected to FAIL until the leak is fixed.
-        -- Marking as pending so the suite is green; flip to assert when slurp is hardened.
-        if leaked then
-            pending("slurp leaks parinfer_enabled on error (see structural.lua:235-248)")
-        end
-        assert(ok ~= nil) -- always; we just want the test to run
+        assert.is_false(ok)
+        assert.matches("simulated", tostring(err))
+        assert.are.equal(vim.b[buf].changedtick, vim.b[buf].parinfer_last_changedtick)
+        assert.are.equal(
+            table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, true), "\n"),
+            vim.b[buf].parinfer_previous_text
+        )
+        vim.api.nvim_buf_delete(buf, { force = true })
     end)
 end)
 
@@ -196,6 +214,7 @@ describe("#lisp", function()
     ---@field pending string?
     ---@field should_fail boolean?
     ---@field fail_msg string?
+    ---@field opts RunOpOpts?
 
     ---@type {op: string, ft_tests: { ft: string, tests: spec.NormalizedDataTest[] }[] }[]
     local tests = vim.iter(pairs(data_tests))
@@ -231,6 +250,7 @@ describe("#lisp", function()
                                                         or nil,
                                                     should_fail = t.should_fail,
                                                     fail_msg = t.fail_msg,
+                                                    opts = t.opts,
                                                 }
                                             end
                                         )
@@ -263,7 +283,7 @@ describe("#lisp", function()
                             pending(t.pending)
                         end
                         local is_ok, err = xpcall(function()
-                            h.golden(t.inp, t.expected, op_fn, ft)
+                            h.golden(t.inp, t.expected, op_fn, ft, t.opts)
                         end, debug.traceback)
 
                         if t.should_fail then

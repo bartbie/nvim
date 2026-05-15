@@ -358,6 +358,28 @@ function M.each_ft(fts, fn, opts)
     end
 end
 
+-- Drain a stateful iterator into an array.
+---@generic T
+---@param iter fun(): T?
+---@return T[]
+function M.collect(iter)
+    local out = {}
+    for x in iter do
+        out[#out + 1] = x
+    end
+    return out
+end
+
+-- First leaf node that is not a list (atom/symbol). Companion to find_first.
+---@param root TSNode
+---@return TSNode|nil
+function M.find_atom(root)
+    local lisp = require("bartbie.treesitter").lisp
+    return M.find_first(root, function(n)
+        return n:named_child_count() == 0 and not lisp.is_list(n)
+    end)
+end
+
 -- 32-bit LCG. Deterministic, seedable via TEST_SEED env var.
 local DEFAULT_SEED = 0xC0FFEE
 
