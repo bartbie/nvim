@@ -42,12 +42,14 @@ function M.delete_text(buf, sr, sc, er, ec)
     M.replace_range(buf, sr, sc, er, ec, {})
 end
 
+---@param buf integer
 ---@param fn function
-function M.lockout_parinfer(fn)
-    local parinfer_state = vim.g.parinfer_enabled
-    vim.g.parinfer_enabled = false
+function M.lockout_parinfer(buf, fn)
     local ok, err = pcall(fn)
-    vim.g.parinfer_enabled = parinfer_state
+    if vim.api.nvim_buf_is_valid(buf) and vim.b[buf].parinfer_last_changedtick ~= nil then
+        vim.b[buf].parinfer_last_changedtick = vim.b[buf].changedtick
+        vim.b[buf].parinfer_previous_text = table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, true), "\n")
+    end
     if not ok then
         error(err, 0)
     end
@@ -59,7 +61,7 @@ end
 ---@param buf integer
 ---@param edits { [1]: integer, [2]: integer, [3]: integer, [4]: integer, [5]: string|string[] }[]
 function M.apply_disjoint_edits(buf, edits)
-    M.lockout_parinfer(function()
+    M.lockout_parinfer(buf, function()
         table.sort(edits, function(a, b)
             if a[1] ~= b[1] then
                 return a[1] > b[1]
