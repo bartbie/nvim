@@ -37,7 +37,7 @@
             buildNeovim
             ;
         };
-    
+
       config.packages = config.testPackages;
 
       options = {
@@ -49,11 +49,12 @@
         testPackages = lib.mkOption {
           type = lib.types.attrsOf lib.types.package;
           description = "Packages used for testing.";
-          default = {};
+          default = { };
         };
         nvim = {
           stable = lib.mkOption {
-            type = lib.types.package; readOnly = true;
+            type = lib.types.package;
+            readOnly = true;
             description = "Stable neovim unwrapped package.";
             default = pkgs.neovim-unwrapped;
           };
@@ -61,7 +62,7 @@
             type = lib.types.package;
             readOnly = true;
             description = "Nightly neovim unwrapped package.";
-            default = inputs'.neovim-nightly-overlay.packages.default;
+            default = inputs.neovim-nightly-overlay.packages.${system}.default;
           };
         };
       };
